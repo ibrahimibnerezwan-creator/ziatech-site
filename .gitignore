@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# App secrets & local DB
+*.jks
+release-key.jks
+*.log
+prisma/dev.db

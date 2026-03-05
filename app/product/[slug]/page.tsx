@@ -1,10 +1,13 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
+
+export const revalidate = 3600; // Revalidate every hour
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ShoppingCart, Heart, Share2, Star } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
+import { ProductActions } from '@/components/product/product-actions'
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
     // Fetch product from database
@@ -138,18 +141,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
                         </div>
 
                         {/* Actions */}
-                        <div className="flex gap-4 pt-4">
-                            <Button size="lg" className="flex-1 bg-accent-500 hover:bg-accent-600 text-black font-bold" disabled={product.stock === 0}>
-                                <ShoppingCart className="w-5 h-5 mr-2" />
-                                Add to Cart
-                            </Button>
-                            <Button size="lg" variant="glass" className="w-14">
-                                <Heart className="w-5 h-5" />
-                            </Button>
-                            <Button size="lg" variant="glass" className="w-14">
-                                <Share2 className="w-5 h-5" />
-                            </Button>
-                        </div>
+                        <ProductActions
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                stock: product.stock
+                            }}
+                        />
                     </div>
                 </div>
 

@@ -22,7 +22,7 @@ export function Header() {
                         <div className="absolute inset-0 bg-accent-400/20 blur-lg rounded-full" />
                     </div>
                     <span className="text-2xl font-bold tracking-tight text-white group-hover:text-accent-400 transition-colors">
-                        NEXUS<span className="text-accent-400">.</span>
+                        Zia's <span className="text-accent-400 text-sm font-medium">Tech Shop</span>
                     </span>
                 </Link>
 
@@ -79,7 +79,18 @@ export function Header() {
                         </Button>
                     </Link>
 
-                    <Button variant="ghost" size="icon" className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/5">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/5"
+                        onClick={() => {
+                            const { toast } = require('@/hooks/use-toast');
+                            toast({
+                                title: "Authentication Required",
+                                description: "Login system will be available in the next update!",
+                            })
+                        }}
+                    >
                         <User className="w-5 h-5" />
                     </Button>
 

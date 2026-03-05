@@ -15,8 +15,8 @@ export default function AdminLayout({
                     <div className="bg-accent-500/20 p-2 rounded-lg">
                         <Cpu className="w-6 h-6 text-accent-500" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-white">
-                        NEXUS <span className="text-xs text-gray-500 font-normal ml-1">ADMIN</span>
+                    <span className="text-xl font-bold tracking-tight text-white uppercase">
+                        Zia Tech <span className="text-xs text-gray-500 font-normal ml-1">ADMIN</span>
                     </span>
                 </div>
 

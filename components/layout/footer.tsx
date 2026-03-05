@@ -1,3 +1,5 @@
+"use client"
+
 import Link from 'next/link'
 import { Facebook, Instagram, Twitter, Youtube, MapPin, Mail, Phone, Cpu, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -14,12 +16,12 @@ export function Footer() {
                         <Link href="/" className="flex items-center space-x-2">
                             <Cpu className="w-8 h-8 text-accent-400" />
                             <span className="text-2xl font-bold tracking-tight text-white">
-                                NEXUS<span className="text-accent-400">.</span>
+                                Zia's <span className="text-accent-400">Tech Shop</span>
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Bangladesh's premium destination for robotics, IoT, and electronics.
-                            We empower makers to build the impossible.
+                            Dhaka's premium destination for electronics, dev boards, and smart gadgets.
+                            Curated solutions for the modern maker.
                         </p>
                         <div className="flex space-x-4">
                             <a href="#" className="text-gray-400 hover:text-accent-400 transition-colors"><Facebook className="w-5 h-5" /></a>
@@ -55,7 +57,7 @@ export function Footer() {
                             </li>
                             <li className="flex items-center space-x-3">
                                 <Mail className="w-5 h-5 text-accent-500 shrink-0" />
-                                <span>support@nexus.com</span>
+                                <span>hello@ziatech.shop</span>
                             </li>
                         </ul>
                     </div>
@@ -64,11 +66,21 @@ export function Footer() {
                     <div>
                         <h3 className="font-bold text-white mb-6">Stay Updated</h3>
                         <p className="text-sm text-gray-400 mb-4">
-                            Get the latest products and project ideas delivered to your inbox.
+                            Get the latest gadgets and DIY tips delivered to your inbox.
                         </p>
                         <div className="flex space-x-2">
                             <Input placeholder="Enter your email" className="bg-black/30 border-white/10" />
-                            <Button size="icon" className="shrink-0 bg-accent-500 hover:bg-accent-600 text-black">
+                            <Button
+                                size="icon"
+                                className="shrink-0 bg-accent-500 hover:bg-accent-600 text-black"
+                                onClick={() => {
+                                    const { toast } = require('@/hooks/use-toast');
+                                    toast({
+                                        title: "Coming Soon",
+                                        description: "Newsletter subscription will be active shortly!",
+                                    })
+                                }}
+                            >
                                 <ArrowRight className="w-4 h-4" />
                             </Button>
                         </div>
@@ -76,7 +88,7 @@ export function Footer() {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-                    <p>© 2025 Nexus Electronics. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} Zia's Tech Shop. All rights reserved.</p>
                     <div className="flex space-x-4 mt-4 md:mt-0">
                         <span>Terms</span>
                         <span>Cookies</span>

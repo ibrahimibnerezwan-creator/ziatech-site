@@ -55,10 +55,36 @@ export function ProductCard({ product }: { product: Product }) {
 
                     {/* HOVER ACTIONS OVERLAY */}
                     <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex gap-2 justify-center bg-gradient-to-t from-black/80 to-transparent">
-                        <Button size="icon" variant="glass" className="rounded-full hover:bg-accent-500 hover:text-black">
+                        <Button
+                            size="icon"
+                            variant="glass"
+                            className="rounded-full hover:bg-accent-500 hover:text-black"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const { toast } = require('@/hooks/use-toast');
+                                toast({
+                                    title: "Added to Cart",
+                                    description: `${product.name} has been added to your cart.`,
+                                })
+                            }}
+                        >
                             <ShoppingCart className="w-4 h-4" />
                         </Button>
-                        <Button size="icon" variant="glass" className="rounded-full hover:bg-red-500 hover:text-white">
+                        <Button
+                            size="icon"
+                            variant="glass"
+                            className="rounded-full hover:bg-red-500 hover:text-white"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const { toast } = require('@/hooks/use-toast');
+                                toast({
+                                    title: "Wishlist Updated",
+                                    description: `${product.name} has been added to your wishlist.`,
+                                })
+                            }}
+                        >
                             <Heart className="w-4 h-4" />
                         </Button>
                     </div>

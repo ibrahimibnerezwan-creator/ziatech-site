@@ -56,13 +56,13 @@
 
     0%,
     100% {
-      opacity: 1;
-      box-shadow: 0 0 20px var(--accent-500);
+      opacity: 0.8;
+      transform: scale(1);
     }
 
     50% {
-      opacity: 0.5;
-      box-shadow: 0 0 10px var(--accent-500);
+      opacity: 0.4;
+      transform: scale(1.05);
     }
   }
 

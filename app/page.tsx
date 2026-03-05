@@ -5,22 +5,24 @@ import { FlashSale } from '@/components/home/flash-sale'
 import { NewArrivals } from '@/components/home/new-arrivals'
 import { Footer } from '@/components/layout/footer'
 
-export default async function Home() {
-  // Fetch new arrivals
-  const newProductsRaw = await prisma.product.findMany({
-    take: 4,
-    orderBy: { createdAt: 'desc' },
-    include: { images: true, category: true }
-  })
+export const revalidate = 3600; // Revalidate every hour
 
-  // Fetch flash sale products (products with discount)
-  const flashProductsRaw = await prisma.product.findMany({
-    where: {
-      comparePrice: { not: null }
-    },
-    take: 4,
-    include: { images: true, category: true }
-  })
+export default async function Home() {
+  // Fetch new arrivals and flash sale products in parallel
+  const [newProductsRaw, flashProductsRaw] = await Promise.all([
+    prisma.product.findMany({
+      take: 4,
+      orderBy: { createdAt: 'desc' },
+      include: { images: true, category: true }
+    }),
+    prisma.product.findMany({
+      where: {
+        comparePrice: { not: null }
+      },
+      take: 4,
+      include: { images: true, category: true }
+    })
+  ])
 
   // Map to ProductCard interface
   const newProducts = newProductsRaw.map(p => ({
