@@ -60,8 +60,6 @@ export default async function AdminDashboard() {
                     icon={Users}
                     trend="+2"
                 />
-            </div>                    trend="+2"
-                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
