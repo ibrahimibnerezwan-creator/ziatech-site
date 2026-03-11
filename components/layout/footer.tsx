@@ -1,9 +1,6 @@
-"use client"
-
 import Link from 'next/link'
-import { Cpu, Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, MessageCircle, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Cpu, Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
+import { NewsletterForm } from './newsletter-form'
 import { getStoreSettings } from '@/lib/data'
 
 export async function Footer() {
@@ -107,22 +104,7 @@ export async function Footer() {
                         <p className="text-sm text-gray-400 mb-4">
                             Get the latest gadgets and DIY tips delivered to your inbox.
                         </p>
-                        <div className="flex space-x-2">
-                            <Input placeholder="Enter your email" className="bg-black/30 border-white/10" />
-                            <Button
-                                size="icon"
-                                className="shrink-0 bg-accent-500 hover:bg-accent-600 text-black"
-                                onClick={() => {
-                                    const { toast } = require('@/hooks/use-toast');
-                                    toast({
-                                        title: "Coming Soon",
-                                        description: "Newsletter subscription will be active shortly!",
-                                    })
-                                }}
-                            >
-                                <ArrowRight className="w-4 h-4" />
-                            </Button>
-                        </div>
+                            <NewsletterForm />
                     </div>
                 </div>
 
