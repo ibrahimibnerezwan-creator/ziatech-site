@@ -1,11 +1,11 @@
-import { prisma } from '@/lib/prisma'
+import { getAllCategories } from '@/lib/data'
 import { createProduct } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Save } from 'lucide-react'
 
 export default async function NewProductPage() {
-    const categories = await prisma.category.findMany()
+    const categories = await getAllCategories()
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -35,6 +35,7 @@ export default async function NewProductPage() {
                     <div className="space-y-2 col-span-2">
                         <label className="text-sm font-medium text-gray-300">Category</label>
                         <select name="category" className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500">
+                            <option value="" className="bg-gray-800">Select Category</option>
                             {categories.map(cat => (
                                 <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
                             ))}

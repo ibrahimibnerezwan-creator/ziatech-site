@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { getProductBySlug, getRelatedProducts } from '@/lib/data'
 import { notFound } from 'next/navigation'
 
 export const revalidate = 3600; // Revalidate every hour
@@ -10,17 +10,8 @@ import { ProductCard } from '@/components/product/product-card'
 import { ProductActions } from '@/components/product/product-actions'
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-    // Fetch product from database
-    const product = await prisma.product.findUnique({
-        where: { slug: params.slug },
-        include: {
-            images: true,
-            category: true,
-            brand: true
-        }
-    })
+    const product = await getProductBySlug(params.slug)
 
-    // If product not found, show 404
     if (!product) {
         notFound()
     }
@@ -29,29 +20,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
     const specs = product.specs ? JSON.parse(product.specs) : {}
 
     // Fetch related products from same category
-    const relatedProducts = await prisma.product.findMany({
-        where: {
-            categoryId: product.categoryId,
-            id: { not: product.id } // Exclude current product
-        },
-        take: 4,
-        include: {
-            images: true,
-            category: true
-        }
-    })
-
-    // Map related products to ProductCard format
-    const relatedProductsFormatted = relatedProducts.map(p => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        image: p.images[0]?.url || 'https://via.placeholder.com/400',
-        category: p.category?.name || 'Uncategorized',
-        rating: 0,
-        reviews: 0,
-        stock: p.stock
-    }))
+    const relatedProductsFormatted = product.categoryId
+        ? await getRelatedProducts(product.categoryId, product.id, 4)
+        : []
 
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary pt-24 pb-16">

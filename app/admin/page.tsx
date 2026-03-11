@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { getProductCount, getOrderCount } from '@/lib/data'
 import { Card } from '@/components/ui/card'
 import { DollarSign, ShoppingBag, Package, Users } from 'lucide-react'
 
@@ -24,13 +24,8 @@ function StatCard({ title, value, icon: Icon, trend }: any) {
 }
 
 export default async function AdminDashboard() {
-    // Fetch actual counts
-    const productCount = await prisma.product.count()
-    const orderCount = await prisma.order.count()
-    const customerCount = await prisma.user.count({ where: { role: 'CUSTOMER' } })
-
-    // Calculate revenue (mock for now as we use Float and SQLite aggregation might be tricky without seed)
-    const totalRevenue = 0
+    const productCount = await getProductCount()
+    const orderCount = await getOrderCount()
 
     return (
         <div className="space-y-8">
@@ -42,7 +37,7 @@ export default async function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Revenue"
-                    value={`৳${totalRevenue.toLocaleString()}`}
+                    value="৳0"
                     icon={DollarSign}
                     trend="+20.1%"
                 />
@@ -60,7 +55,7 @@ export default async function AdminDashboard() {
                 />
                 <StatCard
                     title="Active Customers"
-                    value={customerCount}
+                    value={0}
                     icon={Users}
                     trend="+2"
                 />

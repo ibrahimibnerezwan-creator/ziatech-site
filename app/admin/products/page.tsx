@@ -1,16 +1,10 @@
 import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
+import { getAllProducts } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 import { Plus, Edit, Trash2, Eye } from 'lucide-react'
 
 export default async function AdminProductsPage() {
-    const products = await prisma.product.findMany({
-        include: {
-            category: true,
-            brand: true
-        },
-        orderBy: { createdAt: 'desc' }
-    })
+    const products = await getAllProducts()
 
     return (
         <div>
@@ -49,11 +43,11 @@ export default async function AdminProductsPage() {
                                 <tr key={product.id} className="hover:bg-white/5 transition-colors group">
                                     <td className="p-4">
                                         <div className="font-medium text-white">{product.name}</div>
-                                        <div className="text-xs text-gray-500">{product.brand?.name}</div>
+                                        <div className="text-xs text-gray-500">{product.brandName}</div>
                                     </td>
                                     <td className="p-4 text-gray-300">
                                         <span className="px-2 py-1 rounded-full bg-white/10 text-xs">
-                                            {product.category?.name}
+                                            {product.categoryName}
                                         </span>
                                     </td>
                                     <td className="p-4 text-white font-mono">৳{product.price}</td>
@@ -65,15 +59,25 @@ export default async function AdminProductsPage() {
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-400 hover:bg-blue-400/10">
-                                                <Eye className="w-4 h-4" />
-                                            </Button>
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-yellow-400 hover:bg-yellow-400/10">
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-400 hover:bg-red-400/10">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+                                            <Link href={`/product/${product.slug}`} target="_blank">
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-400 hover:bg-blue-400/10">
+                                                    <Eye className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                            <Link href={`/admin/products/${product.id}/edit`}>
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-yellow-400 hover:bg-yellow-400/10">
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
+                                            <form action={async () => {
+                                                'use server'
+                                                const { deleteProduct } = await import('@/app/admin/actions')
+                                                await deleteProduct(product.id)
+                                            }}>
+                                                <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-red-400 hover:bg-red-400/10">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
