@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Hero3D } from '@/components/layout/hero-3d'
+import { HeroAnimation } from '@/components/layout/hero-animation'
 import Link from 'next/link'
 
 export function Hero() {
@@ -85,7 +85,7 @@ export function Hero() {
                     transition={{ duration: 1, delay: 0.4 }}
                     className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center"
                 >
-                    <Hero3D />
+                    <HeroAnimation />
 
                     {/* Decorative circles to ground the 3D element */}
                     <div className="absolute inset-0 border border-white/5 rounded-full scale-110 animate-[spin_20s_linear_infinite]" />
