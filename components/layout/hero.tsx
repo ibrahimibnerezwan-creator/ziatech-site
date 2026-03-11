@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Hero3D } from '@/components/layout/hero-3d'
+import Link from 'next/link'
 
 export function Hero() {
     return (
@@ -45,14 +46,18 @@ export function Hero() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 justify-center md:justify-start">
-                        <Button size="lg" className="rounded-full px-8 text-lg hover:scale-105 transition-transform group">
-                            Start Building
-                            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
+                        <Link href="/categories">
+                            <Button size="lg" className="rounded-full px-8 text-lg hover:scale-105 transition-transform group">
+                                Start Building
+                                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                        </Link>
 
-                        <Button variant="neon" size="lg" className="rounded-full px-8 text-lg">
-                            Explore Projects
-                        </Button>
+                        <Link href="/about">
+                            <Button variant="neon" size="lg" className="rounded-full px-8 text-lg">
+                                Explore Projects
+                            </Button>
+                        </Link>
                     </div>
 
                     <div className="pt-8 flex items-center justify-center md:justify-start space-x-8 text-gray-500">

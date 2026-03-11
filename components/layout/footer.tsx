@@ -90,11 +90,11 @@ export async function Footer() {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-                    <p>© {new Date().getFullYear()} Z's Tech Shop. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} Z&apos;s Tech Shop. All rights reserved.</p>
                     <div className="flex space-x-4 mt-4 md:mt-0">
-                        <span>Terms</span>
-                        <span>Cookies</span>
-                        <span>Sitemap</span>
+                        <Link href="/privacy" className="hover:text-accent-400 transition-colors">Terms</Link>
+                        <Link href="/privacy" className="hover:text-accent-400 transition-colors">Cookies</Link>
+                        <Link href="/about" className="hover:text-accent-400 transition-colors">Sitemap</Link>
                     </div>
                 </div>
             </div>
