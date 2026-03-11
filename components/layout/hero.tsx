@@ -91,10 +91,6 @@ export function Hero() {
                     className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center"
                 >
                     <HeroAnimation />
-
-                    {/* Decorative circles to ground the 3D element */}
-                    <div className="absolute inset-0 border border-white/5 rounded-full scale-110 animate-[spin_20s_linear_infinite]" />
-                    <div className="absolute inset-0 border border-white/5 rounded-full scale-90 border-dashed animate-[spin_15s_linear_infinite_reverse]" />
                 </motion.div>
 
             </div>
