@@ -1,4 +1,4 @@
-# 🚀 Vendor Launchpad: Zia Tech Shop
+# 🚀 Vendor Launchpad: Z's Tech Shop
 
 This document serves as your central command center for the Zia Tech Shop. Keep this open to quickly jump between all your managed services.
 

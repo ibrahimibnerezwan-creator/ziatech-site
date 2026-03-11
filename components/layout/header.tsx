@@ -22,7 +22,7 @@ export function Header() {
                         <div className="absolute inset-0 bg-accent-400/20 blur-lg rounded-full" />
                     </div>
                     <span className="text-2xl font-bold tracking-tight text-white group-hover:text-accent-400 transition-colors">
-                        Zia's <span className="text-accent-400 text-sm font-medium">Tech Shop</span>
+                        Z's <span className="text-accent-400 text-sm font-medium">Tech Shop</span>
                     </span>
                 </Link>
 

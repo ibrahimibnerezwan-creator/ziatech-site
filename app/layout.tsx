@@ -4,8 +4,8 @@ import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Zia's Tech Shop | Premium Electronics",
-  description: "The ultimate hub for electronics and technology. High-quality gadgets curated by Zia.",
+  title: "Z's Tech Shop | Premium Electronics",
+  description: "The ultimate hub for electronics and technology. High-quality gadgets curated by Z.",
 }
 
 export default function RootLayout({

@@ -16,7 +16,7 @@ export function Footer() {
                         <Link href="/" className="flex items-center space-x-2">
                             <Cpu className="w-8 h-8 text-accent-400" />
                             <span className="text-2xl font-bold tracking-tight text-white">
-                                Zia's <span className="text-accent-400">Tech Shop</span>
+                                Z's <span className="text-accent-400">Tech Shop</span>
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
@@ -88,7 +88,7 @@ export function Footer() {
                 </div>
 
                 <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-                    <p>© {new Date().getFullYear()} Zia's Tech Shop. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} Z's Tech Shop. All rights reserved.</p>
                     <div className="flex space-x-4 mt-4 md:mt-0">
                         <span>Terms</span>
                         <span>Cookies</span>
