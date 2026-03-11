@@ -1,6 +1,7 @@
 import { getProductCount, getOrderCount } from '@/lib/data'
 import { Card } from '@/components/ui/card'
-import { DollarSign, ShoppingBag, Package, Users } from 'lucide-react'
+import { CloudflareStatus } from '@/components/admin/cloudflare-status'
+import { Package, ShoppingCart, TrendingUp, Users } from 'lucide-react'
 
 // Dashboard Stats Card Component
 function StatCard({ title, value, icon: Icon, trend }: any) {
@@ -38,13 +39,13 @@ export default async function AdminDashboard() {
                 <StatCard
                     title="Total Revenue"
                     value="৳0"
-                    icon={DollarSign}
+                    icon={TrendingUp}
                     trend="+20.1%"
                 />
                 <StatCard
                     title="Orders"
                     value={orderCount}
-                    icon={ShoppingBag}
+                    icon={ShoppingCart}
                     trend="+12%"
                 />
                 <StatCard
@@ -59,13 +60,22 @@ export default async function AdminDashboard() {
                     icon={Users}
                     trend="+2"
                 />
+            </div>                    trend="+2"
+                />
             </div>
 
-            {/* RECENT ORDERS PLACEHOLDER */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Recent Activity</h2>
-                <div className="text-gray-400 text-sm text-center py-10">
-                    No orders yet. Start selling!
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-3">
+                    {/* RECENT ORDERS PLACEHOLDER */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                        <h2 className="text-xl font-bold text-white mb-4">Recent Activity</h2>
+                        <div className="text-gray-400 text-sm text-center py-10">
+                            No orders yet. Start selling!
+                        </div>
+                    </div>
+                </div>
+                <div className="lg:col-span-1">
+                    <CloudflareStatus />
                 </div>
             </div>
         </div>

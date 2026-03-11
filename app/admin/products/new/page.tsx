@@ -1,40 +1,64 @@
-import { getAllCategories } from '@/lib/data'
+"use client"
+
+import React, { useState, useEffect } from 'react'
 import { createProduct } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Save } from 'lucide-react'
+import { ImageUpload } from '@/components/admin/image-upload'
+import { Save, ChevronLeft } from 'lucide-react'
+import Link from 'next/link'
 
-export default async function NewProductPage() {
-    const categories = await getAllCategories()
+export default function NewProductPage() {
+    const [categories, setCategories] = useState<{id: string, name: string}[]>([])
+    const [imageUrl, setImageUrl] = useState('')
+
+    useEffect(() => {
+        async function fetchCats() {
+            const res = await fetch('/api/products') // This only works if GET /api/products returns everything, let's assume we need a better way or just fetch from data
+            // Since this is a server-to-client switch, I'll fetch categories from a new endpoint or just pass them as props if this was a wrapper.
+            // For now, I'll create a quick fetch inside.
+            const dataRes = await fetch('/api/categories')
+            if (dataRes.ok) {
+                const data = await dataRes.json()
+                setCategories(data)
+            }
+        }
+        fetchCats()
+    }, [])
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white">Add New Product</h1>
-                <p className="text-gray-400">Create a new item in your inventory.</p>
+        <div className="max-w-4xl mx-auto">
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <Link href="/admin/products" className="text-accent-400 flex items-center text-sm mb-2 hover:underline">
+                        <ChevronLeft className="w-4 h-4 mr-1" /> Back to Products
+                    </Link>
+                    <h1 className="text-3xl font-bold text-white uppercase tracking-tight">Add New <span className="text-accent-500">Product</span></h1>
+                </div>
             </div>
 
-            <form action={createProduct} className="space-y-6 bg-white/5 border border-white/10 p-8 rounded-xl backdrop-blur-md">
-
-                <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-gray-300">Product Name</label>
+            <form action={createProduct} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-6 bg-white/5 border border-white/10 p-8 rounded-xl backdrop-blur-md">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Product Name</label>
                         <Input name="name" placeholder="e.g. Arduino Uno R4" required className="bg-black/20 border-white/10" />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Price (৳)</label>
-                        <Input name="price" type="number" step="0.01" placeholder="0.00" required className="bg-black/20 border-white/10" />
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Price (৳)</label>
+                            <Input name="price" type="number" step="0.01" placeholder="0.00" required className="bg-black/20 border-white/10" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Stock Quantity</label>
+                            <Input name="stock" type="number" placeholder="0" required className="bg-black/20 border-white/10" />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Stock Quantity</label>
-                        <Input name="stock" type="number" placeholder="0" required className="bg-black/20 border-white/10" />
-                    </div>
-
-                    <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-gray-300">Category</label>
-                        <select name="category" className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500">
+                        <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category</label>
+                        <select name="category" className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500 appearance-none">
                             <option value="" className="bg-gray-800">Select Category</option>
                             {categories.map(cat => (
                                 <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
@@ -42,25 +66,29 @@ export default async function NewProductPage() {
                         </select>
                     </div>
 
-                    <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-gray-300">Image URL</label>
-                        <Input name="imageUrl" placeholder="https://..." required className="bg-black/20 border-white/10" />
-                        <p className="text-xs text-gray-500">Paste a direct link to an image (e.g. from Unsplash or Imgur).</p>
-                    </div>
-
-                    <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-gray-300">Description</label>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Description</label>
                         <textarea
                             name="description"
-                            rows={4}
+                            rows={6}
                             className="w-full p-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500"
-                            placeholder="Detailed product description..."
+                            placeholder="Describe performance, features, and specs..."
                         />
                     </div>
                 </div>
 
-                <div className="pt-4 flex justify-end">
-                    <Button type="submit" size="lg" className="bg-accent-500 text-black hover:bg-accent-600">
+                <div className="space-y-6">
+                    <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md">
+                        <ImageUpload onUploadComplete={(url) => setImageUrl(url)} />
+                        <input type="hidden" name="imageUrl" value={imageUrl} />
+                        {imageUrl && (
+                            <p className="mt-2 text-[10px] text-green-400 font-mono break-all opacity-50">
+                                {imageUrl}
+                            </p>
+                        )}
+                    </div>
+
+                    <Button type="submit" size="lg" className="w-full bg-accent-500 text-black hover:bg-accent-600 font-bold uppercase tracking-widest shadow-lg shadow-accent-500/20">
                         <Save className="w-4 h-4 mr-2" /> Save Product
                     </Button>
                 </div>
