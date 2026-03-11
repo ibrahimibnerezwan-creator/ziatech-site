@@ -3,8 +3,13 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { HeroAnimation } from '@/components/layout/hero-animation'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
+
+const HeroAnimation = dynamic(() => import('@/components/layout/hero-animation').then(m => m.HeroAnimation), {
+    ssr: false,
+    loading: () => <div className="w-full h-[400px] md:h-[600px] flex items-center justify-center"><div className="w-20 h-20 border-2 border-accent-500/30 border-t-accent-500 rounded-full animate-spin" /></div>
+})
 
 export function Hero() {
     return (
