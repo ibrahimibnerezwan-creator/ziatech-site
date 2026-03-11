@@ -79,32 +79,13 @@ export async function Footer() {
                         </ul>
                     </div>
 
-                    {/* CONTACT INFO */}
-                    <div>
-                        <h3 className="font-bold text-white mb-6">Contact Us</h3>
-                        <ul className="space-y-4 text-sm text-gray-400">
-                            <li className="flex items-start space-x-3">
-                                <MapPin className="w-5 h-5 text-accent-500 shrink-0" />
-                                <span>2/1/E, Eden Center, Arambagh,<br />Motijheel, Dhaka-1000</span>
-                            </li>
-                            <li className="flex items-center space-x-3">
-                                <Phone className="w-5 h-5 text-accent-500 shrink-0" />
-                                <span>+880 9678-110110</span>
-                            </li>
-                            <li className="flex items-center space-x-3">
-                                <Mail className="w-5 h-5 text-accent-500 shrink-0" />
-                                <span>hello@ziatech.shop</span>
-                            </li>
-                        </ul>
-                    </div>
-
                     {/* NEWSLETTER */}
                     <div>
                         <h3 className="font-bold text-white mb-6">Stay Updated</h3>
                         <p className="text-sm text-gray-400 mb-4">
                             Get the latest gadgets and DIY tips delivered to your inbox.
                         </p>
-                            <NewsletterForm />
+                        <NewsletterForm />
                     </div>
                 </div>
 
