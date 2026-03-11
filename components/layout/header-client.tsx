@@ -7,6 +7,7 @@ import { Search, ShoppingCart, User, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
+import { useCart } from '@/lib/cart-context'
 
 interface HeaderClientProps {
     categories: Array<{ id: string; name: string; slug: string }>
@@ -16,6 +17,7 @@ export function HeaderClient({ categories }: HeaderClientProps) {
     const [isSearchFocused, setIsSearchFocused] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const { toast } = useToast()
+    const { totalItems } = useCart()
 
     // Take up to 5 categories for the top nav
     const topCategories = categories.slice(0, 5)
@@ -69,8 +71,11 @@ export function HeaderClient({ categories }: HeaderClientProps) {
                 <Link href="/cart">
                     <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
                         <ShoppingCart className="w-5 h-5" />
-                        {/* Fake badge replaced with a simple dot for empty state, until cart logic is fully built */}
-                        {/* <span className="absolute top-1 right-1 w-2 h-2 bg-accent-400 rounded-full"></span> */}
+                        {totalItems > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-black text-xs font-bold rounded-full flex items-center justify-center">
+                                {totalItems}
+                            </span>
+                        )}
                     </Button>
                 </Link>
 

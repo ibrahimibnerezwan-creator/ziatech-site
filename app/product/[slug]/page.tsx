@@ -117,6 +117,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             product={{
                                 id: product.id,
                                 name: product.name,
+                                price: product.price,
+                                image: product.images[0]?.url || '',
+                                slug: product.slug,
                                 stock: product.stock
                             }}
                         />

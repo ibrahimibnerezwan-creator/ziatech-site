@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Toaster } from '@/components/ui/toaster'
+import { Providers } from './providers'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className="min-h-screen bg-bg-primary text-text-primary overflow-x-hidden selection:bg-accent-500/30 selection:text-white" suppressHydrationWarning>
-        <Header />
-        <main className="pt-20">
-          {children}
-        </main>
-        <Toaster />
+        <Providers>
+          <Header />
+          <main className="pt-20">
+            {children}
+          </main>
+          <Toaster />
+        </Providers>
 
         {/* Background Ambient Glow */}
         <div className="fixed inset-0 -z-50 pointer-events-none overflow-hidden">

@@ -4,19 +4,32 @@ import React from 'react'
 import { ShoppingCart, Heart, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
+import { useCart } from '@/lib/cart-context'
 
 interface ProductActionsProps {
     product: {
         id: string
         name: string
+        price: number
+        image: string
+        slug: string
         stock: number
     }
 }
 
 export function ProductActions({ product }: ProductActionsProps) {
+    const { addItem } = useCart()
+
     const handleAddToCart = () => {
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            slug: product.slug,
+        })
         toast({
-            title: "Added to Cart",
+            title: "Added to Cart ✓",
             description: `${product.name} has been added to your cart.`,
         })
     }
@@ -34,17 +47,12 @@ export function ProductActions({ product }: ProductActionsProps) {
                 title: product.name,
                 url: window.location.href,
             }).catch(() => {
-                toast({
-                    title: "Link Copied",
-                    description: "Product link copied to clipboard.",
-                })
+                navigator.clipboard.writeText(window.location.href)
+                toast({ title: "Link Copied", description: "Product link copied to clipboard." })
             })
         } else {
             navigator.clipboard.writeText(window.location.href)
-            toast({
-                title: "Link Copied",
-                description: "Product link copied to clipboard.",
-            })
+            toast({ title: "Link Copied", description: "Product link copied to clipboard." })
         }
     }
 
@@ -61,19 +69,17 @@ export function ProductActions({ product }: ProductActionsProps) {
             </Button>
             <Button
                 size="lg"
-                variant="glass"
-                className="w-14"
+                className="w-14 bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:text-red-400"
                 onClick={handleWishlist}
             >
-                <Heart className="w-5 h-5 hover:text-red-500 transition-colors" />
+                <Heart className="w-5 h-5" />
             </Button>
             <Button
                 size="lg"
-                variant="glass"
-                className="w-14"
+                className="w-14 bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:text-accent-400"
                 onClick={handleShare}
             >
-                <Share2 className="w-5 h-5 hover:text-accent-400 transition-colors" />
+                <Share2 className="w-5 h-5" />
             </Button>
         </div>
     )
