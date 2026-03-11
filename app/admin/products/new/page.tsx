@@ -13,17 +13,18 @@ export default function NewProductPage() {
     const [imageUrl, setImageUrl] = useState('')
 
     useEffect(() => {
-        async function fetchCats() {
-            const res = await fetch('/api/products') // This only works if GET /api/products returns everything, let's assume we need a better way or just fetch from data
-            // Since this is a server-to-client switch, I'll fetch categories from a new endpoint or just pass them as props if this was a wrapper.
-            // For now, I'll create a quick fetch inside.
-            const dataRes = await fetch('/api/categories')
-            if (dataRes.ok) {
-                const data = await dataRes.json()
-                setCategories(data)
+        async function fetchCategories() {
+            try {
+                const res = await fetch('/api/categories')
+                if (res.ok) {
+                    const data = await res.json()
+                    setCategories(data)
+                }
+            } catch (error) {
+                console.error('Failed to fetch categories:', error)
             }
         }
-        fetchCats()
+        fetchCategories()
     }, [])
 
     return (

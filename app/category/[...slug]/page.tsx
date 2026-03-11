@@ -2,20 +2,7 @@ import { ProductCard } from '@/components/product/product-card'
 import { Button } from '@/components/ui/button'
 import { Filter } from 'lucide-react'
 import { Footer } from '@/components/layout/footer'
-
-// Mock Data for Demo
-const categoryProducts = Array.from({ length: 8 }).map((_, i) => ({
-    id: `c-${i}`,
-    name: i % 2 === 0 ? 'Arduino Uno R3 Original' : 'ESP32 Development Board',
-    price: 1200 + (i * 100),
-    image: i % 2 === 0
-        ? 'https://images.unsplash.com/photo-1555664424-778a69fdb6b8?q=80&w=400'
-        : 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=400',
-    category: 'Development Boards',
-    rating: 4.5,
-    reviews: 12 + i,
-    stock: 20
-}))
+import { getProductsByCategory } from '@/lib/data'
 
 export default async function CategoryPage({
     params,
@@ -23,7 +10,10 @@ export default async function CategoryPage({
     params: Promise<{ slug: string[] }>
 }) {
     const { slug } = await params
-    const categoryName = slug?.[0]?.replace('-', ' ') || 'All Products'
+    const categorySlug = slug?.[0] || 'all'
+    
+    // Fetch real data from DB
+    const { products: categoryProducts, categoryName } = await getProductsByCategory(categorySlug)
 
     return (
         <div className="min-h-screen flex flex-col">

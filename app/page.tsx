@@ -5,7 +5,7 @@ import { FlashSale } from '@/components/home/flash-sale'
 import { NewArrivals } from '@/components/home/new-arrivals'
 import { Footer } from '@/components/layout/footer'
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 0; // Dynamic rendering for immediate updates
 
 export default async function Home() {
   const [newProducts, flashProducts] = await Promise.all([

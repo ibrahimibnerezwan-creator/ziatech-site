@@ -16,7 +16,7 @@ export default function AdminLayout({
                         <Cpu className="w-6 h-6 text-accent-500" />
                     </div>
                     <span className="text-xl font-bold tracking-tight text-white uppercase">
-                        Zia Tech <span className="text-xs text-gray-500 font-normal ml-1">ADMIN</span>
+                        Z's Tech <span className="text-xs text-gray-500 font-normal ml-1">ADMIN</span>
                     </span>
                 </div>
 
