@@ -1,6 +1,9 @@
 # 🚀 Vendor Launchpad: Z's Tech Shop
 
-This document serves as your central command center for the Zia Tech Shop. Keep this open to quickly jump between all your managed services.
+This document serves as your central command center for Z's Tech Shop. Keep this open to quickly jump between all your managed services.
+
+> [!TIP]
+> Your Cloudflare R2 connection status and Image Uploader are now active in the Admin Dashboard!
 
 ## 📦 Core Infrastructure (One Profile, Many Clients)
 
