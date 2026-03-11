@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { products, productImages, categories, brands, orders } from '@/db/schema';
+import { products, categories, productImages, brands, orders, orderItems, storeSettings, reviews } from '@/db/schema';
 import { eq, desc, ne, isNotNull, sql } from 'drizzle-orm';
 
 // ==================== PRODUCT QUERIES ====================
@@ -258,4 +258,56 @@ export async function getProductCount() {
 export async function getOrderCount() {
   const result = await db.select({ count: sql<number>`count(*)` }).from(orders);
   return result[0].count;
+}
+
+export async function getStoreSettings() {
+  const result = await db.select().from(storeSettings);
+  return result.reduce((acc, curr) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {} as Record<string, string>);
+}
+
+export async function getStoreSetting(key: string, defaultValue = '') {
+  const result = await db.select().from(storeSettings).where(eq(storeSettings.key, key)).limit(1);
+  return result.length > 0 ? result[0].value : defaultValue;
+}
+
+export async function getAllCategoriesWithCount() {
+  const result = await db.select({
+    id: categories.id,
+    name: categories.name,
+    slug: categories.slug,
+    image: categories.image,
+    productCount: sql<number>`count(${products.id})`,
+  })
+  .from(categories)
+  .leftJoin(products, eq(products.categoryId, categories.id))
+  .groupBy(categories.id)
+  .orderBy(categories.name);
+  
+  return result;
+}
+
+export async function getCategoryById(id: string) {
+  const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function getAllReviews() {
+  const result = await db.select({
+    id: reviews.id,
+    rating: reviews.rating,
+    comment: reviews.comment,
+    reviewerName: reviews.reviewerName,
+    createdAt: reviews.createdAt,
+    status: reviews.status,
+    adminReply: reviews.adminReply,
+    productName: products.name,
+  })
+  .from(reviews)
+  .leftJoin(products, eq(reviews.productId, products.id))
+  .orderBy(desc(reviews.createdAt));
+
+  return result;
 }

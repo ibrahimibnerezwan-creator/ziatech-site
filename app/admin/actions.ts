@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { products, productImages } from '@/db/schema'
+import { products, productImages, categories } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -93,4 +93,63 @@ export async function deleteProduct(id: string) {
     }
 
     revalidatePath('/admin/products')
+}
+
+export async function createCategory(formData: FormData) {
+    const name = formData.get('name') as string
+    const image = formData.get('imageUrl') as string
+    
+    // Generate clean slug
+    const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+    // Fallback if empty
+    const slug = baseSlug || `cat-${Date.now()}`
+
+    try {
+        await db.insert(categories).values({
+            id: uuidv4(),
+            name,
+            slug,
+            image: image || null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        })
+    } catch (error) {
+        console.error('Failed to create category:', error)
+    }
+
+    revalidatePath('/admin/categories')
+    redirect('/admin/categories')
+}
+
+export async function updateCategory(id: string, formData: FormData) {
+    const name = formData.get('name') as string
+    const image = formData.get('imageUrl') as string
+    
+    // Generate clean slug
+    const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+    const slug = baseSlug || `cat-${Date.now()}`
+
+    try {
+        await db.update(categories).set({
+            name,
+            slug,
+            image: image || null,
+            updatedAt: new Date()
+        }).where(eq(categories.id, id))
+    } catch (error) {
+        console.error('Failed to update category:', error)
+    }
+
+    revalidatePath('/admin/categories')
+    redirect('/admin/categories')
+}
+
+export async function deleteCategory(id: string) {
+    try {
+        await db.delete(categories).where(eq(categories.id, id))
+    } catch (error) {
+        console.error('Failed to delete category:', error)
+    }
+
+    revalidatePath('/admin/categories')
 }

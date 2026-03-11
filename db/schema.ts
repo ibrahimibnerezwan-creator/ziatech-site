@@ -72,8 +72,16 @@ export const reviews = sqliteTable('reviews', {
   comment: text('comment'),
   reviewerName: text('reviewer_name').notNull().default('Anonymous'),
   productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
-  status: text('status').default('pending'),
+  status: text('status').default('pending'), // pending, approved, rejected
+  adminReply: text('admin_reply'), // New field for admin to respond
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+// ==================== STORE SETTINGS ====================
+export const storeSettings = sqliteTable('store_settings', {
+  key: text('key').primaryKey(), // e.g., 'phone', 'email', 'address', 'whatsapp', 'facebook'
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
 
 // ==================== RELATIONS ====================

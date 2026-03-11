@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Cpu } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Cpu, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function AdminLayout({
@@ -31,14 +31,19 @@ export default function AdminLayout({
                             <Package className="w-4 h-4 mr-3" /> Products
                         </Button>
                     </Link>
+                    <Link href="/admin/categories">
+                        <Button variant="ghost" className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5">
+                            <Package className="w-4 h-4 mr-3" /> Categories
+                        </Button>
+                    </Link>
                     <Link href="/admin/orders">
                         <Button variant="ghost" className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5">
                             <ShoppingCart className="w-4 h-4 mr-3" /> Orders
                         </Button>
                     </Link>
-                    <Link href="/admin/customers">
+                    <Link href="/admin/reviews">
                         <Button variant="ghost" className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5">
-                            <Users className="w-4 h-4 mr-3" /> Customers
+                            <MessageCircle className="w-4 h-4 mr-3" /> Reviews
                         </Button>
                     </Link>
                     <Link href="/admin/settings">
