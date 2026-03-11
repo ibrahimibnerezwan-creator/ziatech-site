@@ -1,5 +1,17 @@
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
+// ==================== USERS ====================
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  phone: text('phone').notNull(),
+  password: text('password').notNull(),
+  address: text('address'),
+  city: text('city'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
 // ==================== PRODUCTS ====================
 export const products = sqliteTable('products', {
   id: text('id').primaryKey(),
@@ -47,11 +59,17 @@ export const brands = sqliteTable('brands', {
 // ==================== ORDERS ====================
 export const orders = sqliteTable('orders', {
   id: text('id').primaryKey(),
+  userId: text('user_id').references(() => users.id),
   status: text('status').notNull().default('PENDING'),
   total: real('total').notNull(),
-  customerName: text('customer_name'),
-  customerPhone: text('customer_phone'),
-  address: text('address'),
+  customerName: text('customer_name').notNull(),
+  customerPhone: text('customer_phone').notNull(),
+  address: text('address').notNull(),
+  shippingCity: text('shipping_city').notNull(),
+  paymentMethod: text('payment_method').notNull(), // bkash, nagad, cod
+  transactionId: text('transaction_id'), // For bKash/Nagad
+  paymentStatus: text('payment_status').notNull().default('PENDING'), // PENDING, VERIFIED, FAILED
+  courierTrackingId: text('courier_tracking_id'), // For Steadfast
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
@@ -87,6 +105,10 @@ export const storeSettings = sqliteTable('store_settings', {
 // ==================== RELATIONS ====================
 import { relations } from 'drizzle-orm';
 
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+}));
+
 export const productsRelations = relations(products, ({ many, one }) => ({
   images: many(productImages),
   reviews: many(reviews),
@@ -115,8 +137,12 @@ export const brandsRelations = relations(brands, ({ many }) => ({
   products: many(products),
 }));
 
-export const ordersRelations = relations(orders, ({ many }) => ({
+export const ordersRelations = relations(orders, ({ many, one }) => ({
   items: many(orderItems),
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
 }));
 
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({

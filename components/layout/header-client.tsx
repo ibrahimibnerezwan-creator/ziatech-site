@@ -8,14 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
 import { useCart } from '@/lib/cart-context'
+import { logoutAction } from '@/app/auth/actions'
 
 interface HeaderClientProps {
     categories: Array<{ id: string; name: string; slug: string }>
+    user?: { id: string; name: string } | null
 }
 
-export function HeaderClient({ categories }: HeaderClientProps) {
+export function HeaderClient({ categories, user }: HeaderClientProps) {
     const [isSearchFocused, setIsSearchFocused] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
     const { toast } = useToast()
     const { totalItems } = useCart()
 
@@ -79,19 +82,56 @@ export function HeaderClient({ categories }: HeaderClientProps) {
                     </Button>
                 </Link>
 
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/5"
-                    onClick={() => {
-                        toast({
-                            title: "Authentication Required",
-                            description: "Login system will be available in the next update!",
-                        })
-                    }}
-                >
-                    <User className="w-5 h-5" />
-                </Button>
+                {user ? (
+                    <div className="relative hidden md:block">
+                        <Button
+                            variant="ghost"
+                            className="text-gray-300 hover:text-white hover:bg-white/5 flex items-center space-x-2"
+                            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        >
+                            <User className="w-5 h-5" />
+                            <span className="max-w-[100px] truncate text-sm font-medium">{user.name}</span>
+                        </Button>
+
+                        <AnimatePresence>
+                            {isUserMenuOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 py-1"
+                                >
+                                    <div className="px-4 py-2 border-b border-white/5 mb-1">
+                                        <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                                    </div>
+                                    <Link
+                                        href="/my-orders"
+                                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-accent-400 transition-colors"
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    >
+                                        My Orders
+                                    </Link>
+                                    <button
+                                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition-colors"
+                                        onClick={async () => {
+                                            setIsUserMenuOpen(false)
+                                            await logoutAction()
+                                            window.location.href = '/'
+                                        }}
+                                    >
+                                        Logout
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                ) : (
+                    <Link href="/login">
+                        <Button variant="ghost" size="icon" className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/5">
+                            <User className="w-5 h-5" />
+                        </Button>
+                    </Link>
+                )}
 
                 {/* MOBILE MENU TOGGLE */}
                 <Button

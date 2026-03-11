@@ -6,7 +6,12 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 export async function updateSettings(formData: FormData) {
-    const keys = ['storeName', 'phone', 'email', 'address', 'whatsapp', 'facebook']
+    const keys = [
+        'storeName', 'phone', 'email', 'address', 'whatsapp', 'facebook',
+        'instagram', 'youtube', 'tiktok',
+        'bkash_number', 'nagad_number',
+        'steadfast_api_key', 'steadfast_secret_key'
+    ]
     
     for (const key of keys) {
         const value = formData.get(key) as string

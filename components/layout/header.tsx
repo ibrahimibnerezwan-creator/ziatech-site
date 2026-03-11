@@ -2,11 +2,15 @@ import React from 'react'
 import Link from 'next/link'
 import { Cpu } from 'lucide-react'
 import { getAllCategoriesWithCount } from '@/lib/data'
+import { getCurrentUser } from '@/lib/auth'
 import { HeaderClient } from './header-client'
 
 export async function Header() {
     // Fetch real categories from the database
     const dbCategories = await getAllCategoriesWithCount()
+    
+    // Fetch current user session
+    const user = await getCurrentUser()
     
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-300 glass border-b border-white/5">
@@ -22,8 +26,8 @@ export async function Header() {
                     </span>
                 </Link>
 
-                {/* PASS CATEGORIES TO INTERACTIVE CLIENT COMPONENT */}
-                <HeaderClient categories={dbCategories} />
+                {/* PASS CATEGORIES AND USER TO INTERACTIVE CLIENT COMPONENT */}
+                <HeaderClient categories={dbCategories} user={user} />
             </div>
         </header>
     )

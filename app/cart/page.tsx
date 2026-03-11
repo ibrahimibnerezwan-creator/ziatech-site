@@ -111,19 +111,14 @@ export default function CartPage() {
                                 <span className="text-lg font-bold text-white">৳{totalPrice.toLocaleString()}</span>
                             </div>
                         </div>
-                        <Button
-                            size="lg"
-                            className="w-full mt-6 bg-accent-500 hover:bg-accent-600 text-black font-bold"
-                            onClick={() => {
-                                const { toast } = require('@/hooks/use-toast')
-                                toast({
-                                    title: "Checkout Coming Soon",
-                                    description: "Payment integration will be available shortly!",
-                                })
-                            }}
-                        >
-                            Proceed to Checkout
-                        </Button>
+                        <Link href="/checkout" className="block mt-6">
+                            <Button
+                                size="lg"
+                                className="w-full bg-accent-500 hover:bg-accent-600 text-black font-bold"
+                            >
+                                Proceed to Checkout
+                            </Button>
+                        </Link>
                         <Link href="/categories" className="block mt-3">
                             <Button variant="ghost" className="w-full text-gray-400 hover:text-white">
                                 <ArrowLeft className="w-4 h-4 mr-2" /> Continue Shopping
