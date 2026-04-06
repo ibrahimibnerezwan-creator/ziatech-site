@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-const secretKey = 'ziatech-super-secret-key-please-change-in-production';
+const secretKey = process.env.JWT_SECRET || 'ziatech-dev-secret-key-change-me';
 const key = new TextEncoder().encode(secretKey);
 
 export async function hashPassword(password: string): Promise<string> {

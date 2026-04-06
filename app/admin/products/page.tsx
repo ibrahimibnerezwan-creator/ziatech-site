@@ -10,62 +10,71 @@ export default async function AdminProductsPage() {
         <div>
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Products</h1>
-                    <p className="text-gray-400">Manage your inventory.</p>
+                    <h1 className="text-3xl font-display font-bold text-white">Products</h1>
+                    <p className="text-text-secondary">Manage your inventory and stock levels.</p>
                 </div>
                 <Link href="/admin/products/new">
-                    <Button className="bg-accent-500 text-black hover:bg-accent-600">
+                    <Button className="bg-primary-500 text-white hover:bg-primary-600 rounded-full px-6 font-bold tracking-tight shadow-lg shadow-primary-500/20">
                         <Plus className="w-4 h-4 mr-2" /> Add Product
                     </Button>
                 </Link>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+            <div className="bg-bg-elevated/60 border border-primary-500/10 rounded-2xl overflow-hidden backdrop-blur-md">
                 <table className="w-full text-left border-collapse">
-                    <thead className="bg-white/5 text-gray-400 text-xs uppercase">
+                    <thead className="bg-primary-500/5 text-text-muted text-xs uppercase tracking-widest font-display">
                         <tr>
-                            <th className="p-4">Product Name</th>
-                            <th className="p-4">Category</th>
-                            <th className="p-4">Price</th>
-                            <th className="p-4">Stock</th>
-                            <th className="p-4 text-right">Actions</th>
+                            <th className="p-5">Product Name</th>
+                            <th className="p-5">Category</th>
+                            <th className="p-5">Price</th>
+                            <th className="p-5">Stock</th>
+                            <th className="p-5 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-primary-500/5">
                         {products.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="p-8 text-center text-gray-500">
-                                    No products found. Add your first product!
+                                <td colSpan={5} className="p-12 text-center text-text-muted">
+                                    No products found. Build your first listing!
                                 </td>
                             </tr>
                         ) : (
                             products.map((product) => (
-                                <tr key={product.id} className="hover:bg-white/5 transition-colors group">
-                                    <td className="p-4">
-                                        <div className="font-medium text-white">{product.name}</div>
-                                        <div className="text-xs text-gray-500">{product.brandName}</div>
+                                <tr key={product.id} className="hover:bg-primary-500/5 transition-colors group">
+                                    <td className="p-5">
+                                        <div className="font-medium text-white group-hover:text-primary-400 transition-colors">{product.name}</div>
+                                        <div className="text-[10px] uppercase tracking-wider text-text-muted mt-0.5">{product.brandName || 'Store Brand'}</div>
                                     </td>
-                                    <td className="p-4 text-gray-300">
-                                        <span className="px-2 py-1 rounded-full bg-white/10 text-xs">
+                                    <td className="p-5">
+                                        <span className="px-3 py-1 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/15 text-[11px] font-bold">
                                             {product.categoryName}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-white font-mono">৳{product.price}</td>
-                                    <td className="p-4">
-                                        <span className={`text-xs px-2 py-1 rounded-full ${product.stock > 10 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                                            }`}>
-                                            {product.stock} in stock
-                                        </span>
+                                    <td className="p-5">
+                                        <span className="text-white font-mono font-medium">৳{product.price.toLocaleString()}</span>
                                     </td>
-                                    <td className="p-4 text-right">
-                                        <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <td className="p-5">
+                                        <div className="flex flex-col">
+                                            <span className={`text-[11px] font-bold uppercase tracking-tighter ${product.stock > 10 ? 'text-emerald-400' : 'text-accent-400'}`}>
+                                                {product.stock > 0 ? `${product.stock} Units` : 'Out of Stock'}
+                                            </span>
+                                            <div className="w-20 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                                                <div 
+                                                    className={`h-full rounded-full ${product.stock > 10 ? 'bg-emerald-500/40' : 'bg-accent-500/40'}`} 
+                                                    style={{ width: `${Math.min(product.stock, 100)}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-5 text-right">
+                                        <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                             <Link href={`/product/${product.slug}`} target="_blank">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-400 hover:bg-blue-400/10">
+                                                <Button size="icon" variant="ghost" className="h-9 w-9 text-text-muted hover:text-white hover:bg-white/5 rounded-full">
                                                     <Eye className="w-4 h-4" />
                                                 </Button>
                                             </Link>
                                             <Link href={`/admin/products/${product.id}/edit`}>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-yellow-400 hover:bg-yellow-400/10">
+                                                <Button size="icon" variant="ghost" className="h-9 w-9 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-full">
                                                     <Edit className="w-4 h-4" />
                                                 </Button>
                                             </Link>
@@ -74,7 +83,7 @@ export default async function AdminProductsPage() {
                                                 const { deleteProduct } = await import('@/app/admin/actions')
                                                 await deleteProduct(product.id)
                                             }}>
-                                                <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-red-400 hover:bg-red-400/10">
+                                                <Button type="submit" size="icon" variant="ghost" className="h-9 w-9 text-accent-400 hover:text-accent-300 hover:bg-accent-500/10 rounded-full">
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
                                             </form>

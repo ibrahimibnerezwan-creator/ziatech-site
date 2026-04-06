@@ -33,36 +33,36 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                     <Link
                         key={item.id}
                         href={`/category/${item.slug}`}
-                        className="text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
+                        className="text-sm font-medium text-text-secondary hover:text-white transition-colors relative group"
                     >
                         {item.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-400 transition-all duration-300 group-hover:w-full" />
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-400 transition-all duration-300 group-hover:w-full rounded-full" />
                     </Link>
                 ))}
             </nav>
 
-            {/* SEARCH BAR (AI Powered) */}
+            {/* SEARCH BAR */}
             <div className="hidden md:block relative w-96 mx-4">
                 <motion.div
                     animate={{ scale: isSearchFocused ? 1.02 : 1 }}
                     className="relative"
                 >
                     <Input
-                        placeholder="Ask AI: 'Components for a drone'..."
-                        className="pl-10 bg-black/40 border-primary-500/20 text-white placeholder:text-gray-500 rounded-full focus:ring-accent-500/50"
+                        placeholder="Search components, kits, modules..."
+                        className="pl-10 bg-bg-void/60 border-primary-700/30 text-white placeholder:text-text-muted rounded-full focus:ring-primary-500/40 focus:border-primary-500/40"
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setIsSearchFocused(false)}
                     />
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
 
-                    {/* AI Glow Effect when focused */}
+                    {/* Warm Glow Effect when focused */}
                     <AnimatePresence>
                         {isSearchFocused && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute inset-0 -z-10 bg-accent-400/20 blur-xl rounded-full"
+                                className="absolute inset-0 -z-10 bg-primary-500/15 blur-xl rounded-full"
                             />
                         )}
                     </AnimatePresence>
@@ -72,10 +72,10 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
             {/* ACTIONS */}
             <div className="flex items-center space-x-4">
                 <Link href="/cart">
-                    <Button variant="ghost" size="icon" className="relative text-gray-300 hover:text-white hover:bg-white/5">
+                    <Button variant="ghost" size="icon" className="relative text-text-secondary hover:text-white hover:bg-white/5">
                         <ShoppingCart className="w-5 h-5" />
                         {totalItems > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-black text-xs font-bold rounded-full flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                                 {totalItems}
                             </span>
                         )}
@@ -86,7 +86,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                     <div className="relative hidden md:block">
                         <Button
                             variant="ghost"
-                            className="text-gray-300 hover:text-white hover:bg-white/5 flex items-center space-x-2"
+                            className="text-text-secondary hover:text-white hover:bg-white/5 flex items-center space-x-2"
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                         >
                             <User className="w-5 h-5" />
@@ -99,14 +99,14 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 py-1"
+                                    className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-primary-700/20 rounded-2xl shadow-xl overflow-hidden z-50 py-1"
                                 >
                                     <div className="px-4 py-2 border-b border-white/5 mb-1">
                                         <p className="text-sm font-medium text-white truncate">{user.name}</p>
                                     </div>
                                     <Link
                                         href="/my-orders"
-                                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-accent-400 transition-colors"
+                                        className="block px-4 py-2 text-sm text-text-secondary hover:bg-white/5 hover:text-primary-400 transition-colors"
                                         onClick={() => setIsUserMenuOpen(false)}
                                     >
                                         My Orders
@@ -127,7 +127,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                     </div>
                 ) : (
                     <Link href="/login">
-                        <Button variant="ghost" size="icon" className="hidden md:flex text-gray-300 hover:text-white hover:bg-white/5">
+                        <Button variant="ghost" size="icon" className="hidden md:flex text-text-secondary hover:text-white hover:bg-white/5">
                             <User className="w-5 h-5" />
                         </Button>
                     </Link>
@@ -137,7 +137,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden text-gray-300"
+                    className="md:hidden text-text-secondary"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                     {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -151,22 +151,53 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="absolute top-20 left-0 right-0 md:hidden bg-bg-elevated/95 backdrop-blur-xl border-b border-white/10 overflow-hidden shadow-2xl"
+                        className="absolute top-20 left-0 right-0 md:hidden bg-bg-elevated/95 backdrop-blur-xl border-b border-primary-700/15 overflow-hidden shadow-2xl"
                     >
                         <div className="p-4 space-y-4">
-                            <Input placeholder="Search..." className="bg-black/20" />
-                            <nav className="flex flex-col space-y-2">
+                            <Input placeholder="Search products..." className="bg-bg-void/60 border-primary-700/20 rounded-xl" />
+                            <nav className="flex flex-col space-y-1">
                                 {categories.map((item) => (
                                     <Link
                                         key={item.id}
                                         href={`/category/${item.slug}`}
-                                        className="p-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-md font-medium"
+                                        className="p-3 text-text-secondary hover:text-white hover:bg-primary-500/5 rounded-xl font-medium transition-colors"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         {item.name}
                                     </Link>
                                 ))}
                             </nav>
+                            {user ? (
+                                <div className="pt-2 border-t border-white/5 space-y-1">
+                                    <Link
+                                        href="/my-orders"
+                                        className="block p-3 text-text-secondary hover:text-white hover:bg-primary-500/5 rounded-xl font-medium"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        My Orders
+                                    </Link>
+                                    <button
+                                        className="w-full text-left p-3 text-red-400 hover:bg-red-500/5 rounded-xl font-medium"
+                                        onClick={async () => {
+                                            setIsMobileMenuOpen(false)
+                                            await logoutAction()
+                                            window.location.href = '/'
+                                        }}
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="pt-2 border-t border-white/5">
+                                    <Link
+                                        href="/login"
+                                        className="block p-3 text-primary-400 hover:bg-primary-500/5 rounded-xl font-medium"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Sign In
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}

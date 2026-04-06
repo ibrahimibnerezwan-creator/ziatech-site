@@ -311,3 +311,23 @@ export async function getAllReviews() {
 
   return result;
 }
+
+export async function getAllOrders() {
+  const result = await db.select({
+    id: orders.id,
+    status: orders.status,
+    total: orders.total,
+    customerName: orders.customerName,
+    customerPhone: orders.customerPhone,
+    address: orders.address,
+    shippingCity: orders.shippingCity,
+    paymentMethod: orders.paymentMethod,
+    paymentStatus: orders.paymentStatus,
+    transactionId: orders.transactionId,
+    createdAt: orders.createdAt,
+  })
+  .from(orders)
+  .orderBy(desc(orders.createdAt));
+
+  return result;
+}

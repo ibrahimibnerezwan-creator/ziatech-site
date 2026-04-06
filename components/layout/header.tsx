@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Cpu } from 'lucide-react'
+import { Hexagon } from 'lucide-react'
 import { getAllCategoriesWithCount } from '@/lib/data'
 import { getCurrentUser } from '@/lib/auth'
 import { HeaderClient } from './header-client'
@@ -13,16 +13,16 @@ export async function Header() {
     const user = await getCurrentUser()
     
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-300 glass border-b border-white/5">
+        <header className="fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-300 glass border-b border-primary-500/5">
             <div className="container mx-auto h-full px-4 flex items-center justify-between">
-                {/* LOGO */}
-                <Link href="/" className="flex items-center space-x-2 group">
+                {/* LOGO — Prism Forge Identity */}
+                <Link href="/" className="flex items-center space-x-2.5 group">
                     <div className="relative">
-                        <Cpu className="w-8 h-8 text-accent-400 animate-pulse-glow" />
-                        <div className="absolute inset-0 bg-accent-400/20 blur-lg rounded-full" />
+                        <Hexagon className="w-9 h-9 text-primary-400 transition-transform duration-300 group-hover:rotate-[30deg]" strokeWidth={1.5} />
+                        <div className="absolute inset-0 bg-primary-400/15 blur-xl rounded-full transition-opacity group-hover:opacity-100 opacity-60" />
                     </div>
-                    <span className="text-2xl font-bold tracking-tight text-white group-hover:text-accent-400 transition-colors">
-                        Z's <span className="text-accent-400 text-sm font-medium">Tech Shop</span>
+                    <span className="text-2xl font-display font-bold tracking-tight text-white group-hover:text-primary-400 transition-colors">
+                        Zia<span className="text-primary-400">Tech</span>
                     </span>
                 </Link>
 

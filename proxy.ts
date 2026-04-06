@@ -1,45 +1,36 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
-export function proxy(request: NextRequest) {
-    // Only protect the /admin routes
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-        const basicAuth = request.headers.get('authorization')
-        const url = request.nextUrl
+const secretKey = process.env.JWT_SECRET || 'ziatech-dev-secret-key-change-me';
+const key = new TextEncoder().encode(secretKey);
 
-        // If no auth header, prompt for it
-        if (!basicAuth) {
-            return new NextResponse('Auth required', {
-                status: 401,
-                headers: {
-                    'WWW-Authenticate': 'Basic realm="Secure Admin Panel"',
-                },
-            })
+export async function proxy(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // Only apply to /admin routes
+    if (pathname.startsWith('/admin')) {
+        const session = request.cookies.get('session')?.value;
+
+        if (!session) {
+            return NextResponse.redirect(new URL('/login', request.url));
         }
 
-        // Decode basic auth
-        const authValue = basicAuth.split(' ')[1]
-        const [user, pwd] = atob(authValue).split(':')
-
-        // Get credentials from env, fallback to simple defaults if not set
-        const validUser = process.env.ADMIN_USER || 'admin'
-        const validPwd = process.env.ADMIN_PASSWORD || 'secret'
-
-        // If credentials don't match, reject and prompt again
-        if (user !== validUser || pwd !== validPwd) {
-            return new NextResponse('Auth required', {
-                status: 401,
-                headers: {
-                    'WWW-Authenticate': 'Basic realm="Secure Admin Panel"',
-                },
-            })
+        try {
+            await jwtVerify(session, key, {
+                algorithms: ['HS256'],
+            });
+            return NextResponse.next();
+        } catch (error) {
+            // Invalid session
+            return NextResponse.redirect(new URL('/login', request.url));
         }
     }
 
-    // Continue to page
-    return NextResponse.next()
+    return NextResponse.next();
 }
 
+// Next.js 16 (Nexus Fork) uses proxy.ts instead of middleware.ts
 export const config = {
     matcher: ['/admin/:path*'],
-}
+};
