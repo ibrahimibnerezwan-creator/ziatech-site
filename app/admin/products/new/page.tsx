@@ -45,26 +45,36 @@ export default function NewProductPage() {
                         <Input name="name" placeholder="e.g. Arduino Uno R4" required className="bg-black/20 border-white/10" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Price (৳)</label>
                             <Input name="price" type="number" step="0.01" placeholder="0.00" required className="bg-black/20 border-white/10" />
                         </div>
 
+                         <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Compare Price (৳)</label>
+                                <span className="text-[10px] text-accent-400 font-mono">MSRP</span>
+                            </div>
+                            <Input name="comparePrice" type="number" step="0.01" placeholder="0.00" className="bg-black/20 border-white/10" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Stock Quantity</label>
                             <Input name="stock" type="number" placeholder="0" required className="bg-black/20 border-white/10" />
                         </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category</label>
-                        <select name="category" className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500 appearance-none">
-                            <option value="" className="bg-gray-800">Select Category</option>
-                            {categories.map(cat => (
-                                <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
-                            ))}
-                        </select>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category</label>
+                            <select name="category" className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500 appearance-none">
+                                <option value="" className="bg-gray-800">Select Category</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -79,6 +89,19 @@ export default function NewProductPage() {
                 </div>
 
                 <div className="space-y-6">
+                    <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md space-y-4">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-white/5 pb-2">Visibility & Status</h3>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                            <label htmlFor="isFeatured" className="text-sm font-medium text-gray-300 cursor-pointer">Mark as Featured</label>
+                            <input
+                                id="isFeatured"
+                                name="isFeatured"
+                                type="checkbox"
+                                className="w-5 h-5 rounded border-white/10 bg-black/40 text-accent-500 focus:ring-accent-500/20"
+                            />
+                        </div>
+                    </div>
+
                     <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md">
                         <ImageUpload onUploadComplete={(url) => setImageUrl(url)} />
                         <input type="hidden" name="imageUrl" value={imageUrl} />

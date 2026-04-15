@@ -6,6 +6,9 @@ import { Heart, ShoppingCart, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+
+import { useCart } from '@/lib/cart-context'
 
 interface Product {
     id: string
@@ -22,12 +25,38 @@ interface Product {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+    const { addItem, items } = useCart()
+    
     const discount = product.oldPrice
         ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
         : 0
 
     // Use slug if available, otherwise fallback to id
     const productUrl = product.slug ? `/product/${product.slug}` : `/product/${product.id}`
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const existingItem = items.find(i => i.id === product.id)
+        const currentQuantity = existingItem ? existingItem.quantity : 0
+
+        if (currentQuantity >= product.stock) {
+            toast.error(`You already have all ${product.stock} available units in your cart.`)
+            return
+        }
+
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            slug: product.slug || '',
+            stock: product.stock,
+        })
+
+        toast.success(`${product.name} added to cart`)
+    }
 
     return (
         <motion.div
@@ -44,7 +73,7 @@ export function ProductCard({ product }: { product: Product }) {
                     <motion.img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-contain mix-blend-overlay group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                     />
 
                     {/* BADGES */}
@@ -59,15 +88,8 @@ export function ProductCard({ product }: { product: Product }) {
                             size="icon"
                             variant="glass"
                             className="rounded-full hover:bg-accent-500 hover:text-black"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const { toast } = require('@/hooks/use-toast');
-                                toast({
-                                    title: "Added to Cart",
-                                    description: `${product.name} has been added to your cart.`,
-                                })
-                            }}
+                            disabled={product.stock === 0}
+                            onClick={handleAddToCart}
                         >
                             <ShoppingCart className="w-4 h-4" />
                         </Button>
@@ -78,11 +100,7 @@ export function ProductCard({ product }: { product: Product }) {
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                const { toast } = require('@/hooks/use-toast');
-                                toast({
-                                    title: "Wishlist Updated",
-                                    description: `${product.name} has been added to your wishlist.`,
-                                })
+                                toast.success(`${product.name} added to wishlist`)
                             }}
                         >
                             <Heart className="w-4 h-4" />

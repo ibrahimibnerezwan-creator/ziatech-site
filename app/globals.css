@@ -205,3 +205,52 @@ body {
   background: hsla(25, 95%, 55%, 0.25);
   color: white;
 }
+
+/* === Smooth Scrolling === */
+html {
+  scroll-behavior: smooth;
+}
+
+/* === Focus Visible Ring === */
+*:focus-visible {
+  outline: 2px solid hsla(25, 95%, 55%, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* === Shimmer Animation for hover effects === */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* === Page Transition Fade === */
+main {
+  animation: page-enter 0.35s ease-out;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Clip Path for Hero === */
+.clip-diagonal {
+  clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+/* === Improved Skeleton Pulse === */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.04; }
+  50% { opacity: 0.08; }
+}
+
+.animate-pulse {
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -1,6 +1,6 @@
 import { db } from '@/db';
-import { products, categories, productImages, brands, orders, orderItems, storeSettings, reviews } from '@/db/schema';
-import { eq, desc, ne, isNotNull, sql } from 'drizzle-orm';
+import { products, categories, productImages, brands, orders, orderItems, storeSettings, reviews, users } from '@/db/schema';
+import { eq, desc, ne, isNotNull, sql, and, or, like } from 'drizzle-orm';
 
 // ==================== PRODUCT QUERIES ====================
 
@@ -19,221 +19,243 @@ export interface ProductForCard {
 }
 
 export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
-  const rows = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      comparePrice: products.comparePrice,
-      stock: products.stock,
-      imageUrl: productImages.url,
-      categoryName: categories.name,
-    })
-    .from(products)
-    .leftJoin(productImages, eq(productImages.productId, products.id))
-    .leftJoin(categories, eq(categories.id, products.categoryId))
-    .orderBy(desc(products.createdAt))
-    .limit(limit * 3); // Fetch extra to handle duplicate product rows from join
+  const result = await db.query.products.findMany({
+    orderBy: [desc(products.createdAt)],
+    limit: limit,
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+      }
+    }
+  });
 
-  // Deduplicate: take first image per product
-  const seen = new Set<string>();
-  const result: ProductForCard[] = [];
-  for (const row of rows) {
-    if (seen.has(row.id)) continue;
-    seen.add(row.id);
-    result.push({
-      id: row.id,
-      name: row.name,
-      slug: row.slug,
-      price: row.price,
-      oldPrice: row.comparePrice ?? undefined,
-      image: row.imageUrl || 'https://via.placeholder.com/400',
-      category: row.categoryName || 'Uncategorized',
-      rating: 0,
-      reviews: 0,
-      isNew: true,
-      stock: row.stock,
-    });
-    if (result.length >= limit) break;
-  }
-  return result;
+  return result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    oldPrice: p.comparePrice ?? undefined,
+    image: p.images[0]?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop', // Better placeholder
+    category: p.category?.name || 'Uncategorized',
+    rating: p.reviews.length > 0 
+      ? parseFloat((p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length).toFixed(1))
+      : 0,
+    reviews: p.reviews.length,
+    isNew: true,
+    stock: p.stock,
+  }));
+}
+
+export async function getFeaturedProducts(limit = 4): Promise<ProductForCard[]> {
+  const result = await db.query.products.findMany({
+    where: eq(products.isFeatured, true),
+    orderBy: [desc(products.createdAt)],
+    limit: limit,
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+      }
+    }
+  });
+
+  return result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    oldPrice: p.comparePrice ?? undefined,
+    image: p.images[0]?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop',
+    category: p.category?.name || 'Uncategorized',
+    rating: p.reviews.length > 0 
+      ? parseFloat((p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length).toFixed(1))
+      : 0,
+    reviews: p.reviews.length,
+    stock: p.stock,
+  }));
 }
 
 export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]> {
-  const rows = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      comparePrice: products.comparePrice,
-      stock: products.stock,
-      imageUrl: productImages.url,
-      categoryName: categories.name,
-    })
-    .from(products)
-    .leftJoin(productImages, eq(productImages.productId, products.id))
-    .leftJoin(categories, eq(categories.id, products.categoryId))
-    .where(isNotNull(products.comparePrice))
-    .limit(limit * 3);
+  const result = await db.query.products.findMany({
+    where: isNotNull(products.comparePrice),
+    orderBy: [desc(products.createdAt)],
+    limit: limit,
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+      }
+    }
+  });
 
-  const seen = new Set<string>();
-  const result: ProductForCard[] = [];
-  for (const row of rows) {
-    if (seen.has(row.id)) continue;
-    seen.add(row.id);
-    result.push({
-      id: row.id,
-      name: row.name,
-      slug: row.slug,
-      price: row.price,
-      oldPrice: row.comparePrice ?? undefined,
-      image: row.imageUrl || 'https://via.placeholder.com/400',
-      category: row.categoryName || 'Uncategorized',
-      rating: 0,
-      reviews: 0,
-      stock: row.stock,
-    });
-    if (result.length >= limit) break;
-  }
-  return result;
+  return result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    oldPrice: p.comparePrice ?? undefined,
+    image: p.images[0]?.url || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400&auto=format&fit=crop',
+    category: p.category?.name || 'Uncategorized',
+    rating: p.reviews.length > 0 
+      ? parseFloat((p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length).toFixed(1))
+      : 0,
+    reviews: p.reviews.length,
+    stock: p.stock,
+  }));
 }
 
+
+
 export async function getProductBySlug(slug: string) {
-  const productRows = await db
-    .select()
-    .from(products)
-    .where(eq(products.slug, slug))
-    .limit(1);
+  const product = await db.query.products.findFirst({
+    where: eq(products.slug, slug),
+    with: {
+      images: {
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      brand: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+        orderBy: [desc(reviews.createdAt)],
+      },
+    }
+  });
 
-  if (productRows.length === 0) return null;
+  if (!product) return null;
 
-  const product = productRows[0];
-  const images = await db
-    .select()
-    .from(productImages)
-    .where(eq(productImages.productId, product.id))
-    .orderBy(productImages.sortOrder);
+  // Calculate rating stats
+  const approvedReviews = product.reviews || [];
+  const reviewCount = approvedReviews.length;
+  const avgRating = reviewCount > 0 
+    ? parseFloat((approvedReviews.reduce((acc, rev) => acc + rev.rating, 0) / reviewCount).toFixed(1))
+    : 0;
 
-  const category = product.categoryId
-    ? (await db.select().from(categories).where(eq(categories.id, product.categoryId)).limit(1))[0]
-    : null;
-
-  const brand = product.brandId
-    ? (await db.select().from(brands).where(eq(brands.id, product.brandId)).limit(1))[0]
-    : null;
-
-  return { ...product, images, category, brand };
+  return { 
+    ...product, 
+    avgRating, 
+    reviewCount,
+    rating: avgRating // Aliased for consistency with other parts of UI
+  };
 }
 
 export async function getRelatedProducts(categoryId: string, excludeId: string, limit = 4): Promise<ProductForCard[]> {
-  const rows = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      stock: products.stock,
-      imageUrl: productImages.url,
-      categoryName: categories.name,
-    })
-    .from(products)
-    .leftJoin(productImages, eq(productImages.productId, products.id))
-    .leftJoin(categories, eq(categories.id, products.categoryId))
-    .where(eq(products.categoryId, categoryId))
-    .limit(limit * 3);
+  const result = await db.query.products.findMany({
+    where: and(eq(products.categoryId, categoryId), ne(products.id, excludeId)),
+    limit: limit,
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+      }
+    }
+  });
 
-  const seen = new Set<string>();
-  const result: ProductForCard[] = [];
-  for (const row of rows) {
-    if (seen.has(row.id) || row.id === excludeId) continue;
-    seen.add(row.id);
-    result.push({
-      id: row.id,
-      name: row.name,
-      slug: row.slug || '',
-      price: row.price,
-      image: row.imageUrl || 'https://via.placeholder.com/400',
-      category: row.categoryName || 'Uncategorized',
-      rating: 0,
-      reviews: 0,
-      stock: row.stock,
-    });
-    if (result.length >= limit) break;
-  }
-  return result;
+  return result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    oldPrice: p.comparePrice ?? undefined,
+    image: p.images[0]?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop',
+    category: p.category?.name || 'Uncategorized',
+    rating: p.reviews.length > 0 
+      ? parseFloat((p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length).toFixed(1))
+      : 0,
+    reviews: p.reviews.length,
+    stock: p.stock,
+  }));
 }
 
 export async function getProductsByCategory(slug: string, limit = 20): Promise<{ products: ProductForCard[], categoryName: string }> {
+  let categoryId: string | undefined;
   let categoryName = 'All Products';
-  let query = db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      stock: products.stock,
-      imageUrl: productImages.url,
-      categoryName: categories.name,
-    })
-    .from(products)
-    .leftJoin(productImages, eq(productImages.productId, products.id))
-    .leftJoin(categories, eq(categories.id, products.categoryId));
 
   if (slug && slug !== 'all') {
-    // Find category by slug first
-    const catRows = await db.select().from(categories).where(eq(categories.slug, slug)).limit(1);
-    if (catRows.length > 0) {
-      categoryName = catRows[0].name;
-      // Filter products by categoryId
-      // Casting to any because Drizzle's where builder can be tricky with conditionals
-      query = query.where(eq(products.categoryId, catRows[0].id)) as any;
+    const catRows = await db.query.categories.findFirst({
+      where: eq(categories.slug, slug),
+    });
+    if (catRows) {
+      categoryName = catRows.name;
+      categoryId = catRows.id;
     }
   }
 
-  const rows = await query.limit(limit * 3);
+  const result = await db.query.products.findMany({
+    where: categoryId ? eq(products.categoryId, categoryId) : undefined,
+    limit: limit,
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      reviews: {
+        where: eq(reviews.status, 'approved'),
+      }
+    }
+  });
 
-  const seen = new Set<string>();
-  const result: ProductForCard[] = [];
-  for (const row of rows) {
-    if (seen.has(row.id)) continue;
-    seen.add(row.id);
-    result.push({
-      id: row.id,
-      name: row.name,
-      slug: row.slug || '',
-      price: row.price,
-      image: row.imageUrl || 'https://via.placeholder.com/400',
-      category: row.categoryName || 'Uncategorized',
-      rating: 0,
-      reviews: 0,
-      stock: row.stock,
-    });
-    if (result.length >= limit) break;
-  }
-  return { products: result, categoryName };
+  const productsForCard: ProductForCard[] = result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug || '',
+    price: p.price,
+    oldPrice: p.comparePrice ?? undefined,
+    image: p.images[0]?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop',
+    category: p.category?.name || 'Uncategorized',
+    rating: p.reviews.length > 0 
+      ? parseFloat((p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length).toFixed(1))
+      : 0,
+    reviews: p.reviews.length,
+    stock: p.stock,
+  }));
+
+  return { products: productsForCard, categoryName };
 }
 
 // ==================== ADMIN QUERIES ====================
 
 export async function getAllProducts() {
-  const rows = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      stock: products.stock,
-      categoryName: categories.name,
-      brandName: brands.name,
-    })
-    .from(products)
-    .leftJoin(categories, eq(categories.id, products.categoryId))
-    .leftJoin(brands, eq(brands.id, products.brandId))
-    .orderBy(desc(products.createdAt));
+  const result = await db.query.products.findMany({
+    orderBy: [desc(products.createdAt)],
+    with: {
+      images: {
+        limit: 1,
+        orderBy: [desc(productImages.sortOrder)],
+      },
+      category: true,
+      brand: true,
+    }
+  });
 
-  return rows;
+  return result.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    stock: p.stock,
+    categoryName: p.category?.name || 'Uncategorized',
+    brandName: p.brand?.name || 'Store Brand',
+    imageUrl: p.images[0]?.url,
+  }));
 }
 
 export async function getProductById(id: string) {
@@ -258,6 +280,21 @@ export async function getProductCount() {
 export async function getOrderCount() {
   const result = await db.select({ count: sql<number>`count(*)` }).from(orders);
   return result[0].count;
+}
+
+export async function getUserCount() {
+  const result = await db.select({ count: sql<number>`count(*)` }).from(users);
+  return result[0].count;
+}
+
+export async function getTotalRevenue() {
+  const result = await db.select({ 
+    sum: sql<number>`sum(${orders.total})` 
+  })
+  .from(orders)
+  .where(eq(orders.status, 'DELIVERED'));
+  
+  return result[0].sum || 0;
 }
 
 export async function getStoreSettings() {
@@ -312,22 +349,68 @@ export async function getAllReviews() {
   return result;
 }
 
-export async function getAllOrders() {
-  const result = await db.select({
-    id: orders.id,
-    status: orders.status,
-    total: orders.total,
-    customerName: orders.customerName,
-    customerPhone: orders.customerPhone,
-    address: orders.address,
-    shippingCity: orders.shippingCity,
-    paymentMethod: orders.paymentMethod,
-    paymentStatus: orders.paymentStatus,
-    transactionId: orders.transactionId,
-    createdAt: orders.createdAt,
-  })
-  .from(orders)
-  .orderBy(desc(orders.createdAt));
+export async function getAllOrders(filters?: { status?: string; search?: string }) {
+  const result = await db.query.orders.findMany({
+    orderBy: [desc(orders.createdAt)],
+    with: {
+      items: true,
+      user: true,
+    }
+  });
 
-  return result;
+  if (!filters) return result;
+
+  return result.filter(order => {
+    const matchesStatus = !filters.status || filters.status === 'ALL' || order.status === filters.status;
+    
+    let matchesSearch = true;
+    if (filters.search) {
+      const searchVal = filters.search.toLowerCase();
+      matchesSearch = (
+        order.customerName?.toLowerCase().includes(searchVal) ||
+        order.customerPhone?.toLowerCase().includes(searchVal) ||
+        order.id.toLowerCase().includes(searchVal)
+      );
+    }
+
+    return matchesStatus && matchesSearch;
+  });
+}
+
+export async function getOrderById(id: string) {
+  return db.query.orders.findFirst({
+    where: eq(orders.id, id),
+    with: {
+      items: {
+        with: {
+          product: {
+            with: {
+              images: {
+                limit: 1,
+                orderBy: [desc(productImages.sortOrder)],
+              }
+            }
+          }
+        }
+      },
+      user: true,
+    }
+  });
+}
+
+export async function getRecentReviews(limit = 10) {
+  return db
+    .select({
+      id: reviews.id,
+      rating: reviews.rating,
+      comment: reviews.comment,
+      status: reviews.status,
+      createdAt: reviews.createdAt,
+      userName: reviews.reviewerName,
+      productName: products.name,
+    })
+    .from(reviews)
+    .innerJoin(products, eq(reviews.productId, products.id))
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit);
 }

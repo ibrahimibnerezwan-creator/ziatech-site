@@ -38,7 +38,7 @@ export async function registerAction(data: FormData) {
         })
 
         // Log the user in immediately
-        await createSession(newUserId, name)
+        await createSession(newUserId, name, 'customer')
 
         return { success: true }
     } catch (error) {
@@ -56,24 +56,32 @@ export async function loginAction(data: FormData) {
     }
 
     try {
-        const user = await db.query.users.findFirst({
+        let user = await db.query.users.findFirst({
             where: eq(users.email, email)
         })
+        
+        // ADMIN FALLBACK for Prism Forge
+        if (!user && email === process.env.ADMIN_USER) {
+            if (password === process.env.ADMIN_PASSWORD) {
+                await createSession('admin-platform', 'Administrator', 'admin');
+                return { success: true, role: 'admin' };
+            }
+        }
 
         if (!user) {
             return { error: 'Invalid credentials' }
         }
 
         const isValid = await verifyPassword(password, user.password)
-        
+
         if (!isValid) {
             return { error: 'Invalid credentials' }
         }
 
         // Create session
-        await createSession(user.id, user.name)
+        await createSession(user.id, user.name, user.role)
 
-        return { success: true }
+        return { success: true, role: user.role }
     } catch (error) {
         console.error('Login error:', error)
         return { error: 'An unexpected error occurred' }

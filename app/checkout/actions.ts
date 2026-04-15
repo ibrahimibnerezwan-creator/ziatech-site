@@ -13,8 +13,11 @@ interface CheckoutData {
     paymentMethod: string
     transactionId?: string
     items: Array<{ id: string, quantity: number, price: number }>
+    deliveryCharge: number
     total: number
 }
+
+import { revalidatePath } from 'next/cache'
 
 export async function placeOrder(data: CheckoutData) {
     try {
@@ -34,28 +37,28 @@ export async function placeOrder(data: CheckoutData) {
         await db.transaction(async (tx) => {
             // Check stock and decrement
             for (const item of data.items) {
-                const product = await tx.query.products.findFirst({
+                const productRecord = await tx.query.products.findFirst({
                     where: eq(products.id, item.id)
                 })
 
-                if (!product) {
+                if (!productRecord) {
                     throw new Error(`Product not found: ${item.id}`)
                 }
 
-                if (product.stock < item.quantity) {
-                    throw new Error(`Insufficient stock for ${product.name}`)
+                if (productRecord.stock < item.quantity) {
+                    throw new Error(`Insufficient stock for ${productRecord.name}`)
                 }
 
                 // Decrement stock
                 await tx.update(products)
-                    .set({ stock: product.stock - item.quantity, updatedAt: new Date() })
+                    .set({ stock: productRecord.stock - item.quantity, updatedAt: new Date() })
                     .where(eq(products.id, item.id))
             }
 
             // Create Order
             await tx.insert(orders).values({
                 id: orderId,
-                userId: user?.id || null, // Allow guest checkout theoretically, though we prefill if logged in
+                userId: user?.id || null, 
                 status: 'PENDING',
                 paymentStatus: data.paymentMethod === 'cod' ? 'PENDING' : 'VERIFYING',
                 total: data.total,
@@ -63,6 +66,7 @@ export async function placeOrder(data: CheckoutData) {
                 customerPhone: data.customerPhone,
                 address: data.address,
                 shippingCity: data.shippingCity,
+                deliveryCharge: data.deliveryCharge,
                 paymentMethod: data.paymentMethod,
                 transactionId: data.transactionId || null,
                 createdAt: new Date(),
@@ -81,6 +85,12 @@ export async function placeOrder(data: CheckoutData) {
             }
         })
 
+        // 3. Revalidate affected paths
+        revalidatePath('/admin/orders')
+        revalidatePath('/admin')
+        revalidatePath('/')
+        // Ideally we'd revalidate specific product pages too
+        
         return { success: true, orderId }
     } catch (error: any) {
         console.error('Checkout error:', error)

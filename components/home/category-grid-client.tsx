@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 
 interface CategoryItem {
     id: string;
+    slug: string;
     name: string;
     description: string;
     className: string;
@@ -41,7 +42,7 @@ export function CategoryGridClient({ categories }: CategoryGridClientProps) {
                         cat.className
                     )}
                 >
-                    <Link href={`/category/${cat.id}`} className="block h-full w-full">
+                    <Link href={`/category/${cat.slug}`} className="block h-full w-full">
                         {/* Background Glow */}
                         <div className={cn(
                             "absolute inset-0 bg-gradient-to-br opacity-50 transition-opacity duration-500 group-hover:opacity-100",

@@ -9,6 +9,7 @@ export interface CartItem {
     image: string
     slug: string
     quantity: number
+    stock: number
 }
 
 interface CartContextType {
@@ -57,6 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(prev => {
             const existing = prev.find(i => i.id === newItem.id)
             if (existing) {
+                if (existing.quantity >= newItem.stock) return prev
                 return prev.map(i => i.id === newItem.id ? { ...i, quantity: i.quantity + 1 } : i)
             }
             return [...prev, { ...newItem, quantity: 1 }]
@@ -68,11 +70,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [])
 
     const updateQuantity = useCallback((id: string, quantity: number) => {
-        if (quantity <= 0) {
-            setItems(prev => prev.filter(i => i.id !== id))
-        } else {
-            setItems(prev => prev.map(i => i.id === id ? { ...i, quantity } : i))
-        }
+        setItems(prev => {
+            const currentItem = prev.find(i => i.id === id)
+            if (!currentItem) return prev
+
+            if (quantity <= 0) {
+                return prev.filter(i => i.id !== id)
+            }
+            
+            if (quantity > currentItem.stock) {
+                return prev.map(i => i.id === id ? { ...i, quantity: currentItem.stock } : i)
+            }
+            
+            return prev.map(i => i.id === id ? { ...i, quantity } : i)
+        })
     }, [])
 
     const clearCart = useCallback(() => setItems([]), [])

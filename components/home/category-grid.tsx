@@ -26,7 +26,8 @@ export async function CategoryGrid() {
         }
 
         return {
-            id: cat.slug,
+            id: cat.id,
+            slug: cat.slug,
             name: cat.name,
             description: `${cat.productCount} Products`,
             className,
@@ -40,16 +41,17 @@ export async function CategoryGrid() {
         <section className="container px-4 mx-auto">
             <div className="mb-12 flex justify-between items-end">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
+                    <p className="text-primary-400 text-xs font-bold uppercase tracking-[0.2em] mb-3">Browse by category</p>
+                    <h2 className="text-3xl md:text-4xl font-display font-bold text-white">
                         Explore Categories
                     </h2>
-                    <p className="text-gray-400 mt-2">Everything you need for your next invention.</p>
+                    <p className="text-text-secondary mt-2">Everything you need for your next invention.</p>
                 </div>
                 <Link
                     href="/categories"
-                    className="hidden md:flex items-center text-accent-400 hover:text-accent-300 transition-colors group"
+                    className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 transition-colors group text-sm font-bold"
                 >
-                    View All <ArrowUpRight className="ml-1 w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                    View All <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
             </div>
 

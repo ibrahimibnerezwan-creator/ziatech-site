@@ -25,75 +25,90 @@ export default async function MyOrdersPage() {
 
     return (
         <div className="min-h-screen pt-24 pb-12 px-4">
-            <div className="container mx-auto max-w-4xl">
-                <div className="mb-8 border-b border-white/10 pb-4">
-                    <h1 className="text-3xl font-bold text-white mb-2">My Orders</h1>
-                    <p className="text-gray-400">View and track your recent purchases.</p>
+            <div className="container mx-auto max-w-4xl relative">
+                <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary-500/5 blur-[120px] pointer-events-none"></div>
+                <div className="mb-12">
+                    <h1 className="text-4xl font-display font-bold text-white uppercase tracking-tighter mb-2">Order <span className="text-primary-500">History</span></h1>
+                    <p className="text-text-secondary text-sm uppercase tracking-widest font-medium opacity-70">Telemetry of your past procurement cycles.</p>
                 </div>
 
                 {userOrders.length === 0 ? (
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center glass-card">
-                        <Package className="w-16 h-16 text-gray-500 mx-auto mb-4 opacity-50" />
-                        <h2 className="text-xl font-bold text-white mb-2">No orders yet</h2>
-                        <p className="text-gray-400 mb-6">Looks like you haven't placed any orders with us.</p>
-                        <Link href="/categories" className="inline-block bg-accent-500 text-black font-bold px-6 py-3 rounded-md hover:bg-accent-600 transition-colors tracking-wide uppercase text-sm">
-                            Start Shopping
+                    <div className="bg-bg-elevated/40 border border-white/5 rounded-3xl p-20 text-center backdrop-blur-xl relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <Package className="w-20 h-20 text-primary-500/20 mx-auto mb-6 group-hover:scale-110 group-hover:text-primary-400/30 transition-all duration-500" />
+                        <h2 className="text-2xl font-bold text-white mb-3 uppercase tracking-tight">Zero Records Found</h2>
+                        <p className="text-text-muted mb-10 max-w-xs mx-auto text-sm leading-relaxed">Your procurement history is currently empty. Initialize your first acquisition from our inventory.</p>
+                        <Link href="/categories" className="inline-flex items-center bg-primary-500 text-black font-black px-8 py-4 rounded-full hover:bg-primary-600 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary-500/20 uppercase text-xs tracking-[0.2em]">
+                            Initialize Search <ChevronRight className="w-4 h-4 ml-1" />
                         </Link>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {userOrders.map((order) => {
-                            // Status colors
-                            let statusColor = "text-yellow-400 bg-yellow-400/10 border-yellow-400/20"
-                            if (order.status === 'DELIVERED') statusColor = "text-emerald-400 bg-emerald-400/10 border-emerald-400/20"
-                            if (order.status === 'CANCELLED') statusColor = "text-red-400 bg-red-400/10 border-red-400/20"
-                            if (order.status === 'SHIPPED') statusColor = "text-accent-400 bg-accent-400/10 border-accent-400/20"
+                            // Status mappings
+                            const statusConfig = {
+                                'DELIVERED': 'text-emerald-400 bg-emerald-400/5 border-emerald-400/10',
+                                'CANCELLED': 'text-red-400 bg-red-400/5 border-red-400/10',
+                                'SHIPPED': 'text-blue-400 bg-blue-400/5 border-blue-400/10',
+                                'PENDING': 'text-primary-400 bg-primary-400/5 border-primary-400/10',
+                                'PROCESSING': 'text-primary-400 bg-primary-400/5 border-primary-400/10',
+                            }
+                            const statusColor = statusConfig[order.status as keyof typeof statusConfig] || 'text-gray-400 bg-gray-400/5 border-gray-400/10'
 
-                            // Payment colors
-                            let payColor = "text-yellow-400"
-                            if (order.paymentStatus === 'VERIFIED') payColor = "text-emerald-400"
-                            if (order.paymentStatus === 'FAILED') payColor = "text-red-400"
+                            // Payment mapping
+                            const payStatusColor = order.paymentStatus === 'VERIFIED' ? 'text-emerald-400' : 
+                                                 order.paymentStatus === 'FAILED' ? 'text-red-400' : 'text-primary-400'
 
                             return (
                                 <Link 
                                     key={order.id} 
                                     href={`/order-confirmation/${order.id}`}
-                                    className="block bg-white/5 border border-white/10 rounded-xl p-6 glass-card hover:bg-white/10 transition-colors group"
+                                    className="block group relative"
                                 >
-                                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                                        
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-white font-mono font-bold text-lg">
-                                                    #{order.id.split('-').pop()?.toUpperCase()}
-                                                </span>
-                                                <span className={`px-2.5 py-0.5 rounded text-xs font-bold border ${statusColor}`}>
-                                                    {order.status}
-                                                </span>
-                                                {order.paymentStatus === 'VERIFYING' && (
-                                                    <span className="flex items-center gap-1 text-xs text-orange-400 bg-orange-400/10 px-2.5 py-0.5 rounded border border-orange-400/20">
-                                                        <AlertCircle className="w-3 h-3" /> Verifying Payment
+                                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-500"></div>
+                                    <div className="relative bg-bg-elevated/80 border border-white/10 rounded-2xl p-8 backdrop-blur-xl hover:border-primary-500/30 transition-all duration-300">
+                                        <div className="flex flex-col md:flex-row justify-between md:items-center gap-8">
+                                            <div className="flex-1 space-y-4">
+                                                <div className="flex flex-wrap items-center gap-3">
+                                                    <span className="text-white font-mono font-black text-xl uppercase tracking-tighter">
+                                                        #{order.id.split('-').pop()?.toUpperCase()}
                                                     </span>
-                                                )}
+                                                    <span className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${statusColor}`}>
+                                                        {order.status}
+                                                    </span>
+                                                    {order.paymentStatus === 'VERIFYING' && (
+                                                        <span className="flex items-center gap-1.5 text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-400/5 px-3 py-1 rounded-md border border-amber-400/10">
+                                                            <AlertCircle className="w-3 h-3" /> Verifying
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-2">
+                                                    <div>
+                                                        <p className="text-[10px] text-text-muted uppercase tracking-[0.2em] mb-1 font-bold">Deployed</p>
+                                                        <p className="text-sm text-white font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] text-text-muted uppercase tracking-[0.2em] mb-1 font-bold">Payload</p>
+                                                        <p className="text-sm text-white font-medium">{order.items.length} Units</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] text-text-muted uppercase tracking-[0.2em] mb-1 font-bold">Cost</p>
+                                                        <p className="text-sm text-primary-400 font-bold italic">৳{order.total.toLocaleString()}</p>
+                                                    </div>
+                                                    <div className="sm:text-right">
+                                                        <p className="text-[10px] text-text-muted uppercase tracking-[0.2em] mb-1 font-bold">Payment</p>
+                                                        <p className={`text-sm font-bold uppercase tracking-widest ${payStatusColor}`}>{order.paymentStatus}</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            
-                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
-                                                <p>{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                                <p>{order.items.length} items</p>
-                                                <p>Total: <span className="text-white font-bold">৳{order.total.toLocaleString()}</span></p>
+
+                                            <div className="flex items-center justify-center md:justify-end">
+                                                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-primary-500 group-hover:border-primary-500 group-hover:scale-110 text-white group-hover:text-black transition-all duration-500">
+                                                    <ChevronRight className="w-6 h-6 ml-0.5" />
+                                                </div>
                                             </div>
                                         </div>
-
-                                        <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0">
-                                            <div className="text-right">
-                                                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Payment</p>
-                                                <p className={`text-sm font-bold ${payColor}`}>{order.paymentStatus}</p>
-                                            </div>
-                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-accent-500 group-hover:text-black text-gray-400 transition-colors">
-                                                <ChevronRight className="w-5 h-5" />
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </Link>
                             )

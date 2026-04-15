@@ -7,11 +7,12 @@ import Image from 'next/image'
 interface ImageUploadProps {
     onUploadComplete: (url: string) => void
     label?: string
+    defaultValue?: string
 }
 
-export function ImageUpload({ onUploadComplete, label = "Upload Product Image" }: ImageUploadProps) {
+export function ImageUpload({ onUploadComplete, label = "Upload Product Image", defaultValue }: ImageUploadProps) {
     const [isUploading, setIsUploading] = useState(false)
-    const [preview, setPreview] = useState<string | null>(null)
+    const [preview, setPreview] = useState<string | null>(defaultValue || null)
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

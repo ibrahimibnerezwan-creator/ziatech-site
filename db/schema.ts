@@ -7,6 +7,7 @@ export const users = sqliteTable('users', {
   email: text('email').notNull().unique(),
   phone: text('phone').notNull(),
   password: text('password').notNull(),
+  role: text('role').notNull().default('customer'), // customer, admin
   address: text('address'),
   city: text('city'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
@@ -66,6 +67,7 @@ export const orders = sqliteTable('orders', {
   customerPhone: text('customer_phone').notNull(),
   address: text('address').notNull(),
   shippingCity: text('shipping_city').notNull(),
+  deliveryCharge: real('delivery_charge').notNull().default(0),
   paymentMethod: text('payment_method').notNull(), // bkash, nagad, cod
   transactionId: text('transaction_id'), // For bKash/Nagad
   paymentStatus: text('payment_status').notNull().default('PENDING'), // PENDING, VERIFIED, FAILED

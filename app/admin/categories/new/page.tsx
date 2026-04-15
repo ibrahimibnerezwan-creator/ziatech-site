@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { createCategory } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ImageUpload } from '@/components/ui/image-upload'
+import { ImageUpload } from '@/components/admin/image-upload'
 import { ArrowLeft, Plus } from 'lucide-react'
 
 export default function NewCategoryPage() {
@@ -19,7 +19,6 @@ export default function NewCategoryPage() {
         formData.append('imageUrl', imageUrl)
         
         await createCategory(formData)
-        // Router push/refresh happens inside the server action via redirect()
     }
 
     return (
@@ -31,18 +30,18 @@ export default function NewCategoryPage() {
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold text-white">New Category</h1>
+                    <h1 className="text-3xl font-bold text-white uppercase tracking-tight">New <span className="text-accent-500">Category</span></h1>
                     <p className="text-gray-400">Create a new product collection.</p>
                 </div>
             </div>
 
-            <form action={handleSubmit} className="space-y-8 bg-white/5 border border-white/10 p-8 rounded-xl glass-card relative overflow-hidden">
+            <form action={handleSubmit} className="space-y-8 bg-white/5 border border-white/10 p-8 rounded-xl glass-card relative overflow-hidden backdrop-blur-md">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-500 to-purple-500"></div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-300">Category Name</label>
+                            <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category Name</label>
                             <Input 
                                 name="name" 
                                 required 
@@ -54,14 +53,11 @@ export default function NewCategoryPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 block mb-2">Category Image</label>
                         <ImageUpload
-                            value={imageUrl}
-                            onChange={(url) => setImageUrl(url)}
-                            onRemove={() => setImageUrl('')}
-                            className="bg-black/20 border-white/10"
+                            onUploadComplete={(url) => setImageUrl(url)}
+                            label="Category Image"
                         />
-                        <p className="text-xs text-gray-500 mt-2">Recommended: 800x800px square image.</p>
+                        <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest font-mono truncate">{imageUrl || 'Required: 800x800px recommended'}</p>
                     </div>
                 </div>
 

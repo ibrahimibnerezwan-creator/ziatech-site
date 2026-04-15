@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk, Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/header'
-import { Toaster } from '@/components/ui/toaster'
+import { ToasterProvider } from '@/components/providers/toaster-provider'
 import { Providers } from './providers'
 import './globals.css'
 
@@ -32,7 +32,7 @@ export default function RootLayout({
           <main className="pt-20">
             {children}
           </main>
-          <Toaster />
+          <ToasterProvider />
         </Providers>
 
         {/* Prism Forge: Dot Matrix Background Layer */}

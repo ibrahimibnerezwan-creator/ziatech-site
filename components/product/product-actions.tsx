@@ -3,7 +3,7 @@
 import React from 'react'
 import { ShoppingCart, Heart, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { useCart } from '@/lib/cart-context'
 
 interface ProductActionsProps {
@@ -18,27 +18,30 @@ interface ProductActionsProps {
 }
 
 export function ProductActions({ product }: ProductActionsProps) {
-    const { addItem } = useCart()
+    const { addItem, items } = useCart()
 
     const handleAddToCart = () => {
+        const existingItem = items.find(i => i.id === product.id)
+        const currentQuantity = existingItem ? existingItem.quantity : 0
+
+        if (currentQuantity >= product.stock) {
+            toast.error(`You already have all ${product.stock} available units in your cart.`)
+            return
+        }
+
         addItem({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.image,
             slug: product.slug,
+            stock: product.stock,
         })
-        toast({
-            title: "Added to Cart ✓",
-            description: `${product.name} has been added to your cart.`,
-        })
+        toast.success(`${product.name} added to cart`)
     }
 
     const handleWishlist = () => {
-        toast({
-            title: "Wishlist Updated",
-            description: `${product.name} has been added to your wishlist.`,
-        })
+        toast.success(`${product.name} added to wishlist`)
     }
 
     const handleShare = () => {
@@ -48,11 +51,11 @@ export function ProductActions({ product }: ProductActionsProps) {
                 url: window.location.href,
             }).catch(() => {
                 navigator.clipboard.writeText(window.location.href)
-                toast({ title: "Link Copied", description: "Product link copied to clipboard." })
+                toast.success('Link copied to clipboard')
             })
         } else {
             navigator.clipboard.writeText(window.location.href)
-            toast({ title: "Link Copied", description: "Product link copied to clipboard." })
+            toast.success('Link copied to clipboard')
         }
     }
 

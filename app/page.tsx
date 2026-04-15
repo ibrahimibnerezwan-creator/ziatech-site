@@ -5,7 +5,7 @@ import { FlashSale } from '@/components/home/flash-sale'
 import { NewArrivals } from '@/components/home/new-arrivals'
 import { Footer } from '@/components/layout/footer'
 
-export const revalidate = 60; // ISR: cache for 60s, then revalidate in background
+export const revalidate = 60;
 
 export default async function Home() {
   const [newProducts, flashProducts] = await Promise.all([
@@ -14,16 +14,29 @@ export default async function Home() {
   ])
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col">
       <Hero />
 
-      <div className="h-0 md:h-10" />
+      {/* Section Divider */}
+      <div className="relative py-8">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-primary-500/15 to-transparent" />
+      </div>
+
       <CategoryGrid />
 
+      <div className="relative py-6">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-primary-500/10 to-transparent" />
+      </div>
+
       <FlashSale products={flashProducts} />
+
+      <div className="relative py-4">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-primary-500/10 to-transparent" />
+      </div>
+
       <NewArrivals products={newProducts} />
 
-      <div className="h-20" />
+      <div className="h-16" />
       <Footer />
     </div>
   )

@@ -7,7 +7,7 @@ import { placeOrder } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { CreditCard, Truck, Receipt, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -23,7 +23,6 @@ interface User {
 export default function CheckoutClient({ settings, user }: { settings: Settings, user?: User | null }) {
     const { items, totalPrice, clearCart } = useCart()
     const router = useRouter()
-    const { toast } = useToast()
 
     const [step, setStep] = useState<1 | 2 | 3>(1)
     const [isLoading, setIsLoading] = useState(false)
@@ -48,13 +47,13 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
     const nextStep = () => {
         if (step === 1) {
             if (!formData.customerName || !formData.customerPhone || !formData.address) {
-                toast({ title: "Incomplete details", description: "Please fill out all shipping fields.", variant: "destructive" })
+                toast.error("Please fill out all shipping fields.")
                 return
             }
         }
         if (step === 2) {
             if (formData.paymentMethod !== 'cod' && !formData.transactionId) {
-                toast({ title: "Missing Transaction ID", description: "Please provide the TrxID for your payment.", variant: "destructive" })
+                toast.error("Please provide the TrxID for your payment.")
                 return
             }
         }
@@ -69,26 +68,31 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
         const result = await placeOrder({
             ...formData,
             items: items.map(i => ({ id: i.id, quantity: i.quantity, price: i.price })),
+            deliveryCharge: shippingCost,
             total: finalTotal
         })
 
         if (result.error) {
-            toast({ title: "Checkout Failed", description: result.error, variant: "destructive" })
+            toast.error(result.error)
             setIsLoading(false)
         } else {
             clearCart()
-            toast({ title: "Order Placed!", description: "Your order has been received successfully." })
+            toast.success('Order placed successfully!')
             router.push(`/order-confirmation/${result.orderId}`)
         }
     }
 
     if (items.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/10 rounded-2xl glass-card">
-                <Receipt className="w-16 h-16 text-gray-500 mb-6" />
-                <h2 className="text-2xl font-bold text-white mb-2">Cart is empty</h2>
-                <Button onClick={() => router.push('/categories')} className="mt-4 bg-accent-500 text-black hover:bg-accent-600">
-                    Return to Shop
+            <div className="flex flex-col items-center justify-center py-24 bg-bg-elevated/40 border border-white/5 rounded-3xl backdrop-blur-xl relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary-500/20 to-transparent" />
+                <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                    <Receipt className="w-10 h-10 text-white/20" />
+                </div>
+                <h2 className="text-2xl font-display font-bold text-white mb-2">Your cart is empty</h2>
+                <p className="text-text-secondary text-sm mb-8">Add some products before checking out.</p>
+                <Button onClick={() => router.push('/categories')} className="bg-primary-500 text-white hover:bg-primary-600 rounded-full px-8 font-bold shadow-lg shadow-primary-500/20">
+                    Browse Products
                 </Button>
             </div>
         )
@@ -279,36 +283,37 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
             </div>
 
             {/* Checkout Summary Sidebar */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 h-fit sticky top-24 glass-card">
-                <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Order Summary</h3>
-                
-                <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="bg-bg-elevated/60 border border-white/5 rounded-3xl p-8 h-fit sticky top-24 backdrop-blur-xl relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
+                <h3 className="text-xl font-display font-bold text-white mb-6 border-b border-white/5 pb-4">Order Summary</h3>
+
+                <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
                     {items.map(item => (
                         <div key={item.id} className="flex gap-3 text-sm">
-                            <div className="relative w-12 h-12 bg-white/5 rounded overlow-hidden shrink-0">
-                                {item.image && <Image src={item.image} alt={item.name} fill className="object-cover rounded" />}
+                            <div className="relative w-14 h-14 bg-white/5 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                                {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" />}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-white font-medium truncate">{item.name}</p>
-                                <p className="text-gray-400 transition-colors">Qty: {item.quantity}</p>
+                                <p className="text-text-muted text-xs mt-0.5">Qty: {item.quantity}</p>
                             </div>
-                            <div className="text-white font-medium">৳{(item.price * item.quantity).toLocaleString()}</div>
+                            <div className="text-white font-mono font-bold">৳{(item.price * item.quantity).toLocaleString()}</div>
                         </div>
                     ))}
                 </div>
 
-                <div className="space-y-3 text-sm border-t border-white/10 pt-4">
-                    <div className="flex justify-between text-gray-400">
-                        <span>Subtotal ({items.length} items)</span>
-                        <span className="text-white">৳{totalPrice.toLocaleString()}</span>
+                <div className="space-y-3 text-sm border-t border-white/5 pt-4">
+                    <div className="flex justify-between text-text-secondary">
+                        <span>Subtotal ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                        <span className="text-white font-mono">৳{totalPrice.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-gray-400">
+                    <div className="flex justify-between text-text-secondary">
                         <span>Shipping ({formData.shippingCity})</span>
-                        <span className="text-white">৳{shippingCost.toLocaleString()}</span>
+                        <span className="text-white font-mono">৳{shippingCost.toLocaleString()}</span>
                     </div>
-                    <div className="border-t border-white/10 mt-3 pt-3 flex justify-between text-lg">
-                        <span className="font-bold text-white">Total</span>
-                        <span className="font-bold text-accent-400">৳{finalTotal.toLocaleString()}</span>
+                    <div className="border-t border-white/5 mt-3 pt-3 flex justify-between text-lg">
+                        <span className="font-display font-bold text-white">Total</span>
+                        <span className="font-display font-bold text-primary-400">৳{finalTotal.toLocaleString()}</span>
                     </div>
                 </div>
             </div>

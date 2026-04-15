@@ -1,11 +1,29 @@
 'use server'
 
 import { db } from '@/db'
-import { products, productImages, categories } from '@/db/schema'
+import { products, productImages, categories, orders } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
+
+export async function updateOrderStatus(orderId: string, status: string) {
+    try {
+        await db.update(orders)
+            .set({ 
+                status,
+                updatedAt: new Date()
+            })
+            .where(eq(orders.id, orderId))
+            
+        revalidatePath('/admin/orders')
+        revalidatePath('/admin')
+        return { success: true }
+    } catch (error) {
+        console.error('Failed to update order status:', error)
+        return { success: false, error: 'Failed to update order status' }
+    }
+}
 
 export async function createProduct(formData: FormData) {
     const name = formData.get('name') as string
@@ -14,6 +32,8 @@ export async function createProduct(formData: FormData) {
     const categoryId = formData.get('category') as string
     const description = formData.get('description') as string
     const imageUrl = formData.get('imageUrl') as string
+    const comparePrice = formData.get('comparePrice') ? parseFloat(formData.get('comparePrice') as string) : null
+    const isFeatured = formData.get('isFeatured') === 'on'
 
     const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
     const now = new Date()
@@ -26,9 +46,10 @@ export async function createProduct(formData: FormData) {
             slug,
             description: description || '',
             price,
+            comparePrice,
             stock,
             categoryId: categoryId || null,
-            isFeatured: false,
+            isFeatured,
             createdAt: now,
             updatedAt: now,
         })
@@ -56,14 +77,18 @@ export async function updateProduct(id: string, formData: FormData) {
     const categoryId = formData.get('category') as string
     const description = formData.get('description') as string
     const imageUrl = formData.get('imageUrl') as string
+    const comparePrice = formData.get('comparePrice') ? parseFloat(formData.get('comparePrice') as string) : null
+    const isFeatured = formData.get('isFeatured') === 'on'
 
     try {
         await db.update(products).set({
             name,
             description: description || '',
             price,
+            comparePrice,
             stock,
             categoryId: categoryId || null,
+            isFeatured,
             updatedAt: new Date(),
         }).where(eq(products.id, id))
 

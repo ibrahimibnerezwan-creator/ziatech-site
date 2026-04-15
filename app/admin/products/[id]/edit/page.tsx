@@ -72,7 +72,7 @@ export default function EditProductPage() {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Price (৳)</label>
                             <Input
@@ -87,6 +87,23 @@ export default function EditProductPage() {
                         </div>
 
                         <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Compare Price (৳)</label>
+                                <span className="text-[10px] text-accent-400 font-mono">MSRP</span>
+                            </div>
+                            <Input
+                                name="comparePrice"
+                                type="number"
+                                step="0.01"
+                                defaultValue={product.comparePrice}
+                                placeholder="0.00"
+                                className="bg-black/20 border-white/10"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Stock Quantity</label>
                             <Input
                                 name="stock"
@@ -97,20 +114,20 @@ export default function EditProductPage() {
                                 className="bg-black/20 border-white/10"
                             />
                         </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category</label>
-                        <select
-                            name="category"
-                            defaultValue={product.categoryId || ''}
-                            className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500 appearance-none"
-                        >
-                            <option value="" className="bg-gray-800">Select Category</option>
-                            {categories.map(cat => (
-                                <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
-                            ))}
-                        </select>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 uppercase tracking-wider">Category</label>
+                            <select
+                                name="category"
+                                defaultValue={product.categoryId || ''}
+                                className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-500 appearance-none"
+                            >
+                                <option value="" className="bg-gray-800">Select Category</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id} className="bg-gray-800">{cat.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -126,12 +143,33 @@ export default function EditProductPage() {
                 </div>
 
                 <div className="space-y-6">
+                    <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md space-y-4">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Visibility & Status</h3>
+                            {product.isFeatured && <span className="text-[10px] bg-accent-500/10 text-accent-500 px-2 py-0.5 rounded border border-accent-500/20 font-bold uppercase tracking-widest">Current: Featured</span>}
+                        </div>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5 hover:border-accent-500/30 transition-colors group">
+                            <label htmlFor="isFeatured" className="text-sm font-medium text-gray-300 cursor-pointer group-hover:text-accent-400 transition-colors">Mark as Featured</label>
+                            <input
+                                id="isFeatured"
+                                name="isFeatured"
+                                type="checkbox"
+                                defaultChecked={product.isFeatured}
+                                className="w-5 h-5 rounded border-white/10 bg-black/40 text-accent-500 focus:ring-accent-500/20"
+                            />
+                        </div>
+                    </div>
+
                     <div className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-md">
-                        <ImageUpload label="Update Image" onUploadComplete={(url) => setImageUrl(url)} />
+                        <ImageUpload 
+                            label="Update Image" 
+                            defaultValue={imageUrl}
+                            onUploadComplete={(url) => setImageUrl(url)} 
+                        />
                         <input type="hidden" name="imageUrl" value={imageUrl} />
                         {imageUrl && (
-                            <p className="mt-2 text-[10px] text-green-400 font-mono break-all opacity-50 italic">
-                                Connected to R2
+                            <p className="mt-2 text-[10px] text-green-400 font-mono break-all opacity-30 italic">
+                                S3-NODE-V4::AUTH_OK
                             </p>
                         )}
                     </div>
