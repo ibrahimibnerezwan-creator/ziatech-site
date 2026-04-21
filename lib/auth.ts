@@ -63,10 +63,18 @@ export async function getSession() {
 export async function getCurrentUser() {
     const session = await getSession();
     if (!session) return null;
-    
+
     return {
         id: session.userId as string,
         name: session.name as string,
         role: session.role as string,
     };
+}
+
+export async function requireAdmin() {
+    const user = await getCurrentUser();
+    if (!user || user.role !== 'admin') {
+        throw new Error('Unauthorized');
+    }
+    return user;
 }

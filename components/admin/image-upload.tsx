@@ -56,9 +56,10 @@ export function ImageUpload({ onUploadComplete, label = "Upload Product Image", 
             {preview ? (
                 <div className="relative aspect-video rounded-lg overflow-hidden border border-white/10 group">
                     <Image src={preview} alt="Preview" fill className="object-cover" />
-                    <button 
+                    <button
+                        type="button"
                         onClick={() => { setPreview(null); onUploadComplete(''); }}
-                        className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                     >
                         <X className="w-4 h-4" />
                     </button>

@@ -3,6 +3,15 @@ import { db } from '@/db';
 import { products, productImages, categories } from '@/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
+import { getCurrentUser } from '@/lib/auth';
+
+async function requireAdminResponse() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return null;
+}
 
 // GET all products (for Admin Dashboard)
 export async function GET() {
@@ -43,6 +52,9 @@ export async function GET() {
 // POST new product
 export async function POST(request: Request) {
   try {
+    const unauthorized = await requireAdminResponse();
+    if (unauthorized) return unauthorized;
+
     const body = await request.json();
     const { title, price, description, stock, category, images } = body;
 
@@ -89,6 +101,9 @@ export async function POST(request: Request) {
 // DELETE a product
 export async function DELETE(request: Request) {
   try {
+    const unauthorized = await requireAdminResponse();
+    if (unauthorized) return unauthorized;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

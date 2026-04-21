@@ -3,28 +3,30 @@ import Link from "next/link";
 import Image from "next/image";
 import { getOrderById } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import { 
-    ChevronLeft, 
-    Package, 
-    Truck, 
-    CheckCircle2, 
-    Clock, 
-    User, 
-    MapPin, 
-    Phone, 
+import {
+    ChevronLeft,
+    Package,
+    Truck,
+    CheckCircle2,
+    Clock,
+    User,
+    MapPin,
+    Phone,
     CreditCard,
     Calendar,
     ArrowUpRight,
-    Search
+    Search,
+    ImageOff
 } from "lucide-react";
 import { format } from "date-fns";
+import { OrderActions } from "./order-actions";
 
 interface Props {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }
 
 export default async function OrderDetailPage({ params }: Props) {
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
     const order = await getOrderById(id);
 
     if (!order) {
@@ -76,14 +78,7 @@ export default async function OrderDetailPage({ params }: Props) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Button variant="outline" className="border-white/10 text-white hover:bg-white/5 rounded-full px-6 font-bold uppercase tracking-widest text-xs h-11">
-                        Print Invoice
-                    </Button>
-                    <Button className="bg-primary-500 text-white hover:bg-primary-600 rounded-full px-8 font-bold uppercase tracking-widest text-xs h-11 shadow-lg shadow-primary-500/20">
-                        Update Status
-                    </Button>
-                </div>
+                <OrderActions orderId={order.id} currentStatus={order.status} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -103,14 +98,18 @@ export default async function OrderDetailPage({ params }: Props) {
                         <div className="divide-y divide-white/5">
                             {order.items.map((item) => (
                                 <div key={item.id} className="p-6 flex items-center gap-6 group hover:bg-white/[0.02] transition-colors">
-                                    <div className="w-20 h-20 rounded-2xl bg-bg-void border border-white/5 overflow-hidden flex-shrink-0 relative">
-                                        <Image 
-                                            src={item.product?.images[0]?.url || 'https://via.placeholder.com/200'} 
-                                            alt={item.product?.name || 'Product'} 
-                                            fill 
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                            sizes="80px"
-                                        />
+                                    <div className="w-20 h-20 rounded-2xl bg-bg-void border border-white/5 overflow-hidden flex-shrink-0 relative flex items-center justify-center text-white/20">
+                                        {item.product?.images[0]?.url ? (
+                                            <Image
+                                                src={item.product.images[0].url}
+                                                alt={item.product?.name || 'Product'}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                sizes="80px"
+                                            />
+                                        ) : (
+                                            <ImageOff className="w-6 h-6" />
+                                        )}
                                     </div>
                                     <div className="flex-grow min-w-0">
                                         <h3 className="font-display font-bold text-white text-lg truncate group-hover:text-primary-400 transition-colors">
@@ -239,8 +238,13 @@ export default async function OrderDetailPage({ params }: Props) {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest">Status</span>
-                                    <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md ${order.paymentStatus === 'PAID' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
-                                        {order.paymentStatus || 'UNPAID'}
+                                    <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md ${
+                                        order.paymentStatus === 'VERIFIED' ? 'bg-emerald-500/20 text-emerald-400'
+                                        : order.paymentStatus === 'VERIFYING' ? 'bg-amber-500/20 text-amber-400'
+                                        : order.paymentStatus === 'FAILED' ? 'bg-rose-500/20 text-rose-400'
+                                        : 'bg-white/10 text-white/60'
+                                    }`}>
+                                        {order.paymentStatus || 'PENDING'}
                                     </span>
                                 </div>
                                 {order.transactionId && (
@@ -251,9 +255,6 @@ export default async function OrderDetailPage({ params }: Props) {
                                 )}
                             </div>
                             
-                            <Button variant="ghost" className="w-full text-white/40 hover:text-white hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest h-9">
-                                Manual Override
-                            </Button>
                         </div>
                     </div>
                 </div>

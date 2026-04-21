@@ -4,8 +4,10 @@ import { db } from '@/db'
 import { storeSettings } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth'
 
 export async function updateSettings(formData: FormData) {
+    await requireAdmin()
     const keys = [
         'storeName', 'phone', 'email', 'address', 'whatsapp', 'facebook',
         'instagram', 'youtube', 'tiktok',

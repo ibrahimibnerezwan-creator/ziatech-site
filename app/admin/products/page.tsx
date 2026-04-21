@@ -116,7 +116,7 @@ export default async function AdminProductsPage() {
                                             </div>
                                         </td>
                                         <td className="p-6 text-right">
-                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                            <div className="flex items-center justify-end gap-2 md:opacity-0 md:group-hover:opacity-100 md:translate-x-4 md:group-hover:translate-x-0 transition-all duration-300">
                                                 <Link href={`/product/${product.slug}`} target="_blank">
                                                     <Button size="icon" variant="ghost" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5 rounded-xl border border-transparent hover:border-white/10">
                                                         <Eye className="w-4 h-4" />

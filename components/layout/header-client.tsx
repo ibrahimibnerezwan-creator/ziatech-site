@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, User, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/hooks/use-toast'
 import { useCart } from '@/lib/cart-context'
 import { logoutAction } from '@/app/auth/actions'
 
@@ -19,8 +19,18 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
     const [isSearchFocused, setIsSearchFocused] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-    const { toast } = useToast()
+    const [searchQuery, setSearchQuery] = useState('')
+    const [mobileSearchQuery, setMobileSearchQuery] = useState('')
+    const router = useRouter()
     const { totalItems } = useCart()
+
+    function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>, query: string) {
+        e.preventDefault()
+        const q = query.trim()
+        if (!q) return
+        setIsMobileMenuOpen(false)
+        router.push(`/category/all?q=${encodeURIComponent(q)}`)
+    }
 
     // Take up to 5 categories for the top nav
     const topCategories = categories.slice(0, 5)
@@ -42,20 +52,26 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
             </nav>
 
             {/* SEARCH BAR */}
-            <div className="hidden md:block relative w-96 mx-4">
+            <form
+                onSubmit={(e) => handleSearchSubmit(e, searchQuery)}
+                className="hidden md:block relative w-96 mx-4"
+            >
                 <motion.div
                     animate={{ scale: isSearchFocused ? 1.02 : 1 }}
                     className="relative"
                 >
                     <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search components, kits, modules..."
                         className="pl-10 bg-bg-void/60 border-primary-700/30 text-white placeholder:text-text-muted rounded-full focus:ring-primary-500/40 focus:border-primary-500/40"
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => setIsSearchFocused(false)}
                     />
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-muted" />
+                    <button type="submit" aria-label="Search" className="absolute left-3 top-2.5 text-text-muted hover:text-white">
+                        <Search className="w-4 h-4" />
+                    </button>
 
-                    {/* Warm Glow Effect when focused */}
                     <AnimatePresence>
                         {isSearchFocused && (
                             <motion.div
@@ -67,7 +83,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                         )}
                     </AnimatePresence>
                 </motion.div>
-            </div>
+            </form>
 
             {/* ACTIONS */}
             <div className="flex items-center space-x-4">
@@ -154,7 +170,14 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                         className="absolute top-20 left-0 right-0 md:hidden bg-bg-elevated/95 backdrop-blur-xl border-b border-primary-700/15 overflow-hidden shadow-2xl"
                     >
                         <div className="p-4 space-y-4">
-                            <Input placeholder="Search products..." className="bg-bg-void/60 border-primary-700/20 rounded-xl" />
+                            <form onSubmit={(e) => handleSearchSubmit(e, mobileSearchQuery)}>
+                                <Input
+                                    value={mobileSearchQuery}
+                                    onChange={(e) => setMobileSearchQuery(e.target.value)}
+                                    placeholder="Search products..."
+                                    className="bg-bg-void/60 border-primary-700/20 rounded-xl"
+                                />
+                            </form>
                             <nav className="flex flex-col space-y-1">
                                 {categories.map((item) => (
                                     <Link

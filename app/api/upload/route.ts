@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { generateUploadUrl } from '@/lib/r2';
 import { v4 as uuidv4 } from 'uuid';
+import { getCurrentUser } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { filename, contentType } = await request.json();
 
     if (!filename || !contentType) {

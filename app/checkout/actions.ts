@@ -58,7 +58,7 @@ export async function placeOrder(data: CheckoutData) {
             // Create Order
             await tx.insert(orders).values({
                 id: orderId,
-                userId: user?.id || null, 
+                userId: user?.id && user.id !== 'admin-platform' ? user.id : null,
                 status: 'PENDING',
                 paymentStatus: data.paymentMethod === 'cod' ? 'PENDING' : 'VERIFYING',
                 total: data.total,

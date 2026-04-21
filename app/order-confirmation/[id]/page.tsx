@@ -8,7 +8,7 @@ import { CheckCircle2, Package, Truck, ArrowRight, User } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-export default async function OrderConfirmationPage({ params }: { params: { id: string } }) {
+export default async function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
 
     const orderRow = await db.query.orders.findFirst({
@@ -41,7 +41,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                         <CheckCircle2 className="w-10 h-10" />
                     </div>
                     <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">Order Confirmed!</h1>
-                    <p className="text-gray-400 text-lg">Thank you for shopping with Z's Tech Shop.</p>
+                    <p className="text-gray-400 text-lg">Thank you for shopping with ZiaTech.</p>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 p-8 rounded-2xl glass-card backdrop-blur-xl">

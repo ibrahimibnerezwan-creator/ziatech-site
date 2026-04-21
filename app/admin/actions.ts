@@ -6,8 +6,10 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
+import { requireAdmin } from '@/lib/auth'
 
 export async function updateOrderStatus(orderId: string, status: string) {
+    await requireAdmin()
     try {
         await db.update(orders)
             .set({ 
@@ -26,6 +28,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 }
 
 export async function createProduct(formData: FormData) {
+    await requireAdmin()
     const name = formData.get('name') as string
     const price = parseFloat(formData.get('price') as string)
     const stock = parseInt(formData.get('stock') as string)
@@ -71,6 +74,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(id: string, formData: FormData) {
+    await requireAdmin()
     const name = formData.get('name') as string
     const price = parseFloat(formData.get('price') as string)
     const stock = parseInt(formData.get('stock') as string)
@@ -111,6 +115,7 @@ export async function updateProduct(id: string, formData: FormData) {
 }
 
 export async function deleteProduct(id: string) {
+    await requireAdmin()
     try {
         await db.delete(products).where(eq(products.id, id))
     } catch (error) {
@@ -121,12 +126,11 @@ export async function deleteProduct(id: string) {
 }
 
 export async function createCategory(formData: FormData) {
+    await requireAdmin()
     const name = formData.get('name') as string
     const image = formData.get('imageUrl') as string
-    
-    // Generate clean slug
+
     const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
-    // Fallback if empty
     const slug = baseSlug || `cat-${Date.now()}`
 
     try {
@@ -147,10 +151,10 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function updateCategory(id: string, formData: FormData) {
+    await requireAdmin()
     const name = formData.get('name') as string
     const image = formData.get('imageUrl') as string
-    
-    // Generate clean slug
+
     const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
     const slug = baseSlug || `cat-${Date.now()}`
 
@@ -170,6 +174,7 @@ export async function updateCategory(id: string, formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
+    await requireAdmin()
     try {
         await db.delete(categories).where(eq(categories.id, id))
     } catch (error) {

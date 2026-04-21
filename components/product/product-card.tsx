@@ -127,9 +127,11 @@ export function ProductCard({ product }: { product: Product }) {
                                 <span className="text-xs text-gray-500 line-through">৳{product.oldPrice.toLocaleString()}</span>
                             )}
                         </div>
-                        {product.stock < 5 && (
+                        {product.stock === 0 ? (
+                            <span className="text-xs text-red-400 font-bold uppercase tracking-wider">Out of stock</span>
+                        ) : product.stock < 5 ? (
                             <span className="text-xs text-red-400 animate-pulse">{product.stock} left!</span>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </Link>

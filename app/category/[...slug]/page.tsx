@@ -1,92 +1,41 @@
-import { ProductCard } from '@/components/product/product-card'
-import { Button } from '@/components/ui/button'
-import { Filter } from 'lucide-react'
 import { Footer } from '@/components/layout/footer'
 import { getProductsByCategory } from '@/lib/data'
+import { CategoryResults } from './category-results'
 
 export default async function CategoryPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ slug: string[] }>
+    searchParams: Promise<{ q?: string }>
 }) {
     const { slug } = await params
+    const { q } = await searchParams
     const categorySlug = slug?.[0] || 'all'
-    
-    // Fetch real data from DB
+
     const { products: categoryProducts, categoryName } = await getProductsByCategory(categorySlug)
+
+    const query = (q || '').trim().toLowerCase()
+    const filtered = query
+        ? categoryProducts.filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query)
+        )
+        : categoryProducts
+
+    const heading = query ? `Results for "${q}"` : categoryName
 
     return (
         <div className="min-h-screen flex flex-col">
             <div className="container px-4 mx-auto py-8 flex-1">
-                {/* HEADER */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold capitalize text-white mb-2">{categoryName}</h1>
-                        <p className="text-gray-400">Found {categoryProducts.length} results</p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline" className="border-white/10">
-                            <Filter className="w-4 h-4 mr-2" /> Filters
-                        </Button>
-                        <select className="bg-black/20 border border-white/10 rounded-md px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-accent-500">
-                            <option>Sort by: Featured</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
-                            <option>Newest Arrivals</option>
-                        </select>
+                        <h1 className="text-3xl font-bold capitalize text-white mb-2">{heading}</h1>
+                        <p className="text-gray-400">Found {filtered.length} results{query && categorySlug !== 'all' ? ` in ${categoryName}` : ''}</p>
                     </div>
                 </div>
 
-                {/* MAIN GRID */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    {/* SIDEBAR (Desktop) */}
-                    <aside className="hidden md:block space-y-8 sticky top-24 h-fit">
-                        <div className="space-y-4">
-                            <h3 className="font-bold text-white">Price Range</h3>
-                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                                <div className="h-full w-1/2 bg-accent-500 rounded-full" />
-                            </div>
-                            <div className="flex justify-between text-xs text-gray-400">
-                                <span>৳0</span>
-                                <span>৳10,000</span>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-white mb-2">Brands</h3>
-                            {['Arduino', 'Espressif', 'Raspberry Pi', 'Adafruit'].map((brand) => (
-                                <label key={brand} className="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
-                                    <input type="checkbox" className="rounded border-gray-600 bg-transparent focus:ring-accent-500 text-accent-500" />
-                                    <span>{brand}</span>
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-white mb-2">Availability</h3>
-                            <label className="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
-                                <input type="checkbox" className="rounded border-gray-600 bg-transparent focus:ring-accent-500 text-accent-500" />
-                                <span>In Stock Only</span>
-                            </label>
-                        </div>
-                    </aside>
-
-                    {/* PRODUCT GRID */}
-                    <div className="col-span-1 md:col-span-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {categoryProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
-                            ))}
-                        </div>
-
-                        <div className="mt-12 flex justify-center">
-                            <Button variant="ghost" className="bg-white/5 hover:bg-white/10">
-                                Load More Products
-                            </Button>
-                        </div>
-                    </div>
-                </div>
+                <CategoryResults products={filtered} />
             </div>
 
             <Footer />

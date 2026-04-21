@@ -87,7 +87,7 @@ export default async function AdminCategoriesPage() {
                                             </div>
                                         </td>
                                         <td className="p-6 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                            <div className="flex items-center justify-end gap-3 md:opacity-0 md:group-hover:opacity-100 md:translate-x-4 md:group-hover:translate-x-0 transition-all duration-300">
                                                 <Link href={`/admin/categories/${category.id}/edit`}>
                                                     <Button size="icon" variant="ghost" className="h-10 w-10 text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 rounded-xl border border-transparent hover:border-primary-500/20">
                                                         <Edit className="w-4 h-4" />
