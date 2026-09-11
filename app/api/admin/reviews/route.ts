@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
     }
 
     const patch: Record<string, any> = {};
-    if (status) patch.status = status;
+    if (status) patch.status = status.toLowerCase();
     if (adminReply !== undefined) patch.adminReply = adminReply;
 
     await db.update(reviews).set(patch).where(eq(reviews.id, id));

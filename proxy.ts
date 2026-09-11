@@ -8,28 +8,18 @@ export async function proxy(request: NextRequest) {
 
   // Define route groups
   const isAuthRoute = pathname === '/login' || pathname === '/register';
-  const isProtectedUserRoute = pathname.startsWith('/my-orders');
 
-  // Handle protected customer routes
+  // If no session, continue
   if (!session) {
-    if (isProtectedUserRoute) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('from', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
     return NextResponse.next();
   }
 
   const payload = await decrypt(session);
 
   if (!payload) {
-    // Session is invalid, clear it
-    if (isProtectedUserRoute) {
-      const response = NextResponse.redirect(new URL('/login', request.url));
-      response.cookies.delete('session');
-      return response;
-    }
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.cookies.delete('session');
+    return response;
   }
 
   // If customer is already logged in, redirect away from login/register
@@ -41,5 +31,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/login', '/register', '/my-orders/:path*'],
+  matcher: ['/login', '/register'],
 };

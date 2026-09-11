@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react'
+import { Search, ShoppingCart, User, Menu, X, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCart } from '@/lib/cart-context'
@@ -86,7 +86,15 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
             </form>
 
             {/* ACTIONS */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+                <Link
+                    href="/my-orders"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/25 text-orange-400 text-xs font-semibold transition-colors"
+                >
+                    <Package className="w-3.5 h-3.5" />
+                    <span>অর্ডার ট্র্যাক</span>
+                </Link>
+
                 <Link href="/cart">
                     <Button variant="ghost" size="icon" className="relative text-text-secondary hover:text-white hover:bg-white/5">
                         <ShoppingCart className="w-5 h-5" />
@@ -189,6 +197,13 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                                         {item.name}
                                     </Link>
                                 ))}
+                                <Link
+                                    href="/my-orders"
+                                    className="p-3 text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 rounded-xl font-medium transition-colors flex items-center gap-2"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <Package className="w-4 h-4" /> অর্ডার ট্র্যাক (Track Order)
+                                </Link>
                             </nav>
                             {user ? (
                                 <div className="pt-2 border-t border-white/5 space-y-1">

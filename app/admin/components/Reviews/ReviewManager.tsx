@@ -211,7 +211,7 @@ export default function ReviewManager() {
 
                 {/* Admin Reply */}
                 {rev.adminReply ? (
-                  <div className="bg-orange-950/20 border border-cyan-900/40 rounded-2xl p-3.5 text-xs text-orange-200">
+                  <div className="bg-orange-950/20 border border-orange-900/40 rounded-2xl p-3.5 text-xs text-orange-200">
                     <span className="font-bold text-orange-400 uppercase text-[10px] tracking-wider block mb-1">
                       Official ZiaTech Response:
                     </span>
