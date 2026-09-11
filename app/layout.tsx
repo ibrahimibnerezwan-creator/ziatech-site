@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Space_Grotesk, Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/header'
 import { ToasterProvider } from '@/components/providers/toaster-provider'
+import { ChatWidget } from '@/components/shared/ChatWidget'
 import { Providers } from './providers'
 import './globals.css'
 
@@ -29,9 +30,10 @@ export default function RootLayout({
       >
         <Providers>
           <Header />
-          <main className="pt-20">
+          <main className="pt-24 sm:pt-26">
             {children}
           </main>
+          <ChatWidget />
           <ToasterProvider />
         </Providers>
 

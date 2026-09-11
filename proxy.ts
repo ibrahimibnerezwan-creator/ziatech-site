@@ -7,13 +7,12 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define route groups
-  const isAdminRoute = pathname.startsWith('/admin');
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
-  const isProtectedUserRoute = pathname.startsWith('/my-orders') || pathname.startsWith('/checkout');
+  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  const isProtectedUserRoute = pathname.startsWith('/my-orders');
 
-  // Handle protected routes
+  // Handle protected customer routes
   if (!session) {
-    if (isAdminRoute || isProtectedUserRoute) {
+    if (isProtectedUserRoute) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
@@ -25,25 +24,22 @@ export async function proxy(request: NextRequest) {
 
   if (!payload) {
     // Session is invalid, clear it
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete('session');
-    return response;
+    if (isProtectedUserRoute) {
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('session');
+      return response;
+    }
+    return NextResponse.next();
   }
 
-  // Handle auth routes (login/register) when already logged in
-  if (isAuthRoute) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // Admin access control
-  if (isAdminRoute && payload.role !== 'admin') {
+  // If customer is already logged in, redirect away from login/register
+  if (isAuthRoute && payload.role !== 'admin') {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
 }
 
-// Next.js 16 (Nexus Fork) uses proxy.ts instead of middleware.ts
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/register', '/my-orders', '/checkout'],
+  matcher: ['/login', '/register', '/my-orders/:path*'],
 };

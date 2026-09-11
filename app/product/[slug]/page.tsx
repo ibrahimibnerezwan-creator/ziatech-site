@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Star, ChevronRight, Cpu, Truck, Shield, RotateCcw } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 import { ProductActions } from '@/components/product/product-actions'
+import { ProductGallery } from '@/components/product/ProductGallery'
+import { ReviewForm } from '@/components/product/ReviewForm'
 import { Footer } from '@/components/layout/footer'
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -44,38 +46,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 {/* Product Detail Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
 
-                    {/* Image Gallery */}
-                    <div className="space-y-4">
-                        <div className="relative aspect-square rounded-3xl overflow-hidden bg-bg-elevated/60 border border-white/5 backdrop-blur-xl group">
-                            <Image
-                                src={product.images[0]?.url || '/placeholder.png'}
-                                alt={product.name}
-                                fill
-                                className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
-                                priority
-                            />
-                            <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                {product.isFeatured && (
-                                    <Badge className="bg-gold-500 text-black font-bold text-xs">Featured</Badge>
-                                )}
-                                {product.comparePrice && (
-                                    <Badge variant="destructive" className="font-bold text-xs">
-                                        -{Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%
-                                    </Badge>
-                                )}
-                            </div>
-                        </div>
-
-                        {product.images.length > 1 && (
-                            <div className="grid grid-cols-4 gap-3">
-                                {product.images.map((img, idx) => (
-                                    <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden bg-bg-elevated/40 border border-white/5 cursor-pointer hover:border-primary-500/30 transition-all duration-200 group/thumb">
-                                        <Image src={img.url} alt={`${product.name} ${idx + 1}`} fill className="object-cover group-hover/thumb:scale-105 transition-transform" />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {/* Interactive Image Gallery */}
+                    <ProductGallery
+                        images={product.images}
+                        name={product.name}
+                        isFeatured={product.isFeatured}
+                        comparePrice={product.comparePrice}
+                        price={product.price}
+                    />
 
                     {/* Product Info */}
                     <div className="space-y-6 lg:pt-4">
@@ -241,6 +219,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                 <p className="text-text-muted text-sm">No reviews yet. Be the first to share your experience.</p>
                             </div>
                         )}
+                    </div>
+
+                    {/* Submit Review Form */}
+                    <div className="mt-8 max-w-2xl">
+                        <ReviewForm productId={product.id} />
                     </div>
                 </div>
 

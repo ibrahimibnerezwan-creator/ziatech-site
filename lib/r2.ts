@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, HeadBucketCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadBucketCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Cloudflare R2 is S3-compatible
@@ -37,4 +37,23 @@ export async function generateUploadUrl(filename: string, contentType: string) {
     signedUrl,
     publicUrl: `${PUBLIC_DOMAIN}/${filename}`,
   };
+}
+
+export async function deleteFromR2(key: string) {
+  if (!key) return;
+  const command = new DeleteObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+  });
+  return await r2.send(command);
+}
+
+export function extractR2Key(url: string): string {
+  if (!url) return '';
+  try {
+    const parsed = new URL(url);
+    return parsed.pathname.replace(/^\//, '');
+  } catch {
+    return url.split('/').pop() || '';
+  }
 }

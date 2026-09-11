@@ -71,6 +71,11 @@ export async function getCurrentUser() {
     };
 }
 
+export async function isAuthenticatedAdmin(): Promise<boolean> {
+    const user = await getCurrentUser();
+    return !!user && user.role === 'admin';
+}
+
 export async function requireAdmin() {
     const user = await getCurrentUser();
     if (!user || user.role !== 'admin') {
