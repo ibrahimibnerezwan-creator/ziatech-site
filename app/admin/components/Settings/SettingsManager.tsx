@@ -50,10 +50,10 @@ export default function SettingsManager() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
+      <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-cyan-400" />
+            <Settings className="w-5 h-5 text-orange-400" />
             Store Settings & Integrations
           </h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -71,9 +71,9 @@ export default function SettingsManager() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Identity & Contact */}
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Store className="w-4 h-4 text-cyan-400" />
+            <Store className="w-4 h-4 text-orange-400" />
             Store Identity & Contact Lines
           </h3>
 
@@ -84,7 +84,7 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.storeName || "Zia's Tech Shop"}
                 onChange={(e) => handleChange('storeName', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -94,7 +94,7 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.phone || '+880 1712-345678'}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -104,7 +104,7 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.whatsapp || '01712345678'}
                 onChange={(e) => handleChange('whatsapp', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -114,7 +114,7 @@ export default function SettingsManager() {
                 type="email"
                 value={settings.email || 'support@ziatech.shop'}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -124,14 +124,14 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.address || 'Agargaon Tech Market, Dhaka, Bangladesh'}
                 onChange={(e) => handleChange('address', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
           </div>
         </div>
 
         {/* Payments & MFS Accounts */}
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-3">
             <CreditCard className="w-4 h-4 text-amber-400" />
             Mobile Banking & Payment Receivers
@@ -144,7 +144,7 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.bkash_number || '01712345678'}
                 onChange={(e) => handleChange('bkash_number', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -154,16 +154,16 @@ export default function SettingsManager() {
                 type="text"
                 value={settings.nagad_number || '01712345678'}
                 onChange={(e) => handleChange('nagad_number', e.target.value)}
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
           </div>
         </div>
 
         {/* Steadfast Courier Integration */}
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Truck className="w-4 h-4 text-cyan-400" />
+            <Truck className="w-4 h-4 text-orange-400" />
             Steadfast Courier API Keys
           </h3>
 
@@ -175,7 +175,7 @@ export default function SettingsManager() {
                 value={settings.steadfast_api_key || ''}
                 onChange={(e) => handleChange('steadfast_api_key', e.target.value)}
                 placeholder="c5hrdhmpssren..."
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-400 focus:outline-none"
               />
             </div>
 
@@ -186,7 +186,7 @@ export default function SettingsManager() {
                 value={settings.steadfast_secret_key || ''}
                 onChange={(e) => handleChange('steadfast_secret_key', e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-400 focus:outline-none"
               />
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function SettingsManager() {
           <button
             type="submit"
             disabled={isSaving}
-            className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold rounded-2xl text-sm transition flex items-center gap-2 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
+            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold rounded-2xl text-sm transition flex items-center gap-2 shadow-lg shadow-orange-500/20 disabled:opacity-50"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save All Settings

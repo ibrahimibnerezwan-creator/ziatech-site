@@ -4,9 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Heart, ShoppingCart, Star } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 import { useCart } from '@/lib/cart-context'
@@ -34,7 +31,6 @@ export function ProductCard({ product }: { product: Product }) {
         ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
         : 0
 
-    // Use slug if available, otherwise fallback to id
     const productUrl = product.slug ? `/product/${product.slug}` : `/product/${product.id}`
 
     const handleAddToCart = (e: React.MouseEvent) => {
@@ -79,7 +75,7 @@ export function ProductCard({ product }: { product: Product }) {
                 viewport={{ once: true }}
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
-                className="group relative bg-[#0f141c]/90 rounded-2xl overflow-hidden border border-white/10 hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/5 transition-all flex flex-col justify-between"
+                className="group relative bg-[#130f0b]/90 rounded-2xl overflow-hidden border border-white/10 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/10 transition-all flex flex-col justify-between"
             >
                 <Link href={productUrl} className="block">
                     {/* IMAGE CONTAINER */}
@@ -94,7 +90,7 @@ export function ProductCard({ product }: { product: Product }) {
                         {/* BADGES */}
                         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
                             {product.isNew && (
-                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                                <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-orange-500/20 text-orange-400 border border-orange-500/30">
                                     NEW
                                 </span>
                             )}
@@ -120,10 +116,10 @@ export function ProductCard({ product }: { product: Product }) {
 
                     {/* DETAILS */}
                     <div className="p-4 flex-1 flex flex-col">
-                        <div className="text-[11px] font-medium text-cyan-400/80 mb-1 uppercase tracking-wider">
+                        <div className="text-[11px] font-medium text-orange-400/90 mb-1 uppercase tracking-wider">
                             {product.category || 'Component'}
                         </div>
-                        <h3 className="font-semibold text-sm text-gray-100 group-hover:text-cyan-400 transition-colors line-clamp-2 min-h-[2.5rem] leading-snug">
+                        <h3 className="font-semibold text-sm text-gray-100 group-hover:text-orange-400 transition-colors line-clamp-2 min-h-[2.5rem] leading-snug">
                             {product.name}
                         </h3>
 
@@ -150,7 +146,7 @@ export function ProductCard({ product }: { product: Product }) {
                     <button
                         onClick={handleBuyNow}
                         disabled={product.stock === 0}
-                        className="flex-1 py-2 px-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs transition-colors flex items-center justify-center gap-1 shadow-md shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="flex-1 py-2 px-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs transition-colors flex items-center justify-center gap-1 shadow-md shadow-orange-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         {product.stock === 0 ? 'স্টক আউট' : 'অর্ডার করুন'}
                     </button>

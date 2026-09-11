@@ -107,7 +107,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
             placeholder="e.g. তানভীর আহমেদ"
             value={reviewerName}
             onChange={(e) => setReviewerName(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
           />
         </div>
       </div>
@@ -122,14 +122,14 @@ export function ReviewForm({ productId }: ReviewFormProps) {
           placeholder="পণ্যটি কেমন কাজ করছে, কোয়ালিটি কেমন লেগেছে ইত্যাদি শেয়ার করুন..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+          className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="py-2.5 px-5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 text-cyan-400 font-semibold text-xs transition-colors flex items-center gap-2 disabled:opacity-50"
+        className="py-2.5 px-5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 font-semibold text-xs transition-colors flex items-center gap-2 disabled:opacity-50"
       >
         {loading ? (
           <>

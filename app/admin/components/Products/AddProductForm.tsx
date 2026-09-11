@@ -204,13 +204,13 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
   };
 
   return (
-    <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-6 relative overflow-hidden">
+    <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-6 relative overflow-hidden">
       {/* Top highlight bar */}
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-400 to-amber-400" />
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-400 to-amber-400" />
 
       <div>
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Plus className="w-5 h-5 text-cyan-400" />
+          <Plus className="w-5 h-5 text-orange-400" />
           Add New Component
         </h2>
         <p className="text-xs text-slate-400 mt-1">
@@ -236,7 +236,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         {/* Photo Upload Area */}
         <div>
           <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
-            Primary Photo <span className="text-cyan-400">*</span>
+            Primary Photo <span className="text-orange-400">*</span>
           </label>
 
           {previewUrl ? (
@@ -247,7 +247,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
                   type="button"
                   onClick={handleRegenerate}
                   disabled={isAnalyzing}
-                  className="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-cyan-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md transition shadow-lg"
+                  className="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-orange-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md transition shadow-lg"
                   title="Re-run Gemini AI Vision analysis"
                 >
                   {isAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
@@ -266,22 +266,22 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               </div>
 
               {isAnalyzing && (
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center gap-2 text-cyan-300 text-xs font-semibold">
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center gap-2 text-orange-300 text-xs font-semibold">
                   <Sparkles className="w-4 h-4 animate-bounce text-amber-400" />
                   <span>Gemini Vision analyzing component specs...</span>
                 </div>
               )}
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700/80 hover:border-cyan-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
+            <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700/80 hover:border-orange-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
               <div className="flex flex-col items-center justify-center p-4 text-center">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                   <UploadCloud className="w-5 h-5" />
                 </div>
                 <p className="text-sm font-semibold text-slate-200">
                   Click or drag component photo
                 </p>
-                <p className="text-[11px] text-cyan-400/80 flex items-center gap-1 mt-1 font-mono">
+                <p className="text-[11px] text-orange-400/80 flex items-center gap-1 mt-1 font-mono">
                   <Sparkles className="w-3 h-3 text-amber-400" /> Auto-detects specs via Gemini Vision
                 </p>
               </div>
@@ -299,7 +299,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         {/* Product Title */}
         <div>
           <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-            Component Name <span className="text-cyan-400">*</span>
+            Component Name <span className="text-orange-400">*</span>
           </label>
           <input
             type="text"
@@ -307,7 +307,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. ESP32-WROOM-32D Development Board"
             required
-            className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-cyan-400 focus:outline-none"
+            className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-orange-400 focus:outline-none"
           />
         </div>
 
@@ -315,7 +315,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              Price (৳) <span className="text-cyan-400">*</span>
+              Price (৳) <span className="text-orange-400">*</span>
             </label>
             <input
               type="number"
@@ -325,7 +325,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               required
               min="0"
               step="any"
-              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
@@ -340,7 +340,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               placeholder="MSRP / Regular"
               min="0"
               step="any"
-              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
@@ -354,7 +354,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               onChange={(e) => setStock(e.target.value)}
               placeholder="10"
               min="0"
-              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Select or enter category..."
-              className="flex-1 h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="flex-1 h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
             <datalist id="cat-suggestions">
               {existingCategories.map((c) => (
@@ -398,7 +398,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="Key features, applications, and operating parameters..."
-            className="w-full p-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-cyan-400 focus:outline-none resize-none leading-relaxed"
+            className="w-full p-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-orange-400 focus:outline-none resize-none leading-relaxed"
           />
         </div>
 
@@ -409,7 +409,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
             id="featuredToggle"
             checked={isFeatured}
             onChange={(e) => setIsFeatured(e.target.checked)}
-            className="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-slate-700 focus:ring-cyan-400"
+            className="w-4 h-4 rounded text-orange-500 bg-slate-800 border-slate-700 focus:ring-orange-400"
           />
           <label htmlFor="featuredToggle" className="text-xs text-slate-300 font-medium cursor-pointer select-none">
             Highlight on Storefront Homepage (Featured Badge)
@@ -418,7 +418,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
         {/* Upload Status */}
         {isPublishing && (
-          <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 rounded-xl text-xs flex items-center gap-2">
+          <div className="p-3 bg-orange-500/10 border border-orange-500/20 text-orange-300 rounded-xl text-xs flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin shrink-0" />
             <span>{uploadStep || 'Publishing...'}</span>
           </div>
@@ -428,7 +428,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         <button
           type="submit"
           disabled={isPublishing || !title || !price || !selectedFile}
-          className="w-full h-12 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isPublishing ? (
             <>

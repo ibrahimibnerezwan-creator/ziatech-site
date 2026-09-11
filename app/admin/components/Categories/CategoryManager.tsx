@@ -119,9 +119,9 @@ export default function CategoryManager() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
       {/* Create Form */}
-      <div className="lg:col-span-1 bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl space-y-5">
+      <div className="lg:col-span-1 bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl space-y-5">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <Plus className="w-5 h-5 text-cyan-400" />
+          <Plus className="w-5 h-5 text-orange-400" />
           Add Category
         </h2>
 
@@ -141,7 +141,7 @@ export default function CategoryManager() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
             <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">
-              Category Name <span className="text-cyan-400">*</span>
+              Category Name <span className="text-orange-400">*</span>
             </label>
             <input
               type="text"
@@ -149,7 +149,7 @@ export default function CategoryManager() {
               onChange={(e) => setNewName(e.target.value)}
               placeholder="e.g. Microcontrollers"
               required
-              className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
@@ -162,14 +162,14 @@ export default function CategoryManager() {
               value={newImage}
               onChange={(e) => setNewImage(e.target.value)}
               placeholder="https://..."
-              className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-11 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-cyan-500/20"
+            className="w-full h-11 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-orange-500/20"
           >
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Save Category
@@ -179,15 +179,15 @@ export default function CategoryManager() {
 
       {/* Categories List */}
       <div className="lg:col-span-2 space-y-4">
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <FolderOpen className="w-5 h-5 text-cyan-400" />
+            <FolderOpen className="w-5 h-5 text-orange-400" />
             Store Collections ({categories.length})
           </h2>
         </div>
 
         {categories.length === 0 ? (
-          <div className="bg-[#111927] border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
+          <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
             No categories found. Create one using the form on the left.
           </div>
         ) : (
@@ -195,21 +195,21 @@ export default function CategoryManager() {
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="bg-[#111927]/90 border border-slate-800/80 hover:border-cyan-500/30 rounded-2xl p-4 backdrop-blur-xl transition flex items-center justify-between gap-3 group"
+                className="bg-[#18110b]/90 border border-slate-800/80 hover:border-orange-500/30 rounded-2xl p-4 backdrop-blur-xl transition flex items-center justify-between gap-3 group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 overflow-hidden relative shrink-0 flex items-center justify-center text-slate-600">
                     {cat.image ? (
                       <Image src={cat.image} alt={cat.name} fill className="object-cover" />
                     ) : (
-                      <FolderOpen className="w-6 h-6 text-cyan-500/40" />
+                      <FolderOpen className="w-6 h-6 text-orange-500/40" />
                     )}
                   </div>
 
                   <div className="min-w-0">
                     <h3 className="font-bold text-white text-sm truncate">{cat.name}</h3>
                     <p className="text-[11px] text-slate-400 font-mono">
-                      /{cat.slug} • <span className="text-cyan-400 font-semibold">{cat.productCount} items</span>
+                      /{cat.slug} • <span className="text-orange-400 font-semibold">{cat.productCount} items</span>
                     </p>
                   </div>
                 </div>
@@ -243,9 +243,9 @@ export default function CategoryManager() {
       {/* Edit Modal */}
       {editingId && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#111927] border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl relative space-y-4">
+          <div className="bg-[#18110b] border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl relative space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Edit className="w-4 h-4 text-cyan-400" />
+              <Edit className="w-4 h-4 text-orange-400" />
               Edit Category
             </h3>
 
@@ -257,7 +257,7 @@ export default function CategoryManager() {
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   required
-                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
                 />
               </div>
 
@@ -267,7 +267,7 @@ export default function CategoryManager() {
                   type="url"
                   value={editImage}
                   onChange={(e) => setEditImage(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
                 />
               </div>
 
@@ -282,7 +282,7 @@ export default function CategoryManager() {
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="px-5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2"
+                  className="px-5 py-2 bg-orange-500 hover:bg-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2"
                 >
                   {isSavingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   Save

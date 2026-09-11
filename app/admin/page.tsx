@@ -38,8 +38,8 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0f18] flex flex-col items-center justify-center gap-3 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+      <div className="min-h-screen bg-[#0f0b08] flex flex-col items-center justify-center gap-3 text-slate-400">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-400" />
         <span className="text-xs font-mono">Verifying ZiaTech terminal credentials...</span>
       </div>
     );

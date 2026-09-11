@@ -62,10 +62,10 @@ export default function LabelManager() {
   return (
     <div className="space-y-6">
       {/* Control Bar (Hidden when printing) */}
-      <div className="print:hidden bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="print:hidden bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Tag className="w-5 h-5 text-cyan-400" />
+            <Tag className="w-5 h-5 text-orange-400" />
             Courier Packing Slips & Shipping Labels
           </h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -83,7 +83,7 @@ export default function LabelManager() {
           <button
             onClick={handlePrint}
             disabled={selectedOrders.length === 0}
-            className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-2 disabled:opacity-50 shadow-lg shadow-cyan-500/20"
+            className="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-2 disabled:opacity-50 shadow-lg shadow-orange-500/20"
           >
             <Printer className="w-4 h-4" /> Print {selectedOrders.length} Label(s)
           </button>
@@ -91,7 +91,7 @@ export default function LabelManager() {
       </div>
 
       {/* Order Selector List (Hidden when printing) */}
-      <div className="print:hidden bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl space-y-3">
+      <div className="print:hidden bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl space-y-3">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
           Select Orders to Print ({selectedOrders.length} selected)
         </h3>
@@ -108,11 +108,11 @@ export default function LabelManager() {
                   onClick={() => toggleSelect(order.id)}
                   className={`p-3 rounded-2xl border cursor-pointer transition flex items-center gap-3 select-none ${
                     isSelected
-                      ? 'bg-cyan-950/20 border-cyan-500/40 text-white'
+                      ? 'bg-orange-950/20 border-orange-500/40 text-white'
                       : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700'
                   }`}
                 >
-                  <button type="button" className="text-cyan-400 shrink-0">
+                  <button type="button" className="text-orange-400 shrink-0">
                     {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4 text-slate-600" />}
                   </button>
                   <div className="min-w-0 text-xs">

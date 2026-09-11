@@ -11,11 +11,11 @@ export async function CategoryGrid() {
     const mappedCategories = dbCategories.map((cat, i) => {
         // Pattern for the grid layout (similar to the hardcoded one)
         let className = 'md:col-span-1 md:row-span-1'
-        let gradient = 'from-blue-500/20 to-cyan-500/20'
+        let gradient = 'from-blue-500/20 to-orange-500/20'
 
         if (i % 4 === 0) {
             className = 'md:col-span-2 md:row-span-2'
-            gradient = 'from-blue-500/20 to-cyan-500/20'
+            gradient = 'from-blue-500/20 to-orange-500/20'
         } else if (i % 4 === 1) {
             gradient = 'from-purple-500/20 to-pink-500/20'
         } else if (i % 4 === 2) {

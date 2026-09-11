@@ -129,10 +129,10 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
 
   return (
     <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#111927] border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-[#18110b] border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-cyan-400" />
+            <ImageIcon className="w-5 h-5 text-orange-400" />
             Add Product Photo
           </h3>
           <button
@@ -165,9 +165,9 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-700/80 hover:border-cyan-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
+            <label className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed border-slate-700/80 hover:border-orange-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
               <div className="flex flex-col items-center justify-center p-4 text-center">
-                <UploadCloud className="w-8 h-8 text-slate-400 group-hover:text-cyan-400 mb-2 transition-colors" />
+                <UploadCloud className="w-8 h-8 text-slate-400 group-hover:text-orange-400 mb-2 transition-colors" />
                 <p className="text-sm font-semibold text-slate-300 group-hover:text-white">
                   Select photo to add
                 </p>
@@ -186,7 +186,7 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
           )}
 
           {isUploading && (
-            <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-xs text-cyan-300 flex items-center gap-2">
+            <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl text-xs text-orange-300 flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin shrink-0" />
               <span>{stepMsg || 'Uploading...'}</span>
             </div>
@@ -206,7 +206,7 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
             type="button"
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
-            className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs transition disabled:opacity-50 flex items-center gap-1.5"
+            className="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold rounded-xl text-xs transition disabled:opacity-50 flex items-center gap-1.5"
           >
             {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
             Attach Photo

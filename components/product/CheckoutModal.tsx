@@ -123,13 +123,13 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
       onClick={onClose}
     >
       <div
-        className="bg-[#0f141c] border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden relative my-auto animate-in fade-in zoom-in-95 duration-200"
+        className="bg-[#120e0b] border border-orange-500/20 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden relative my-auto animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="bg-gradient-to-r from-[#141b26] to-[#1a2332] p-5 sm:p-6 border-b border-white/10 flex items-center justify-between relative">
+        <div className="bg-gradient-to-r from-[#1c140d] to-[#251a10] p-5 sm:p-6 border-b border-orange-500/15 flex items-center justify-between relative">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold">
+            <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 font-bold">
               <Zap className="w-5 h-5" />
             </div>
             <div>
@@ -157,7 +157,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
               <h3 className="text-2xl font-bold text-white mb-2">অর্ডার সফলভাবে সম্পন্ন হয়েছে!</h3>
               <p className="text-sm text-gray-300 max-w-md mb-6 leading-relaxed">
                 ধন্যবাদ! আপনার ইনভয়েস নম্বর:{" "}
-                <span className="font-mono font-bold text-cyan-400">{successData.invoice}</span>। আমাদের ডেলিভারি পার্টনার 
+                <span className="font-mono font-bold text-orange-400">{successData.invoice}</span>। আমাদের ডেলিভারি পার্টনার 
                 <strong className="text-white"> Steadfast Courier</strong> এর মাধ্যমে আপনার পার্সেলটি দ্রুত পাঠানো হচ্ছে।
               </p>
 
@@ -168,7 +168,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                 </div>
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>সর্বমোট প্রদেয়:</span>
-                  <span className="text-cyan-400 font-bold font-mono">৳{successData.total.toLocaleString()}</span>
+                  <span className="text-orange-400 font-bold font-mono">৳{successData.total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>পেমেন্ট মোড:</span>
@@ -217,7 +217,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-white truncate">{product.name}</p>
-                    <p className="text-cyan-400 font-bold font-mono text-base mt-0.5">
+                    <p className="text-orange-400 font-bold font-mono text-base mt-0.5">
                       ৳{product.price.toLocaleString()}
                     </p>
                   </div>
@@ -264,7 +264,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                         onClick={() => setDeliveryZone(z.key)}
                         className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition-all ${
                           deliveryZone === z.key
-                            ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-400 font-bold shadow-lg shadow-cyan-500/10"
+                            ? "bg-orange-500/15 border-orange-500/50 text-orange-400 font-bold shadow-lg shadow-orange-500/10"
                             : "bg-white/[0.03] border-white/5 text-gray-400 hover:border-white/20 hover:text-white"
                         }`}
                       >
@@ -287,7 +287,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                   </div>
                   <div className="flex justify-between items-baseline pt-2 border-t border-white/10 font-bold text-sm">
                     <span className="text-white">সর্বমোট মূল্য</span>
-                    <span className="text-cyan-400 font-mono text-lg">৳{grandTotal.toLocaleString()}</span>
+                    <span className="text-orange-400 font-mono text-lg">৳{grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -299,7 +299,6 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
               {/* Customer Form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
-                {/* Honeypot */}
                 <input
                   type="text"
                   name="website"
@@ -330,7 +329,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                     placeholder="যেমন: মোঃ সাকিব রহমান"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -344,7 +343,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                     placeholder="যেমন: 017XXXXXXXX"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -358,7 +357,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                     placeholder="যেমন: বাসা ১২, রোড ৪, সেক্টর ৭, উত্তরা, ঢাকা"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
                   />
                 </div>
 
@@ -399,7 +398,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                       onClick={() => setFormData({ ...formData, paymentMethod: "nagad" })}
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         formData.paymentMethod === "nagad"
-                          ? "bg-orange-500/10 border-orange-500/50 text-orange-400 font-bold"
+                          ? "bg-orange-500/15 border-orange-500/50 text-orange-400 font-bold"
                           : "bg-white/[0.03] border-white/5 text-gray-400 hover:border-white/20"
                       }`}
                     >
@@ -428,7 +427,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold text-sm tracking-wide transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
                 >
                   {loading ? (
                     <>

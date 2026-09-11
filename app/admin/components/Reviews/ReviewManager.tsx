@@ -98,10 +98,10 @@ export default function ReviewManager() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#111927] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
+      <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex justify-between items-center">
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-cyan-400" />
+            <MessageSquare className="w-5 h-5 text-orange-400" />
             Customer Feedback Moderation
           </h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -117,7 +117,7 @@ export default function ReviewManager() {
       </div>
 
       {reviews.length === 0 ? (
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-16 text-center text-slate-500">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-16 text-center text-slate-500">
           <p className="text-sm">No customer reviews submitted yet.</p>
         </div>
       ) : (
@@ -132,14 +132,14 @@ export default function ReviewManager() {
             return (
               <div
                 key={rev.id}
-                className="bg-[#111927]/90 border border-slate-800/80 hover:border-cyan-500/30 rounded-3xl p-5 md:p-6 backdrop-blur-xl transition shadow-lg space-y-4"
+                className="bg-[#18110b]/90 border border-slate-800/80 hover:border-orange-500/30 rounded-3xl p-5 md:p-6 backdrop-blur-xl transition shadow-lg space-y-4"
               >
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   <div>
                     <div className="flex items-center gap-2.5">
                       <span className="font-bold text-white text-sm">{rev.reviewerName}</span>
                       <span className="text-slate-600">•</span>
-                      <span className="text-xs text-cyan-400 font-medium">
+                      <span className="text-xs text-orange-400 font-medium">
                         Regarding: {rev.productName || 'Hardware Component'}
                       </span>
                     </div>
@@ -211,8 +211,8 @@ export default function ReviewManager() {
 
                 {/* Admin Reply */}
                 {rev.adminReply ? (
-                  <div className="bg-cyan-950/20 border border-cyan-900/40 rounded-2xl p-3.5 text-xs text-cyan-200">
-                    <span className="font-bold text-cyan-400 uppercase text-[10px] tracking-wider block mb-1">
+                  <div className="bg-orange-950/20 border border-cyan-900/40 rounded-2xl p-3.5 text-xs text-orange-200">
+                    <span className="font-bold text-orange-400 uppercase text-[10px] tracking-wider block mb-1">
                       Official ZiaTech Response:
                     </span>
                     <p>{rev.adminReply}</p>
@@ -226,12 +226,12 @@ export default function ReviewManager() {
                       onChange={(e) =>
                         setReplyTextMap((prev) => ({ ...prev, [rev.id]: e.target.value }))
                       }
-                      className="flex-1 h-9 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                      className="flex-1 h-9 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:border-orange-400 focus:outline-none"
                     />
                     <button
                       onClick={() => handleSendReply(rev.id)}
                       disabled={updatingId === rev.id || !replyTextMap[rev.id]}
-                      className="px-4 h-9 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition disabled:opacity-40"
+                      className="px-4 h-9 bg-orange-500 hover:bg-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition disabled:opacity-40"
                     >
                       <Send className="w-3.5 h-3.5" /> Reply
                     </button>

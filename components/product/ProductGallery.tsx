@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Maximize2 } from "lucide-react";
 
 interface ProductGalleryProps {
   images: Array<{ id: string; url: string }>;
@@ -67,7 +66,7 @@ export function ProductGallery({
                 onClick={() => setSelectedIndex(idx)}
                 className={`relative w-20 h-20 rounded-xl overflow-hidden bg-white/[0.02] border transition-all shrink-0 p-1 flex items-center justify-center ${
                   isSelected
-                    ? "border-cyan-500 shadow-md shadow-cyan-500/20 ring-2 ring-cyan-500/30"
+                    ? "border-orange-500 shadow-md shadow-orange-500/20 ring-2 ring-orange-500/30"
                     : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
                 }`}
               >

@@ -134,7 +134,7 @@ export default function ProductList({
   return (
     <div className="lg:col-span-2 space-y-6">
       {/* Top Filter Bar */}
-      <div className="bg-[#111927] border border-slate-800 rounded-3xl p-4 md:p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-4 md:p-6 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -142,7 +142,7 @@ export default function ProductList({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search component name, category..."
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-cyan-400 focus:outline-none"
+            className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-orange-400 focus:outline-none"
           />
         </div>
 
@@ -150,7 +150,7 @@ export default function ProductList({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-200 text-xs font-semibold focus:border-cyan-400 focus:outline-none w-full sm:w-auto"
+            className="h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-200 text-xs font-semibold focus:border-orange-400 focus:outline-none w-full sm:w-auto"
           >
             <option value="ALL">All Categories ({products.length})</option>
             {existingCategories.map((c) => (
@@ -164,7 +164,7 @@ export default function ProductList({
 
       {/* Product List Cards */}
       {filteredProducts.length === 0 ? (
-        <div className="bg-[#111927] border border-slate-800 rounded-3xl p-12 text-center text-slate-400">
+        <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-12 text-center text-slate-400">
           <p className="text-sm">No components match your search filter.</p>
         </div>
       ) : (
@@ -176,7 +176,7 @@ export default function ProductList({
             return (
               <div
                 key={product.id}
-                className="bg-[#111927]/90 border border-slate-800/80 hover:border-cyan-500/30 rounded-2xl p-4 md:p-5 backdrop-blur-xl transition-all duration-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
+                className="bg-[#18110b]/90 border border-slate-800/80 hover:border-orange-500/30 rounded-2xl p-4 md:p-5 backdrop-blur-xl transition-all duration-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
               >
                 {/* Left: Thumbnail & Details */}
                 <div className="flex items-center gap-4 min-w-0">
@@ -197,10 +197,10 @@ export default function ProductList({
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors line-clamp-1">
+                      <h3 className="font-bold text-white text-sm group-hover:text-orange-300 transition-colors line-clamp-1">
                         {product.name}
                       </h3>
-                      <span className="px-2 py-0.5 bg-slate-800 text-cyan-400 text-[10px] font-mono rounded-full border border-slate-700/60">
+                      <span className="px-2 py-0.5 bg-slate-800 text-orange-400 text-[10px] font-mono rounded-full border border-slate-700/60">
                         {product.category}
                       </span>
                     </div>
@@ -236,14 +236,14 @@ export default function ProductList({
                     className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
                     title="View & manage photos"
                   >
-                    <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                    <ImageIcon className="w-3.5 h-3.5 text-orange-400" />
                     <span>Photos ({imgCount})</span>
                   </button>
 
                   {/* Add Photo Button */}
                   <button
                     onClick={() => onAddMediaClicked(product.id)}
-                    className="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-cyan-400 rounded-xl transition"
+                    className="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-orange-400 rounded-xl transition"
                     title="Add another photo"
                   >
                     <Plus className="w-4 h-4" />
@@ -287,7 +287,7 @@ export default function ProductList({
       {/* Quick Edit Modal */}
       {editingProduct && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#111927] border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#18110b] border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Edit className="w-5 h-5 text-amber-400" />
               Edit Component Details
@@ -301,7 +301,7 @@ export default function ProductList({
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   required
-                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
                 />
               </div>
 
@@ -314,7 +314,7 @@ export default function ProductList({
                     onChange={(e) => setEditPrice(e.target.value)}
                     required
                     step="any"
-                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -325,7 +325,7 @@ export default function ProductList({
                     onChange={(e) => setEditComparePrice(e.target.value)}
                     step="any"
                     placeholder="MSRP"
-                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -335,7 +335,7 @@ export default function ProductList({
                     value={editStock}
                     onChange={(e) => setEditStock(e.target.value)}
                     required
-                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
                   />
                 </div>
               </div>
@@ -347,7 +347,7 @@ export default function ProductList({
                   list="edit-cat-list"
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
                 />
                 <datalist id="edit-cat-list">
                   {existingCategories.map((c) => (
@@ -362,7 +362,7 @@ export default function ProductList({
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                   rows={3}
-                  className="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none resize-none"
+                  className="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none resize-none"
                 />
               </div>
 
@@ -372,7 +372,7 @@ export default function ProductList({
                   id="editFeatured"
                   checked={editFeatured}
                   onChange={(e) => setEditFeatured(e.target.checked)}
-                  className="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-slate-700"
+                  className="w-4 h-4 rounded text-orange-500 bg-slate-800 border-slate-700"
                 />
                 <label htmlFor="editFeatured" className="text-xs text-slate-300 cursor-pointer select-none">
                   Highlight on Storefront (Featured Badge)
@@ -390,7 +390,7 @@ export default function ProductList({
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-2"
+                  className="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-2"
                 >
                   {isSavingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   Save Changes

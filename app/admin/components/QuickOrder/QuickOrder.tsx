@@ -91,12 +91,12 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-[#111927] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-6 relative overflow-hidden">
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-teal-400 to-cyan-400" />
+    <div className="max-w-2xl mx-auto bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-6 relative overflow-hidden">
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 to-orange-400" />
 
       <div>
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <ShoppingCart className="w-5 h-5 text-cyan-400" />
+          <ShoppingCart className="w-5 h-5 text-orange-400" />
           Quick Order Entry
         </h2>
         <p className="text-xs text-slate-400 mt-1">
@@ -122,13 +122,13 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="sm:col-span-2">
             <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1.5">
-              Select Component <span className="text-cyan-400">*</span>
+              Select Component <span className="text-orange-400">*</span>
             </label>
             <select
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
               required
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             >
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -145,7 +145,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
               min="1"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1.5">
-              Customer Name <span className="text-cyan-400">*</span>
+              Customer Name <span className="text-orange-400">*</span>
             </label>
             <input
               type="text"
@@ -162,13 +162,13 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="e.g. Tanvir Ahmed"
               required
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1.5">
-              Mobile Number (01X) <span className="text-cyan-400">*</span>
+              Mobile Number (01X) <span className="text-orange-400">*</span>
             </label>
             <input
               type="tel"
@@ -176,7 +176,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
               onChange={(e) => setCustomerPhone(e.target.value)}
               placeholder="01712345678"
               required
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         {/* Address */}
         <div>
           <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1.5">
-            Delivery Street Address <span className="text-cyan-400">*</span>
+            Delivery Street Address <span className="text-orange-400">*</span>
           </label>
           <input
             type="text"
@@ -192,7 +192,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
             onChange={(e) => setAddress(e.target.value)}
             placeholder="House #, Road #, Area / Thana"
             required
-            className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+            className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
           />
         </div>
 
@@ -205,7 +205,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
               value={shippingCity}
               onChange={(e) => setShippingCity(e.target.value)}
               placeholder="e.g. Dhaka, Chittagong, Sylhet"
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
           </div>
 
@@ -214,7 +214,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
             <select
               value={deliveryCharge}
               onChange={(e) => setDeliveryCharge(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none font-mono"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none font-mono"
             >
               <option value="60">Inside Dhaka (৳60)</option>
               <option value="100">Dhaka Suburbs (৳100)</option>
@@ -231,7 +231,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-cyan-400 focus:outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
             >
               <option value="cod">Cash on Delivery (COD)</option>
               <option value="bkash">bKash</option>
@@ -247,7 +247,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
                 value={trxId}
                 onChange={(e) => setTrxId(e.target.value)}
                 placeholder="e.g. 9J28DAK1"
-                className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                className="w-full h-11 px-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
             </div>
           )}
@@ -256,14 +256,14 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         {/* Calculation summary */}
         <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-2xl flex justify-between items-center text-xs">
           <span className="text-slate-400">Total payable by customer:</span>
-          <span className="text-lg font-mono font-bold text-cyan-400">৳{totalAmount.toLocaleString()}</span>
+          <span className="text-lg font-mono font-bold text-orange-400">৳{totalAmount.toLocaleString()}</span>
         </div>
 
         {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-12 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-sm rounded-xl transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isSubmitting ? (
             <>

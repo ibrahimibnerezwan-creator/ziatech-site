@@ -98,7 +98,7 @@ export function ProductActions({ product }: ProductActionsProps) {
           {/* Instant Buy Now Button */}
           <Button
             size="lg"
-            className="flex-1 h-11 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm tracking-wide rounded-xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
+            className="flex-1 h-11 bg-orange-500 hover:bg-orange-400 text-black font-bold text-sm tracking-wide rounded-xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 transition-all"
             disabled={product.stock === 0}
             onClick={() => setCheckoutOpen(true)}
           >
@@ -130,7 +130,7 @@ export function ProductActions({ product }: ProductActionsProps) {
 
           <Button
             variant="outline"
-            className="w-10 h-10 p-0 border-white/10 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-cyan-400 rounded-xl"
+            className="w-10 h-10 p-0 border-white/10 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-orange-400 rounded-xl"
             onClick={handleShare}
             title="Share"
           >

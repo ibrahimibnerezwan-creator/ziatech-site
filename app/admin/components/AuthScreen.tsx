@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Cpu, Lock, ArrowRight, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
+import { Hexagon, Lock, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -42,22 +42,22 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f18] text-slate-100 flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      {/* Subtle background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0f0b08] text-slate-100 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Subtle warm ember glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-[#111927]/90 border border-slate-800/80 rounded-3xl p-8 md:p-10 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+        <div className="bg-[#18110b]/90 border border-orange-500/20 rounded-3xl p-8 md:p-10 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
           {/* Top highlight bar */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-400 to-amber-400" />
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-600" />
 
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
-              <Cpu className="w-8 h-8" strokeWidth={1.75} />
+            <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/10">
+              <Hexagon className="w-8 h-8" strokeWidth={1.75} />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center justify-center gap-2">
-              ZiaTech <span className="text-cyan-400">HQ</span>
+              ZiaTech <span className="text-orange-500">HQ</span>
             </h1>
             <p className="text-slate-400 text-xs mt-1 font-medium">
               Maker Store Management & Logistics Terminal
@@ -79,7 +79,7 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
                   required
                   autoFocus
                   disabled={isLoading}
-                  className="pl-10 h-12 bg-slate-900/80 border-slate-700/80 text-white rounded-xl focus:border-cyan-400 focus:ring-cyan-400/20 text-sm"
+                  className="pl-10 h-12 bg-black/40 border-white/10 text-white rounded-xl focus:border-orange-500 focus:ring-orange-500/20 text-sm"
                 />
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 mt-2"
+              className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 mt-2"
             >
               {isLoading ? (
                 <>
@@ -107,9 +107,9 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-800/80 text-center">
+          <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 font-mono">
-              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
               <span>Direct Fast Auth • Turso DB • Steadfast API</span>
             </div>
           </div>
