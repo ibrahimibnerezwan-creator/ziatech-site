@@ -93,10 +93,10 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
     const s = status.toUpperCase();
     switch (s) {
       case 'PENDING':
-        return <span className="text-xs text-amber-300">অর্ডার গ্রহণ করা হয়েছে (Awaiting confirmation)</span>;
+        return <span className="text-xs text-amber-800">অর্ডার গ্রহণ করা হয়েছে (Awaiting confirmation)</span>;
       case 'DELIVERED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-700">
             <CheckCircle2 className="w-3.5 h-3.5" /> ডেলিভার্ড (Delivered)
           </span>
         );
@@ -108,13 +108,13 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
         );
       case 'CANCELLED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 border border-red-500/30 text-red-400">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 border border-red-500/30 text-red-700">
             <XCircle className="w-3.5 h-3.5" /> বাতিল (Cancelled)
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-500/10 border border-orange-500/30 text-orange-400">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-500/10 border border-orange-500/30 text-primary-400">
             <Clock className="w-3.5 h-3.5" /> প্রসেসিং চলছে (Processing)
           </span>
         );
@@ -122,43 +122,41 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 bg-[#0c0906] text-white">
+    <div className="min-h-[60vh] pt-10 pb-16 px-4 bg-bg-elevated text-text-primary">
       <div className="container mx-auto max-w-4xl relative">
         {/* Ambient Glow */}
-        <div className="absolute -top-24 -left-24 w-72 h-72 bg-orange-500/10 blur-[130px] pointer-events-none" />
-        <div className="absolute top-1/2 -right-24 w-72 h-72 bg-amber-500/10 blur-[130px] pointer-events-none" />
 
         {/* Header Title */}
         <div className="mb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-primary-400 text-xs font-bold uppercase tracking-wider mb-3">
             <Truck className="w-3.5 h-3.5" /> অর্ডার ট্র্যাকিং ও হিস্ট্রি
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            অর্ডার ট্র্যাক করুন <span className="text-orange-500">/ Track Order</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
+            অর্ডার ট্র্যাক করুন <span className="text-primary-400">/ Track Order</span>
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="text-text-secondary text-sm mt-1">
             আপনার মোবাইল নম্বর এবং সম্পূর্ণ অর্ডার আইডি দিয়ে সরাসরি বর্তমান স্ট্যাটাস জানুন।
           </p>
         </div>
 
         {/* Search / Track Box */}
-        <div className="bg-[#140f0a] border border-orange-500/20 rounded-2xl p-4 sm:p-6 mb-8 shadow-xl">
+        <div className="bg-bg-elevated border border-orange-500/20 rounded-2xl p-4 sm:p-6 mb-8 shadow-sm">
           <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <Search className="w-5 h-5 text-text-secondary absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 aria-label="Full order ID" placeholder="Full order ID from your confirmation"
-                className="w-full pl-12 pr-4 py-3.5 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full pl-12 pr-4 py-3.5 bg-bg-primary border border-line rounded-xl text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500 transition-colors"
               />
             </div>
-            <input aria-label="Order phone number" type="tel" required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Order phone number" className="min-w-0 px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white" />
+            <input aria-label="Order phone number" type="tel" required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Order phone number" className="min-w-0 px-4 py-3 bg-bg-primary border border-line rounded-xl text-text-primary" />
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+              className="px-6 py-3.5 bg-primary-500 hover:bg-primary-600 text-black font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-none active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
@@ -180,10 +178,10 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
 
         {/* Orders List */}
         {displayedOrders.length === 0 ? (
-          <div className="bg-[#140f0a] border border-white/5 rounded-2xl p-12 text-center">
-            <Package className="w-16 h-16 text-orange-500/20 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">কোনো অর্ডার পাওয়া যায়নি</h3>
-            <p className="text-gray-400 text-sm max-w-sm mx-auto mb-6">
+          <div className="bg-bg-elevated border border-line rounded-2xl p-12 text-center">
+            <Package className="w-16 h-16 text-primary-400/20 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-primary mb-2">কোনো অর্ডার পাওয়া যায়নি</h3>
+            <p className="text-text-secondary text-sm max-w-sm mx-auto mb-6">
               আপনার সঠিক ফোন নম্বর এবং সম্পূর্ণ অর্ডার আইডি দিয়ে উপরে সার্চ করুন, অথবা আমাদের স্টোর থেকে নতুন অর্ডার করুন।
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -196,7 +194,7 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
               {!isLoggedIn && (
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-medium text-xs uppercase tracking-wider rounded-xl border border-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-bg-elevated hover:bg-bg-elevated text-text-primary font-medium text-xs uppercase tracking-wider rounded-xl border border-line transition-colors"
                 >
                   লগইন করুন
                 </Link>
@@ -215,23 +213,23 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
               return (
                 <div
                   key={order.id}
-                  className="bg-[#140f0a] border border-orange-500/20 hover:border-orange-500/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 shadow-lg relative overflow-hidden"
+                  className="bg-bg-elevated border border-orange-500/20 hover:border-orange-500/40 rounded-2xl p-5 sm:p-6 transition-all duration-300 shadow-none relative overflow-hidden"
                 >
                   {/* Top Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 mb-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-primary-400">
                         <Package className="w-5 h-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-white text-base">
+                          <span className="tabular-nums font-bold text-text-primary text-base">
                             #{order.shortId || order.id.slice(0, 8).toUpperCase()}
                           </span>
-                          <span className="text-xs text-gray-400">• {formattedDate}</span>
+                          <span className="text-xs text-text-secondary">• {formattedDate}</span>
                         </div>
                         {order.customerName && (
-                          <p className="text-xs text-gray-400">গ্রাহক: {order.customerName}</p>
+                          <p className="text-xs text-text-secondary">গ্রাহক: {order.customerName}</p>
                         )}
                       </div>
                     </div>
@@ -243,24 +241,24 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
                     {order.items.map((item, idx) => (
                       <div
                         key={item.id || idx}
-                        className="flex items-center justify-between gap-3 text-sm bg-black/30 p-2.5 rounded-xl border border-white/5"
+                        className="flex items-center justify-between gap-3 text-sm bg-bg-primary p-2.5 rounded-xl border border-line"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           {item.image ? (
-                            <div className="w-10 h-10 rounded-lg overflow-hidden relative bg-black/60 shrink-0 border border-white/10">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden relative bg-bg-primary shrink-0 border border-line">
                               <Image src={item.image} alt={item.name} fill className="object-cover" />
                             </div>
                           ) : (
-                            <div className="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
+                            <div className="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-primary-400 shrink-0">
                               <Package className="w-4 h-4" />
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="text-white text-xs font-semibold truncate">{item.name}</p>
-                            <p className="text-gray-400 text-[11px]">পরিমাণ: {item.quantity} টি</p>
+                            <p className="text-text-primary text-xs font-semibold truncate">{item.name}</p>
+                            <p className="text-text-secondary text-[11px]">পরিমাণ: {item.quantity} টি</p>
                           </div>
                         </div>
-                        <span className="font-mono font-bold text-orange-400 text-xs shrink-0">
+                        <span className="tabular-nums font-bold text-primary-400 text-xs shrink-0">
                           ৳{(item.price * item.quantity).toLocaleString()}
                         </span>
                       </div>
@@ -268,17 +266,17 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
                   </div>
 
                   {/* Pricing & Steadfast Courier Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-white/10 text-xs">
+                  <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-line text-xs">
                     <div className="flex flex-wrap items-center gap-4">
                       <div>
-                        <span className="text-gray-400 block text-[10px] uppercase">সর্বমোট প্রদেয়</span>
-                        <span className="text-orange-400 font-bold font-mono text-base">
+                        <span className="text-text-secondary block text-[10px] uppercase">সর্বমোট প্রদেয়</span>
+                        <span className="text-primary-400 font-bold tabular-nums text-base">
                           ৳{order.total.toLocaleString()}
                         </span>
                       </div>
                       <div>
-                        <span className="text-gray-400 block text-[10px] uppercase">পেমেন্ট মোড</span>
-                        <span className="text-white font-medium uppercase">{order.paymentMethod || 'COD'}</span>
+                        <span className="text-text-secondary block text-[10px] uppercase">পেমেন্ট মোড</span>
+                        <span className="text-text-primary font-medium uppercase">{order.paymentMethod || 'COD'}</span>
                       </div>
                     </div>
 
@@ -288,20 +286,20 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
                           href={`https://steadfast.com.bd/tracking/${order.courierTrackingId}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-300 font-semibold transition-colors text-xs"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-primary-400 font-semibold transition-colors text-xs"
                         >
                           <Truck className="w-3.5 h-3.5" /> Steadfast ট্র্যাক ({order.courierTrackingId})
                           <ExternalLink className="w-3 h-3 ml-0.5" />
                         </a>
                       ) : (
-                        <span className="text-gray-500 italic text-[11px]">ডিসপ্যাচের অপেক্ষায়</span>
+                        <span className="text-text-muted italic text-[11px]">ডিসপ্যাচের অপেক্ষায়</span>
                       )}
 
                       <a
                         href={`https://wa.me/${support}?text=${encodeURIComponent(`Hello Zia's Tech Shop! I want to check my order #${order.shortId || order.id.slice(0, 8)}.`)}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 font-semibold transition-colors text-xs"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-700 font-semibold transition-colors text-xs"
                       >
                         <MessageCircle className="w-3.5 h-3.5" /> সাহায্য নিন
                       </a>

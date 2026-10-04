@@ -1,246 +1,107 @@
-"use client"
+'use client'
 
-import React, { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X, Package } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { usePathname, useRouter } from 'next/navigation'
+import { Search, ShoppingBag, UserRound, Menu, X, Package, Heart, ArrowUpRight, ChevronDown, Truck } from 'lucide-react'
 import { useCart } from '@/lib/cart-context'
 import { logoutAction } from '@/app/auth/actions'
+import { Brand } from './brand'
 
 interface HeaderClientProps {
-    categories: Array<{ id: string; name: string; slug: string }>
-    user?: { id: string; name: string } | null
+  categories: Array<{ id: string; name: string; slug: string }>
+  user?: { id: string; name: string } | null
+  phone: string
 }
 
-export function HeaderClient({ categories, user }: HeaderClientProps) {
-    const [isSearchFocused, setIsSearchFocused] = useState(false)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-    const [searchQuery, setSearchQuery] = useState('')
-    const [mobileSearchQuery, setMobileSearchQuery] = useState('')
-    const router = useRouter()
-    const { totalItems } = useCart()
+export function HeaderClient({ categories, user, phone }: HeaderClientProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [userOpen, setUserOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const accountRef = useRef<HTMLDivElement>(null)
+  const menuButton = useRef<HTMLButtonElement>(null)
+  const router = useRouter()
+  const pathname = usePathname()
+  const { totalItems } = useCart()
 
-    function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>, query: string) {
-        e.preventDefault()
-        const q = query.trim()
-        if (!q) return
-        setIsMobileMenuOpen(false)
-        router.push(`/category/all?q=${encodeURIComponent(q)}`)
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        if (menuOpen) menuButton.current?.focus()
+        if (userOpen) accountRef.current?.querySelector('button')?.focus()
+        setMenuOpen(false)
+        setUserOpen(false)
+      }
     }
+    function onOutside(event: MouseEvent) {
+      if (accountRef.current && !accountRef.current.contains(event.target as Node)) setUserOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('click', onOutside)
+    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('click', onOutside) }
+  }, [menuOpen, userOpen])
 
-    // Take up to 5 categories for the top nav
-    const topCategories = categories.slice(0, 5)
+  function search(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const term = query.trim()
+    if (!term) return
+    setMenuOpen(false)
+    router.push(`/category/all?q=${encodeURIComponent(term)}`)
+  }
+  async function logout() {
+    setUserOpen(false)
+    setMenuOpen(false)
+    await logoutAction()
+    window.location.href = '/'
+  }
 
-    return (
-        <>
-            {/* DESKTOP NAV */}
-            <nav className="hidden lg:flex items-center space-x-5">
-                {topCategories.map((item) => (
-                    <Link
-                        key={item.id}
-                        href={`/category/${item.slug}`}
-                        className="text-sm font-medium text-text-secondary hover:text-white transition-colors relative group"
-                    >
-                        {item.name}
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-400 transition-all duration-300 group-hover:w-full rounded-full" />
-                    </Link>
-                ))}
-            </nav>
+  const links = [
+    { href: '/category/all', label: 'All products' },
+    ...categories.slice(0, 4).map(c => ({ href: `/category/${c.slug}`, label: c.name })),
+    { href: '/blog', label: 'Project guides' },
+  ]
 
-            {/* SEARCH BAR */}
-            <form
-                onSubmit={(e) => handleSearchSubmit(e, searchQuery)}
-                className="hidden md:block relative w-64 xl:w-80 mx-4"
-            >
-                <motion.div
-                    animate={{ scale: isSearchFocused ? 1.02 : 1 }}
-                    className="relative"
-                >
-                    <Input
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search components, kits, modules..."
-                        className="pl-10 bg-bg-void/60 border-primary-700/30 text-white placeholder:text-text-muted rounded-full focus:ring-primary-500/40 focus:border-primary-500/40"
-                        onFocus={() => setIsSearchFocused(true)}
-                        onBlur={() => setIsSearchFocused(false)}
-                    />
-                    <button type="submit" aria-label="Search" className="absolute left-3 top-2.5 text-text-muted hover:text-white">
-                        <Search className="w-4 h-4" />
-                    </button>
-
-                    <AnimatePresence>
-                        {isSearchFocused && (
-                            <motion.div
-                                initial={false}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 -z-10 bg-primary-500/15 blur-xl rounded-full"
-                            />
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-            </form>
-
-            {/* ACTIONS */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
-                <Link
-                    href="/my-orders"
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/25 text-orange-400 text-xs font-semibold transition-colors"
-                >
-                    <Package className="w-3.5 h-3.5" />
-                    <span>অর্ডার ট্র্যাক</span>
-                </Link>
-
-                <Link href="/wishlist" aria-label="Wishlist" className="text-orange-300 text-sm">Saved</Link>
-                <Link href="/cart" aria-label="Shopping cart">
-                    <Button variant="ghost" size="icon" className="relative text-text-secondary hover:text-white hover:bg-white/5">
-                        <ShoppingCart aria-label="Shopping cart" className="w-5 h-5" />
-                        {totalItems > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                                {totalItems}
-                            </span>
-                        )}
-                    </Button>
-                </Link>
-
-                {user ? (
-                    <div className="relative hidden md:block">
-                        <Button
-                            variant="ghost"
-                            className="text-text-secondary hover:text-white hover:bg-white/5 flex items-center space-x-2"
-                            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                        >
-                            <User className="w-5 h-5" />
-                            <span className="max-w-[100px] truncate text-sm font-medium">{user.name}</span>
-                        </Button>
-
-                        <AnimatePresence>
-                            {isUserMenuOpen && (
-                                <motion.div
-                                    initial={false}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-primary-700/20 rounded-2xl shadow-xl overflow-hidden z-50 py-1"
-                                >
-                                    <div className="px-4 py-2 border-b border-white/5 mb-1">
-                                        <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                                    </div>
-                                    <Link
-                                        href="/my-orders"
-                                        className="block px-4 py-2 text-sm text-text-secondary hover:bg-white/5 hover:text-primary-400 transition-colors"
-                                        onClick={() => setIsUserMenuOpen(false)}
-                                    >
-                                        My Orders
-                                    </Link>
-                                    <button
-                                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition-colors"
-                                        onClick={async () => {
-                                            setIsUserMenuOpen(false)
-                                            await logoutAction()
-                                            window.location.href = '/'
-                                        }}
-                                    >
-                                        Logout
-                                    </button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                ) : (
-                    <Link aria-label="Sign in" href="/login">
-                        <Button variant="ghost" size="icon" className="hidden md:flex text-text-secondary hover:text-white hover:bg-white/5">
-                            <User className="w-5 h-5" />
-                        </Button>
-                    </Link>
-                )}
-
-                {/* MOBILE MENU TOGGLE */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="md:hidden text-text-secondary"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                    {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </Button>
+  return (
+    <header className="site-header">
+      <div className="announcement"><div className="store-container announcement-inner">
+        <span><Truck size={14} /> Nationwide delivery. Cash on delivery available.</span>
+        <Link href="/shipping">Delivery information <ArrowUpRight size={13} /></Link>
+      </div></div>
+      <div className="store-container header-main">
+        <Brand />
+        <form role="search" className="header-search" onSubmit={search}>
+          <Search size={19} aria-hidden="true" />
+          <input type="search" aria-label="Search products" placeholder="Search components, kits, modules..." value={query} onChange={e => setQuery(e.target.value)} />
+          <button type="submit" aria-label="Search"><ArrowUpRight size={20} /></button>
+        </form>
+        <div className="header-actions">
+          {user ? (
+            <div className="header-account" ref={accountRef}>
+              <button className="header-action account-toggle" onClick={() => setUserOpen(!userOpen)} aria-expanded={userOpen} aria-controls="account-menu" aria-label={user.name}>
+                <UserRound size={21} /><span>{user.name}</span><ChevronDown size={13} />
+              </button>
+              {userOpen && <div id="account-menu" className="account-menu">
+                <p>Hi, {user.name}</p>
+                <Link href="/my-orders" onClick={() => setUserOpen(false)}>My orders</Link>
+                <button onClick={logout}>Logout</button>
+              </div>}
             </div>
-
-            {/* MOBILE MENU */}
-            <AnimatePresence>
-                {isMobileMenuOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="absolute top-20 left-0 right-0 md:hidden bg-bg-elevated/95 backdrop-blur-xl border-b border-primary-700/15 overflow-hidden shadow-2xl"
-                    >
-                        <div className="p-4 space-y-4">
-                            <form onSubmit={(e) => handleSearchSubmit(e, mobileSearchQuery)}>
-                                <Input
-                                    value={mobileSearchQuery}
-                                    onChange={(e) => setMobileSearchQuery(e.target.value)}
-                                    placeholder="Search products..."
-                                    className="bg-bg-void/60 border-primary-700/20 rounded-xl"
-                                />
-                            </form>
-                            <nav className="flex flex-col space-y-1">
-                                {categories.map((item) => (
-                                    <Link
-                                        key={item.id}
-                                        href={`/category/${item.slug}`}
-                                        className="p-3 text-text-secondary hover:text-white hover:bg-primary-500/5 rounded-xl font-medium transition-colors"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                ))}
-                                <Link
-                                    href="/my-orders"
-                                    className="p-3 text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 rounded-xl font-medium transition-colors flex items-center gap-2"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <Package className="w-4 h-4" /> অর্ডার ট্র্যাক (Track Order)
-                                </Link>
-                            </nav>
-                            {user ? (
-                                <div className="pt-2 border-t border-white/5 space-y-1">
-                                    <Link
-                                        href="/my-orders"
-                                        className="block p-3 text-text-secondary hover:text-white hover:bg-primary-500/5 rounded-xl font-medium"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        My Orders
-                                    </Link>
-                                    <button
-                                        className="w-full text-left p-3 text-red-400 hover:bg-red-500/5 rounded-xl font-medium"
-                                        onClick={async () => {
-                                            setIsMobileMenuOpen(false)
-                                            await logoutAction()
-                                            window.location.href = '/'
-                                        }}
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="pt-2 border-t border-white/5">
-                                    <Link
-                                        href="/login"
-                                        className="block p-3 text-primary-400 hover:bg-primary-500/5 rounded-xl font-medium"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        Sign In
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </>
-    )
+          ) : <Link href="/login" aria-label="Sign in" className="header-action account-toggle"><UserRound size={21} /><span>Account</span></Link>}
+          <Link href="/wishlist" aria-label="Wishlist" className="header-action"><Heart size={21} /><span>Saved</span></Link>
+          <Link href="/cart" aria-label="Shopping cart" className="header-action cart-link"><ShoppingBag size={21} /><span>Cart</span><span className="cart-count">{totalItems}</span></Link>
+          <button ref={menuButton} className="mobile-menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={22} /> : <Menu size={22} />}</button>
+        </div>
+      </div>
+      <div className="header-nav-row"><div className="store-container header-nav-inner">
+        <nav aria-label="Main navigation">{links.map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? 'page' : undefined}>{link.label}</Link>)}</nav>
+        <Link href="/my-orders" className="track-link"><Package size={16} /> Track your order</Link>
+      </div></div>
+      {menuOpen && <nav id="mobile-navigation" className="mobile-navigation" aria-label="Mobile navigation">
+        {links.map(link => <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>{link.label}<ArrowUpRight size={17} /></Link>)}
+        <Link href="/my-orders" onClick={() => setMenuOpen(false)}>Track your order<Package size={17} /></Link>
+        <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact & support</Link>
+        {phone && <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a>}
+      </nav>}
+    </header>
+  )
 }

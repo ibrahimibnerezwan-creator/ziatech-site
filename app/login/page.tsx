@@ -42,28 +42,25 @@ export default function LoginPage() {
     if (isAdminLogin) {
         return (
             <div className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 relative overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-[150px] -z-10" />
 
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className="w-full max-w-md relative"
                 >
-                    <div className="absolute -inset-[1px] bg-gradient-to-b from-red-500/15 to-transparent rounded-3xl blur-sm" />
-                    <div className="relative bg-bg-elevated/80 border border-white/5 backdrop-blur-2xl p-10 rounded-3xl shadow-2xl">
-                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
+                    <div className="relative bg-bg-elevated border border-line  p-6 sm:p-10 rounded-2xl shadow-sm">
 
                         <div className="text-center mb-10">
                             <motion.div
-                                initial={{ scale: 0.8, opacity: 0 }}
+                                initial={false}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.15 }}
-                                className="w-20 h-20 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-red-500/20 shadow-lg shadow-red-500/10"
+                                className="w-20 h-20 bg-red-500/10 text-red-700 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-red-500/20 shadow-none"
                             >
                                 <ShieldCheck className="w-9 h-9" />
                             </motion.div>
-                            <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tight">Admin Access</h1>
+                            <h1 className="text-3xl font-display font-bold text-text-primary mb-2 tracking-tight">Admin Access</h1>
                             <p className="text-text-secondary text-sm">Restricted area. Authorized personnel only.</p>
                         </div>
 
@@ -78,7 +75,7 @@ export default function LoginPage() {
                                     required
                                     autoFocus
                                     disabled={isLoading}
-                                    className="bg-bg-void/60 border-white/8 text-white focus:ring-red-500/30 focus:border-red-500/30 rounded-xl h-12"
+                                    className="bg-bg-void/60 border-line text-text-primary focus:ring-red-500/30 focus:border-red-500/30 rounded-xl h-12"
                                 />
                             </div>
 
@@ -91,14 +88,14 @@ export default function LoginPage() {
                                     placeholder="••••••••"
                                     required
                                     disabled={isLoading}
-                                    className="bg-bg-void/60 border-white/8 text-white focus:ring-red-500/30 focus:border-red-500/30 rounded-xl h-12"
+                                    className="bg-bg-void/60 border-line text-text-primary focus:ring-red-500/30 focus:border-red-500/30 rounded-xl h-12"
                                 />
                             </div>
 
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-red-500 hover:bg-red-600 text-white h-12 text-base rounded-xl group font-bold shadow-lg shadow-red-500/20 mt-2"
+                                className="w-full bg-red-500 hover:bg-red-600 text-text-primary h-12 text-base rounded-xl group font-bold shadow-none mt-2"
                             >
                                 {isLoading ? "Authenticating..." : "Enter Admin Panel"}
                                 {!isLoading && <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
@@ -106,7 +103,7 @@ export default function LoginPage() {
                         </form>
 
                         <div className="mt-6 text-center">
-                            <Link href="/login" className="text-xs text-text-muted hover:text-white transition-colors">
+                            <Link href="/login" className="text-xs text-text-muted hover:text-text-primary transition-colors">
                                 Back to customer login
                             </Link>
                         </div>
@@ -119,29 +116,25 @@ export default function LoginPage() {
     // ==================== CUSTOMER LOGIN ====================
     return (
         <div className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 relative overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-500/8 rounded-full blur-[150px] -z-10" />
-            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-accent-500/5 rounded-full blur-[120px] -z-10" />
 
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md relative"
             >
-                <div className="absolute -inset-[1px] bg-gradient-to-b from-primary-500/20 to-transparent rounded-3xl blur-sm" />
-                <div className="relative bg-bg-elevated/80 border border-white/5 backdrop-blur-2xl p-10 rounded-3xl shadow-2xl">
-                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent" />
+                <div className="relative bg-bg-elevated border border-line  p-6 sm:p-10 rounded-2xl shadow-sm">
 
                     <div className="text-center mb-10">
                         <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
+                            initial={false}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.15 }}
-                            className="w-20 h-20 bg-primary-500/10 text-primary-400 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-primary-500/20 shadow-lg shadow-primary-500/10"
+                            className="w-20 h-20 bg-primary-500/10 text-primary-400 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-primary-500/20 shadow-none"
                         >
                             <LogIn className="w-9 h-9" />
                         </motion.div>
-                        <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tight">Welcome Back</h1>
+                        <h1 className="text-3xl font-display font-bold text-text-primary mb-2 tracking-tight">Welcome Back</h1>
                         <p className="text-text-secondary text-sm">Sign in to access your orders and saved items.</p>
                     </div>
 
@@ -155,7 +148,7 @@ export default function LoginPage() {
                                 placeholder="you@example.com"
                                 required
                                 disabled={isLoading}
-                                className="bg-bg-void/60 border-white/8 text-white focus:ring-primary-500/30 focus:border-primary-500/30 rounded-xl h-12"
+                                className="bg-bg-void/60 border-line text-text-primary focus:ring-primary-500/30 focus:border-primary-500/30 rounded-xl h-12"
                             />
                         </div>
 
@@ -172,14 +165,14 @@ export default function LoginPage() {
                                 type="password"
                                 required
                                 disabled={isLoading}
-                                className="bg-bg-void/60 border-white/8 text-white focus:ring-primary-500/30 focus:border-primary-500/30 rounded-xl h-12"
+                                className="bg-bg-void/60 border-line text-text-primary focus:ring-primary-500/30 focus:border-primary-500/30 rounded-xl h-12"
                             />
                         </div>
 
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-primary-500 hover:bg-primary-600 text-white h-12 text-base rounded-xl group font-bold shadow-lg shadow-primary-500/20 mt-2"
+                            className="w-full bg-primary-500 hover:bg-primary-600 text-text-primary h-12 text-base rounded-xl group font-bold shadow-none mt-2"
                         >
                             {isLoading ? "Signing in..." : "Sign In"}
                             {!isLoading && <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}

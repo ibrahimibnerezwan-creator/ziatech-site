@@ -1,2 +1,2 @@
 import Link from 'next/link';
-export default function NotFound(){return <div className="max-w-xl mx-auto px-4 py-24 text-center space-y-6"><h1 className="text-3xl font-bold">Page not found</h1><p className="text-gray-400">This product or page may have moved.</p><Link href="/category/all" className="inline-block px-5 py-3 rounded-xl bg-orange-500 text-black font-bold">Browse products</Link></div>;}
+export default function NotFound(){return <div className="max-w-xl mx-auto px-4 py-24 text-center space-y-6"><h1 className="text-3xl font-bold">Page not found</h1><p className="text-text-secondary">This product or page may have moved.</p><Link href="/category/all" className="inline-block px-5 py-3 rounded-xl bg-orange-500 text-black font-bold">Browse products</Link></div>;}

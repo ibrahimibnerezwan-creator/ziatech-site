@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShoppingCart, Heart, Share2, Zap } from "lucide-react";
+import { ShoppingCart, Share2, Zap } from "lucide-react";
 import { WishlistButton } from "./wishlist-button";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart-context";
 import { CheckoutModal } from "@/components/product/CheckoutModal";
@@ -54,82 +53,20 @@ export function ProductActions({ product }: ProductActionsProps) {
 
   return (
     <>
-      <div className="space-y-3 pt-2">
-        {/* Quantity and Actions Bar */}
-        <div className="flex items-center gap-3">
-          {/* Quantity Selector */}
-          <div className="flex items-center border border-white/10 rounded-xl bg-white/[0.03] overflow-hidden shrink-0">
-            <button
-              type="button"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              disabled={product.stock === 0}
-              className="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 font-bold transition-colors disabled:opacity-40"
-            >
-              -
-            </button>
-            <span className="w-10 text-center font-mono font-bold text-white text-sm">
-              {qty}
-            </span>
-            <button
-              type="button"
-              onClick={() => setQty((q) => Math.min(product.stock, q + 1))}
-              disabled={product.stock === 0}
-              className="w-11 h-11 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 font-bold transition-colors disabled:opacity-40"
-            >
-              +
-            </button>
-          </div>
-
-          {/* Instant Buy Now Button */}
-          <Button
-            size="lg"
-            className="flex-1 h-11 bg-orange-500 hover:bg-orange-400 text-black font-bold text-sm tracking-wide rounded-xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 transition-all"
-            disabled={product.stock === 0}
-            onClick={() => setCheckoutOpen(true)}
-          >
-            <Zap className="w-4 h-4 fill-black" />
-            {product.stock === 0 ? "স্টক শেষ" : "সরাসরি অর্ডার করুন (Buy Now)"}
-          </Button>
+      <div className="product-quantity-row">
+        <div className="quantity-control">
+          <button type="button" aria-label="Decrease quantity" onClick={() => setQty(q => Math.max(1, q - 1))} disabled={product.stock === 0 || qty === 1}>−</button>
+          <span aria-live="polite">{qty}</span>
+          <button type="button" aria-label="Increase quantity" onClick={() => setQty(q => Math.min(product.stock, q + 1))} disabled={product.stock === 0 || qty >= product.stock}>+</button>
         </div>
-
-        {/* Secondary Actions */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="flex-1 h-10 border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium text-xs rounded-xl"
-            disabled={product.stock === 0}
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="w-4 h-4 mr-1.5" />
-            কার্টে যোগ করুন
-          </Button>
-
-          <WishlistButton id={product.id} label className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-gray-300" />
-
-          <Button
-            variant="outline"
-            className="w-10 h-10 p-0 border-white/10 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-orange-400 rounded-xl"
-            onClick={handleShare}
-            title="Share"
-          >
-            <Share2 className="w-4 h-4" />
-          </Button>
-        </div>
+        <button className="shop-button" disabled={product.stock === 0} onClick={() => setCheckoutOpen(true)}><Zap size={17} />{product.stock === 0 ? 'স্টক শেষ' : 'সরাসরি অর্ডার করুন (Buy Now)'}</button>
       </div>
-
-      {checkoutOpen && (
-        <CheckoutModal
-          product={{
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            stock: product.stock,
-          }}
-          initialQuantity={qty}
-          onClose={() => setCheckoutOpen(false)}
-        />
-      )}
+      <div className="detail-actions">
+        <button disabled={product.stock === 0} onClick={handleAddToCart}><ShoppingCart size={17} />কার্টে যোগ করুন</button>
+        <WishlistButton id={product.id} label />
+        <button onClick={handleShare} title="Share" aria-label="Share product"><Share2 size={17} /></button>
+      </div>
+      {checkoutOpen && <CheckoutModal product={{id: product.id, name: product.name, price: product.price, image: product.image, stock: product.stock}} initialQuantity={qty} onClose={() => setCheckoutOpen(false)} />}
     </>
   );
 }

@@ -11,7 +11,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-primary-500 text-primary-foreground hover:bg-primary-600 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]",
+                default: "bg-primary-500 text-primary-foreground hover:bg-primary-600",
                 destructive:
                     "bg-red-500 text-destructive-foreground hover:bg-red-600",
                 outline:
@@ -51,7 +51,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             <motion.button
                 className={cn(buttonVariants({ variant, size, className }))}
                 ref={ref}
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 {...props}
             />
         )

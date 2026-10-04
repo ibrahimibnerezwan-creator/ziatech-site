@@ -1,11 +1,17 @@
-import Link from 'next/link';
-import {getStoreSettings} from '@/lib/data';
-export async function Footer(){
- const s=await getStoreSettings();const phone=(s.phone||'').replace(/\D/g,'');const wa=(s.whatsapp||s.phone||'').replace(/\D/g,'').replace(/^0/,'880');
- return <footer className="bg-bg-void/90 border-t border-primary-500/10 py-12"><div className="container mx-auto px-4"><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
- <div><Link href="/" className="text-2xl font-bold text-orange-400">ZiaTech</Link><p className="text-sm text-gray-400 mt-4">Electronics, robotics components and tools for your next project.</p><div className="flex flex-wrap gap-3 mt-4">{['facebook','instagram','youtube','tiktok'].filter(k=>/^https:\/\//.test(s[k]||'')).map(k=><a key={k} href={s[k]} target="_blank" rel="noopener noreferrer" className="text-sm text-orange-300 capitalize">{k}</a>)}</div></div>
- <div><h2 className="font-bold mb-4">Contact us</h2><div className="space-y-3 text-sm text-gray-300">{s.address&&<p>{s.address}</p>}{phone&&<p><a href={'tel:'+phone}>{s.phone}</a></p>}{wa&&<p><a href={'https://wa.me/'+wa} target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a></p>}{s.email&&<p><a href={'mailto:'+s.email}>{s.email}</a></p>}</div></div>
- <div><h2 className="font-bold mb-4">Help & information</h2><ul className="space-y-3 text-sm text-gray-300">{[['/about','About us'],['/blog','Project tutorials'],['/contact','Contact support'],['/shipping','Shipping & returns'],['/privacy','Privacy policy'],['/terms','Terms of purchase']].map(([href,label])=><li key={href}><Link href={href}>{label}</Link></li>)}</ul></div>
- <div><h2 className="font-bold mb-4">Shop & manage</h2><ul className="space-y-3 text-sm text-gray-300">{[['/category/all','All products'],['/categories','Shop by category'],['/wishlist','Your wishlist'],['/my-orders','Track your order'],['/admin','Store admin']].map(([href,label])=><li key={href}><Link href={href}>{label}</Link></li>)}</ul></div>
- </div><div className="border-t border-white/10 mt-10 pt-6 flex flex-wrap justify-between gap-4 text-xs text-gray-400"><p>© {new Date().getFullYear()} ZiaTech. All rights reserved.</p><a href="/sitemap.xml">Sitemap</a></div></div></footer>;
+import Link from 'next/link'
+import { ArrowUpRight, MapPin, Phone, Mail } from 'lucide-react'
+import { getStoreSettings } from '@/lib/data'
+import { Brand } from './brand'
+
+export async function Footer() {
+  const settings = await getStoreSettings()
+  const phone = (settings.phone || '').replace(/[^+\d]/g, '')
+  const whatsapp = (settings.whatsapp || settings.phone || '').replace(/\D/g, '').replace(/^0/, '880')
+  return <footer className="site-footer"><div className="store-container">
+    <div className="footer-top"><div className="footer-brand"><Brand inverse /><p>Small parts. Big possibilities.<br />Electronics for the maker in you.</p><div className="footer-socials">{['facebook','instagram','youtube','tiktok'].filter(key => /^https:\/\//.test(settings[key] || '')).map(key => <a key={key} href={settings[key]} target="_blank" rel="noopener noreferrer">{key}<ArrowUpRight size={14} /></a>)}</div></div>
+    <div className="footer-links"><h2>Explore the shop</h2><Link href="/category/all">All components</Link><Link href="/categories">Shop by category</Link><Link href="/wishlist">Your wishlist</Link><Link href="/blog">Project guides</Link></div>
+    <div className="footer-links"><h2>We&apos;re here to help</h2><Link href="/my-orders">Track your order</Link><Link href="/shipping">Shipping & returns</Link><Link href="/about">About ZiaTech</Link><Link href="/contact">Contact support</Link><Link href="/admin">Store admin</Link></div>
+    <div className="footer-contact"><h2>Let&apos;s connect</h2>{settings.address && <p><MapPin size={16} />{settings.address}</p>}{phone && <a href={`tel:${phone}`}><Phone size={16} />{settings.phone}</a>}{settings.email && <a href={`mailto:${settings.email}`}><Mail size={16} />{settings.email}</a>}{whatsapp && <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="footer-whatsapp">Chat on WhatsApp <ArrowUpRight size={16} /></a>}</div></div>
+    <div className="footer-bottom"><span>© {new Date().getFullYear()} ZiaTech. Made for possibility.</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><a href="/sitemap.xml">Sitemap</a></div><span className="footer-payments">Cash on delivery{settings.bkash_number && <span>bKash</span>}</span></div>
+  </div></footer>
 }

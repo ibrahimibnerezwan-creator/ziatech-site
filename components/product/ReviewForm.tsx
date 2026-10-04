@@ -52,12 +52,12 @@ export function ReviewForm({ productId }: ReviewFormProps) {
 
   if (submitted) {
     return (
-      <div className="bg-white/[0.02] border border-emerald-500/20 rounded-2xl p-6 text-center">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto mb-3">
+      <div className="bg-bg-elevated border border-emerald-500/20 rounded-2xl p-6 text-center">
+        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-700 mx-auto mb-3">
           <CheckCircle2 className="w-6 h-6" />
         </div>
-        <h4 className="text-white font-bold text-base mb-1">ধন্যবাদ আপনার মতামতের জন্য!</h4>
-        <p className="text-xs text-gray-400 max-w-sm mx-auto">
+        <h4 className="text-text-primary font-bold text-base mb-1">ধন্যবাদ আপনার মতামতের জন্য!</h4>
+        <p className="text-xs text-text-secondary max-w-sm mx-auto">
           আপনার রিভিউটি জমা হয়েছে। আমাদের এডমিন পর্যালোচনা করার পর এটি ওয়েবসাইটে প্রদর্শিত হবে।
         </p>
       </div>
@@ -67,17 +67,19 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 space-y-4"
+      className="bg-bg-elevated border border-line rounded-2xl p-6 space-y-4"
     >
-      <h3 className="text-base font-bold text-white">আপনার মতামত দিন (Write a Review)</h3>
+      <h3 className="text-base font-bold text-text-primary">আপনার মতামত দিন (Write a Review)</h3>
 
       {/* Star Selector */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400">রেটিং:</span>
+        <span className="text-xs text-text-secondary">রেটিং:</span>
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
+              aria-label={`Rate ${star} out of 5 stars`}
+              aria-pressed={rating === star}
               type="button"
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoverRating(star)}
@@ -98,7 +100,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-300 mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             আপনার নাম *
           </label>
           <input
@@ -107,13 +109,13 @@ export function ReviewForm({ productId }: ReviewFormProps) {
             placeholder="e.g. তানভীর আহমেদ"
             value={reviewerName}
             onChange={(e) => setReviewerName(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-bg-primary border border-line text-text-primary text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-300 mb-1">
+        <label className="block text-xs font-medium text-text-secondary mb-1">
           আপনার অভিজ্ঞতা / রিভিউ *
         </label>
         <textarea
@@ -122,14 +124,14 @@ export function ReviewForm({ productId }: ReviewFormProps) {
           placeholder="পণ্যটি কেমন কাজ করছে, কোয়ালিটি কেমন লেগেছে ইত্যাদি শেয়ার করুন..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
+          className="w-full px-3.5 py-2.5 rounded-xl bg-bg-primary border border-line text-text-primary text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors resize-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="py-2.5 px-5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 font-semibold text-xs transition-colors flex items-center gap-2 disabled:opacity-50"
+        className="py-2.5 px-5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-primary-400 font-semibold text-xs transition-colors flex items-center gap-2 disabled:opacity-50"
       >
         {loading ? (
           <>

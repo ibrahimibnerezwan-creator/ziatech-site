@@ -12,9 +12,9 @@ export default async function CheckoutPage() {
     const user = await getCurrentUser()
 
     return (
-        <div className="min-h-screen pt-20 pb-12 px-4">
+        <div className="min-h-[60vh] pt-10 pb-12 px-4">
             <div className="container mx-auto max-w-6xl">
-                <h1 className="text-3xl font-bold text-white mb-8 border-b border-white/10 pb-4">Checkout</h1>
+                <h1 className="text-3xl font-bold text-text-primary mb-8 border-b border-line pb-4">Checkout</h1>
                 <CheckoutClient 
                     settings={settings} 
                     user={user} 

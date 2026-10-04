@@ -1,96 +1,38 @@
-"use client"
+'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import { ArrowUpRight, SearchX } from 'lucide-react'
 import { ProductCard } from '@/components/product/product-card'
 
-type Product = {
-    id: string
-    name: string
-    slug: string
-    price: number
-    oldPrice?: number
-    image: string
-    category: string
-    rating: number
-    reviews: number
-    stock: number
-    createdAt?: number
-    isFeatured?: boolean
-}
-
+type Product = { id: string; name: string; slug: string; price: number; oldPrice?: number; image: string; category: string; rating: number; reviews: number; stock: number; createdAt?: number; isFeatured?: boolean }
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'newest'
+type Category = { id: string; name: string; slug: string; productCount: number }
 
-export function CategoryResults({ products }: { products: Product[] }) {
-    const [sort, setSort] = useState<SortKey>('featured')
-    const [inStockOnly, setInStockOnly] = useState(false)
-
-    const sorted = useMemo(() => {
-        let list = [...products]
-        if (inStockOnly) list = list.filter(p => p.stock > 0)
-        switch (sort) {
-            case 'price-asc':
-                list.sort((a, b) => a.price - b.price)
-                break
-            case 'price-desc':
-                list.sort((a, b) => b.price - a.price)
-                break
-            case 'newest':
-                list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))
-                break
-            case 'featured':
-                list.sort((a,b) => Number(b.isFeatured) - Number(a.isFeatured))
-                break
-            default:
-                break
-        }
-        return list
-    }, [products, sort, inStockOnly])
-
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <aside className="space-y-4 md:space-y-8 md:sticky top-24 h-fit">
-                <div className="space-y-2">
-                    <h3 className="font-bold text-white mb-2">Availability</h3>
-                    <label className="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
-                        <input
-                            type="checkbox"
-                            checked={inStockOnly}
-                            onChange={(e) => setInStockOnly(e.target.checked)}
-                            className="rounded border-gray-600 bg-transparent focus:ring-accent-500 text-accent-500"
-                        />
-                        <span>In Stock Only</span>
-                    </label>
-                </div>
-
-                <div className="space-y-2">
-                    <h3 className="font-bold text-white mb-2">Sort</h3>
-                    <select
-                        aria-label="Sort products"
-                        value={sort}
-                        onChange={(e) => setSort(e.target.value as SortKey)}
-                        className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
-                    >
-                        <option value="featured">Featured</option>
-                        <option value="price-asc">Price: Low to High</option>
-                        <option value="price-desc">Price: High to Low</option>
-                        <option value="newest">Newest Arrivals</option>
-                    </select>
-                </div>
-            </aside>
-
-            <div className="col-span-1 md:col-span-3">
-                {sorted.length === 0 ? (
-                    <div className="py-20 text-center text-gray-400">
-                        No products match your search.
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {sorted.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+export function CategoryResults({ products, categories, activeCategory }: { products: Product[]; categories: Category[]; activeCategory: string }) {
+  const [sort, setSort] = useState<SortKey>('featured')
+  const [inStockOnly, setInStockOnly] = useState(false)
+  const sorted = useMemo(() => {
+    const list = inStockOnly ? products.filter(p => p.stock > 0) : [...products]
+    switch (sort) {
+      case 'price-asc': return list.sort((a, b) => a.price - b.price)
+      case 'price-desc': return list.sort((a, b) => b.price - a.price)
+      case 'newest': return list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      default: return list.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured))
+    }
+  }, [products, sort, inStockOnly])
+  return <div className="catalogue-layout">
+    <aside className="catalogue-sidebar">
+      <h2>Shop by category</h2><nav aria-label="Product categories" className="catalogue-categories">
+        <Link href="/category/all" className={`category-filter ${activeCategory === 'all' ? 'active' : ''}`} aria-current={activeCategory === 'all' ? 'page' : undefined}>All components</Link>
+        {categories.map(category => <Link key={category.id} href={`/category/${category.slug}`} className={`category-filter ${category.slug === activeCategory ? 'active' : ''}`} aria-current={category.slug === activeCategory ? 'page' : undefined}>{category.name}<span>{category.productCount}</span></Link>)}
+      </nav>
+      <h2>Availability</h2><label><input type="checkbox" checked={inStockOnly} onChange={e => setInStockOnly(e.target.checked)} />In Stock Only</label>
+      <div className="catalogue-help"><strong>Looking for something?</strong><p>Tell us about the component you need. We&apos;ll help you find your next step.</p><Link href="/contact" className="text-link">Ask us <ArrowUpRight size={14} /></Link></div>
+    </aside>
+    <div className="catalogue-content">
+      <div className="catalogue-toolbar"><p aria-live="polite">{sorted.length} {sorted.length === 1 ? 'component' : 'components'}</p><select aria-label="Sort products" value={sort} onChange={e => setSort(e.target.value as SortKey)}><option value="featured">Featured first</option><option value="price-asc">Price: Low to High</option><option value="price-desc">Price: High to Low</option><option value="newest">Newest Arrivals</option></select></div>
+      {sorted.length ? <div className="product-grid">{sorted.map(product => <ProductCard key={product.id} product={product} />)}</div> : <div className="empty-state"><SearchX size={35} /><h2>No components found</h2><p>Try a different search or explore the full catalogue.</p>{inStockOnly && <button className="shop-button shop-button-outline" onClick={() => setInStockOnly(false)}>Show all availability</button>}<Link href="/category/all" className="shop-button">Browse all components</Link></div>}
+    </div>
+  </div>
 }

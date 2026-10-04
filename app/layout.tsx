@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Plus_Jakarta_Sans, IBM_Plex_Mono } from 'next/font/google'
+import { Manrope, DM_Sans, Noto_Sans_Bengali, IBM_Plex_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/header'
 import { ToasterProvider } from '@/components/providers/toaster-provider'
-import { ChatWidget } from '@/components/shared/ChatWidget'
+import { SiteFrame } from '@/components/layout/site-frame'
+import { Footer } from '@/components/layout/footer'
 import { Providers } from './providers'
 import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display-family' })
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-body-family' })
+const manrope = Manrope({ subsets: ['latin'], variable: '--font-display-family' })
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body-family' })
+const bengali = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-bengali-family' })
 const ibmPlexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-mono-family' })
 
 export const metadata: Metadata = {
@@ -26,30 +28,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className="dark" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${ibmPlexMono.variable} min-h-screen bg-bg-primary text-text-primary overflow-x-hidden`}
-        style={{ fontFamily: 'var(--font-body-family), system-ui, sans-serif' }}
+        className={`${manrope.variable} ${dmSans.variable} ${bengali.variable} ${ibmPlexMono.variable} min-h-screen bg-bg-primary text-text-primary`}
+        style={{ fontFamily: 'var(--font-body-family), var(--font-bengali-family), system-ui, sans-serif' }}
         suppressHydrationWarning
       >
         <Providers>
-          <Header />
-          <main className="pt-24 sm:pt-26">
+          <SiteFrame header={<Header />} footer={<Footer />}>
             {children}
-          </main>
-          <ChatWidget />
+          </SiteFrame>
           <ToasterProvider />
         </Providers>
 
-        {/* Prism Forge: Dot Matrix Background Layer */}
-        <div className="fixed inset-0 -z-50 pointer-events-none dot-matrix opacity-60" />
-
-        {/* Prism Forge: Warm Ember Glow (distinct from Binary's cold blobs) */}
-        <div className="fixed inset-0 -z-40 pointer-events-none overflow-hidden">
-          <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-primary-500/8 rounded-full blur-[150px] animate-ember-pulse transform-gpu" />
-          <div className="absolute bottom-[-15%] left-[-5%] w-[500px] h-[500px] bg-accent-500/6 rounded-full blur-[130px] animate-ember-pulse transform-gpu" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-[40%] left-[50%] w-[300px] h-[300px] bg-gold-400/4 rounded-full blur-[100px] animate-ember-pulse transform-gpu" style={{ animationDelay: '4s' }} />
-        </div>
       </body>
     </html>
   )
