@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/header'
 import { ToasterProvider } from '@/components/providers/toaster-provider'
 import { ChatWidget } from '@/components/shared/ChatWidget'
 import { Providers } from './providers'
+import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display-family' })
@@ -11,6 +12,9 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-bo
 const ibmPlexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-mono-family' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: './' },
+  openGraph: { type: 'website', siteName: 'ZiaTech', url: './' },
   title: "ZiaTech | Premium Electronics & Components",
   description: "Bangladesh's trusted source for premium electronics, IoT components, and tech accessories. Quality guaranteed, innovation delivered.",
   keywords: ['electronics', 'components', 'Bangladesh', 'tech', 'IoT', 'robotics', 'ZiaTech'],
