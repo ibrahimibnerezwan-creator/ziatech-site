@@ -21,8 +21,9 @@ export async function saveProduct(input: Record<string, unknown>, id?: string) {
   const name=textValue(input.title ?? input.name ?? existing?.name,'product name',200);
   const price=numberValue(input.price ?? existing?.price,'price');
   const stock=numberValue(input.stock ?? existing?.stock ?? 0,'stock',true);
-  const comparePrice=input.comparePrice === null || input.comparePrice === '' ? null : input.comparePrice === undefined ? existing?.comparePrice ?? null : numberValue(input.comparePrice,'previous price');
-  if(comparePrice!==null && comparePrice<=price) throw new InputError('Previous price must be greater than the selling price.');
+  const previousPrice=input.comparePrice === null || input.comparePrice === '' ? null : input.comparePrice === undefined ? existing?.comparePrice ?? null : numberValue(input.comparePrice,'compare price');
+  if(previousPrice!==null && previousPrice<price) throw new InputError('Compare price cannot be lower than the selling price. Leave it blank if there is no discount.');
+  const comparePrice=previousPrice===price ? null : previousPrice;
   const description=textValue(input.description ?? existing?.description ?? '', 'description',20000,false);
   const specs=input.specs===undefined?existing?.specs ?? null:specsValue(input.specs);
   if(input.isFeatured!==undefined&&typeof input.isFeatured!=='boolean') throw new InputError('Featured must be true or false.');

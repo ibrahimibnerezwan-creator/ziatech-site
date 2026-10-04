@@ -37,6 +37,22 @@ test('unconfigured payment methods are unavailable',async()=>{await assert.rejec
 test('prepaid orders require transaction ID and verification before shipping',async()=>{await db.insert(storeSettings).values({key:'bkash_number',value:'01712345678',updatedAt:new Date()});await assert.rejects(createOrder(checkout({paymentMethod:'bkash'})));const o=await createOrder(checkout({paymentMethod:'bkash',transactionId:'TEST12345'}));await assert.rejects(updateOrder(o.orderId,{status:'SHIPPED'}),/Verify payment/);await updateOrder(o.orderId,{paymentStatus:'VERIFIED',status:'SHIPPED'});});
 test('private courier settings never enter public settings',async()=>{await db.insert(storeSettings).values([{key:'steadfast_secret_key',value:'test-only-secret',updatedAt:new Date()},{key:'phone',value:'01712345678',updatedAt:new Date()}]);const visible=await publicSettings();assert.equal(visible.steadfast_secret_key,undefined);assert.equal(visible.phone,'01712345678');assert.equal((await courierCredentials()).secretKey,'test-only-secret');});
 test('product creation and edit preserve slug and validate specifications',async()=>{const id=await saveProduct({name:'Board',price:100,stock:3,specs:'{"Voltage":"3.3V"}',category:'Controllers'});const before=await db.query.products.findFirst({where:eq(products.id,id)});await saveProduct({name:'Board revised',price:90},id);assert.equal((await db.query.products.findFirst({where:eq(products.id,id)}))?.slug,before?.slug);await assert.rejects(saveProduct({price:-1},id));await assert.rejects(saveProduct({stock:1.4},id));await assert.rejects(saveProduct({specs:'broken JSON'},id));});
+test('equal selling and compare prices save without a discount', async () => {
+  const id = await saveProduct({ name: 'IPM (Intelligent Power Module)', price: 3000, comparePrice: 3000, stock: 10 });
+  const saved = await db.query.products.findFirst({ where: eq(products.id, id) });
+  assert.equal(saved?.price, 3000);
+  assert.equal(saved?.comparePrice, null);
+  assert.equal(saved?.stock, 10);
+});
+test('raising the selling price to the existing compare price clears the discount', async () => {
+  const id = await saveProduct({ name: 'IPM', price: 2500, comparePrice: 3000 });
+  await saveProduct({ price: 3000 }, id);
+  assert.equal((await db.query.products.findFirst({ where: eq(products.id, id) }))?.comparePrice, null);
+});
+test('compare prices below the selling price remain invalid and do not alter the product', async () => {
+  await assert.rejects(saveProduct({ price: 3000, comparePrice: 2500 }, 'p1'), /price/i);
+  assert.equal((await db.query.products.findFirst({ where: eq(products.id, 'p1') }))?.price, 450);
+});
 test('product with order history cannot be deleted or lose images',async()=>{await db.insert(productImages).values({id:'img',productId:'p1',url:'https://example.org/a.png',sortOrder:0});await createOrder(checkout());await assert.rejects(removeProduct('p1'),/order history/);assert.equal((await db.select().from(productImages)).length,1);});
 test('category rename retains links and delete unassigns products',async()=>{const id=await saveCategory({name:'Controllers'});const slug=(await db.query.categories.findFirst({where:eq(categories.id,id)}))?.slug;await saveProduct({categoryId:id},'p1');await saveCategory({name:'Microcontrollers'},id);assert.equal((await db.query.categories.findFirst({where:eq(categories.id,id)}))?.slug,slug);await removeCategory(id);assert.equal((await db.query.products.findFirst({where:eq(products.id,'p1')}))?.categoryId,null);});
 test('product and images are atomic on invalid image input',async()=>{await assert.rejects(saveProduct({name:'Bad upload',price:50,images:['javascript:alert(1)']}));assert.equal((await db.select().from(products)).length,2);});

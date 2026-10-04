@@ -69,6 +69,14 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
   const [uploadStep, setUploadStep] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const feedbackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (errorMsg || successMsg) {
+      feedbackRef.current?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      feedbackRef.current?.focus({ preventScroll: true });
+    }
+  }, [errorMsg, successMsg]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -155,8 +163,14 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isPublishing) return;
+    setErrorMsg('');
+    setSuccessMsg('');
     if (!title.trim() || !price || !selectedFile) {
       setErrorMsg('Product name, price, and a photo are required.');
+      return;
+    }
+    if (comparePrice !== '' && Number(comparePrice) < Number(price)) {
+      setErrorMsg('Compare price cannot be lower than the selling price. ছাড় না থাকলে Compare Price খালি রাখুন।');
       return;
     }
 
@@ -237,20 +251,6 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
           ছবি, পণ্যের নাম ও দাম দিন। তারপর নিচের Publish Product to Catalog বাটন চাপুন। AI ছাড়াই পণ্য সেভ করা যাবে।
         </p>
       </div>
-
-      {errorMsg && (
-        <div role="alert" className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-2xl text-xs flex items-center justify-between">
-          <span>{errorMsg}</span>
-          <button aria-label="Dismiss error" onClick={() => setErrorMsg('')} className="text-rose-400 hover:text-white">✕</button>
-        </div>
-      )}
-
-      {successMsg && (
-        <div role="status" className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-2xl text-xs flex items-center gap-2">
-          <Check className="w-4 h-4" />
-          <span>{successMsg}</span>
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Photo Upload Area */}
@@ -371,8 +371,12 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               placeholder="MSRP / Regular"
               min="0"
               step="any"
+              aria-describedby="product-compare-price-help"
               className="w-full h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
             />
+            <p id="product-compare-price-help" className="mt-2 text-xs leading-relaxed text-slate-400">
+              ঐচ্ছিক। ছাড় থাকলে আগের বেশি দাম দিন; ছাড় না থাকলে খালি রাখুন। সমান দামেও সেভ হবে।
+            </p>
           </div>
 
           <div>
@@ -455,6 +459,22 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
           <div className="p-3 bg-orange-500/10 border border-orange-500/20 text-orange-300 rounded-xl text-xs flex items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin shrink-0" />
             <span>{uploadStep || 'Publishing...'}</span>
+          </div>
+        )}
+
+        {(errorMsg || successMsg) && (
+          <div ref={feedbackRef} tabIndex={-1} className="rounded-2xl focus:outline-none">
+            {errorMsg ? (
+              <div role="alert" className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-2xl text-sm flex items-center justify-between gap-3">
+                <span>{errorMsg}</span>
+                <button type="button" aria-label="Dismiss error" onClick={() => setErrorMsg('')} className="text-rose-400 hover:text-white">✕</button>
+              </div>
+            ) : (
+              <div role="status" className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-2xl text-sm flex items-center gap-2">
+                <Check className="w-4 h-4 shrink-0" />
+                <span>{successMsg}</span>
+              </div>
+            )}
           </div>
         )}
 

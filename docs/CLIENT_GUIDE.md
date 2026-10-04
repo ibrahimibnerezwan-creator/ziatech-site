@@ -6,6 +6,8 @@ Open https://ziatech.shopbd.app/admin and sign in with your existing administrat
 
 Use **Manage Products** to upload a JPG, PNG, WebP or GIF (maximum 4 MB), set the name, price, stock and category, then publish. Use the edit button to change a product; its link stays the same. Keep products with order history — set stock to zero if no longer sold. **Categories** manages category names and images.
 
+**Compare Price** is optional: enter the original higher price only for a discount. Leave it blank when there is no discount. Entering the same value as the selling price also saves without a discount. After pressing **Publish Product to Catalog**, the success or error message appears beside the button; an error keeps your photo and details available to correct and retry.
+
 ## Orders
 
 New orders appear in **Orders** and reserve stock immediately. **Quick Order** records phone or WhatsApp orders. It creates an order without booking a courier.

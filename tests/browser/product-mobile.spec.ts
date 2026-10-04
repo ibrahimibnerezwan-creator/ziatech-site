@@ -123,3 +123,67 @@ test('optional AI suggestions preserve details already entered by the admin', as
   await expect(page.getByLabel('Component Name', { exact: false })).toHaveValue('Manual IPM name');
   await expect(page.getByLabel('Technical Description')).toHaveValue('Suggested component specifications');
 });
+
+test('mobile IPM product publishes when both prices are 3000', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.route('**/api/upload', route => route.fulfill({ json: { url: image, publicUrl: image } }));
+  await openAdmin(page);
+  await page.getByLabel('Primary Photo', { exact: false }).setInputFiles(photo);
+  const name = 'AUDIT IPM (Intelligent Power Module)';
+  await page.getByLabel('Component Name', { exact: false }).fill(name);
+  await page.getByLabel('Price (৳) *', { exact: true }).fill('3000');
+  await page.getByLabel('Compare Price (৳)', { exact: true }).fill('3000');
+  await page.getByLabel('Stock Quantity').fill('10');
+  await Promise.all([
+    page.waitForResponse(response => response.url().endsWith('/api/products') && response.request().method() === 'POST'),
+    page.getByRole('button', { name: 'Publish Product to Catalog' }).click(),
+  ]);
+  const saved = (await (await page.request.get('/api/products')).json()).find((p: { name: string }) => p.name === name);
+  try {
+    await expect(page.getByText('Product added successfully!', { exact: true })).toBeInViewport();
+    expect(saved).toMatchObject({ price: 3000, comparePrice: null, stock: 10, imageUrl: image });
+    await page.reload();
+    await page.getByPlaceholder('Search component name, category...').fill(name);
+    await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+    await page.goto(`/product/${saved.slug}`);
+    await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+    await expect(page.locator('main del')).toHaveCount(0);
+  } finally {
+    if (saved) expect((await page.request.delete(`/api/products?id=${saved.id}`)).ok()).toBe(true);
+  }
+});
+
+test('mobile publish failures are visible beside the button and retain entered details', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.route('**/api/upload', route => route.fulfill({ status: 503, json: { error: 'Photo storage is temporarily unavailable. Please try again.' } }));
+  await openAdmin(page);
+  await page.getByLabel('Primary Photo', { exact: false }).setInputFiles(photo);
+  await page.getByLabel('Component Name', { exact: false }).fill('IPM (Intelligent Power Module)');
+  await page.getByLabel('Price (৳) *', { exact: true }).fill('3000');
+  const button = page.getByRole('button', { name: 'Publish Product to Catalog' });
+  await button.click();
+  const alert = page.locator('main [role="alert"]');
+  await expect(alert).toHaveText(/Photo storage is temporarily unavailable/);
+  await expect(alert).toBeInViewport();
+  await expect(page.getByLabel('Component Name', { exact: false })).toHaveValue('IPM (Intelligent Power Module)');
+  await expect(page.getByLabel('Price (৳) *', { exact: true })).toHaveValue('3000');
+  await expect(page.getByAltText('Preview', { exact: true })).toHaveCount(1);
+  const bounds = await alert.boundingBox();
+  const buttonBounds = await button.boundingBox();
+  expect(buttonBounds!.y - (bounds!.y + bounds!.height)).toBeLessThan(100);
+});
+
+test('an invalid compare price is explained before uploading the photo', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  let uploads = 0;
+  await page.route('**/api/upload', route => { uploads++; return route.fulfill({ json: { url: image, publicUrl: image } }); });
+  await openAdmin(page);
+  await page.getByLabel('Primary Photo', { exact: false }).setInputFiles(photo);
+  await page.getByLabel('Component Name', { exact: false }).fill('IPM');
+  await page.getByLabel('Price (৳) *', { exact: true }).fill('3000');
+  await page.getByLabel('Compare Price (৳)', { exact: true }).fill('2500');
+  await page.getByRole('button', { name: 'Publish Product to Catalog' }).click();
+  await expect(page.locator('main [role="alert"]')).toHaveText(/compare price/i);
+  await expect(page.locator('main [role="alert"]')).toBeInViewport();
+  expect(uploads).toBe(0);
+});
