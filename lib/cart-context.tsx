@@ -30,7 +30,8 @@ function loadCart(): CartItem[] {
     if (typeof window === 'undefined') return []
     try {
         const stored = localStorage.getItem(CART_KEY)
-        return stored ? JSON.parse(stored) : []
+        const parsed = stored ? JSON.parse(stored) : []
+        return Array.isArray(parsed) ? parsed.filter(i => i && typeof i.id === 'string' && typeof i.name === 'string' && typeof i.slug === 'string' && typeof i.image === 'string' && Number.isFinite(i.price) && i.price >= 0 && Number.isInteger(i.quantity) && i.quantity > 0 && Number.isInteger(i.stock) && i.stock > 0).map(i=>({...i,quantity:Math.min(i.quantity,i.stock)})) : []
     } catch {
         return []
     }
@@ -38,7 +39,7 @@ function loadCart(): CartItem[] {
 
 function saveCart(items: CartItem[]) {
     if (typeof window === 'undefined') return
-    localStorage.setItem(CART_KEY, JSON.stringify(items))
+    try { localStorage.setItem(CART_KEY, JSON.stringify(items)) } catch { /* Cart still works in this tab when browser storage is unavailable. */ }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -46,6 +47,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        // Hydrate browser storage once after SSR; subsequent writes are guarded by mounted.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setItems(loadCart())
         setMounted(true)
     }, [])
@@ -55,6 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [items, mounted])
 
     const addItem = useCallback((newItem: Omit<CartItem, 'quantity'>) => {
+        if (newItem.stock < 1) return
         setItems(prev => {
             const existing = prev.find(i => i.id === newItem.id)
             if (existing) {
@@ -70,6 +74,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, [])
 
     const updateQuantity = useCallback((id: string, quantity: number) => {
+        if (!Number.isInteger(quantity)) return
         setItems(prev => {
             const currentItem = prev.find(i => i.id === id)
             if (!currentItem) return prev

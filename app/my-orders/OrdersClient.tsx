@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -25,7 +25,7 @@ interface OrderItem {
   image?: string | null;
 }
 
-interface OrderRecord {
+export interface OrderRecord {
   id: string;
   shortId?: string;
   customerName?: string;
@@ -48,6 +48,9 @@ interface OrdersClientProps {
 }
 
 export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClientProps) {
+  const [support, setSupport] = useState('');
+  useEffect(()=>{fetch('/api/settings').then(r=>r.json()).then(s=>setSupport((s.whatsapp||s.phone||'').replace(/\D/g,'').replace(/^0/,'880'))).catch(()=>{});},[]);
+  const [phone, setPhone] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchedOrders, setSearchedOrders] = useState<OrderRecord[] | null>(null);
@@ -64,7 +67,7 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
     setError(null);
 
     try {
-      const res = await fetch(`/api/orders/track?q=${encodeURIComponent(searchQuery.trim())}`);
+      const res = await fetch(`/api/orders/track?q=${encodeURIComponent(searchQuery.trim())}&phone=${encodeURIComponent(phone)}`);
       const data = await res.json();
 
       if (!res.ok || data.error) {
@@ -77,8 +80,8 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
       } else {
         setSearchedOrders(data.orders);
       }
-    } catch (err: any) {
-      setError(err.message || 'অর্ডার খুঁজে পাওয়া যায়নি');
+    } catch (err) {
+      setError((err instanceof Error ? err.message : '') || 'অর্ডার খুঁজে পাওয়া যায়নি');
     } finally {
       setLoading(false);
     }
@@ -89,6 +92,8 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
   const getStatusBadge = (status: string) => {
     const s = status.toUpperCase();
     switch (s) {
+      case 'PENDING':
+        return <span className="text-xs text-amber-300">অর্ডার গ্রহণ করা হয়েছে (Awaiting confirmation)</span>;
       case 'DELIVERED':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
@@ -132,7 +137,7 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
             অর্ডার ট্র্যাক করুন <span className="text-orange-500">/ Track Order</span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            আপনার মোবাইল নম্বর অথবা ইনভয়েস/অর্ডার আইডি দিয়ে সরাসরি বর্তমান স্ট্যাটাস জানুন।
+            আপনার মোবাইল নম্বর এবং সম্পূর্ণ অর্ডার আইডি দিয়ে সরাসরি বর্তমান স্ট্যাটাস জানুন।
           </p>
         </div>
 
@@ -145,10 +150,11 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="মোবাইল নম্বর (যেমন: 017XXXXXXXX) অথবা অর্ডার আইডি..."
+                aria-label="Full order ID" placeholder="Full order ID from your confirmation"
                 className="w-full pl-12 pr-4 py-3.5 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500 transition-colors"
               />
             </div>
+            <input aria-label="Order phone number" type="tel" required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Order phone number" className="min-w-0 px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white" />
             <button
               type="submit"
               disabled={loading}
@@ -178,7 +184,7 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
             <Package className="w-16 h-16 text-orange-500/20 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">কোনো অর্ডার পাওয়া যায়নি</h3>
             <p className="text-gray-400 text-sm max-w-sm mx-auto mb-6">
-              আপনার সঠিক ফোন নম্বর অথবা অর্ডার আইডি দিয়ে উপরে সার্চ করুন, অথবা আমাদের স্টোর থেকে নতুন অর্ডার করুন।
+              আপনার সঠিক ফোন নম্বর এবং সম্পূর্ণ অর্ডার আইডি দিয়ে উপরে সার্চ করুন, অথবা আমাদের স্টোর থেকে নতুন অর্ডার করুন।
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
@@ -288,11 +294,11 @@ export default function OrdersClient({ initialOrders, isLoggedIn }: OrdersClient
                           <ExternalLink className="w-3 h-3 ml-0.5" />
                         </a>
                       ) : (
-                        <span className="text-gray-500 italic text-[11px]">কুরিয়ার কোড তৈরি হচ্ছে</span>
+                        <span className="text-gray-500 italic text-[11px]">ডিসপ্যাচের অপেক্ষায়</span>
                       )}
 
                       <a
-                        href={`https://wa.me/8801755723451?text=${encodeURIComponent(`Hello Zia's Tech Shop! I want to check my order #${order.shortId || order.id.slice(0, 8)}.`)}`}
+                        href={`https://wa.me/${support}?text=${encodeURIComponent(`Hello Zia's Tech Shop! I want to check my order #${order.shortId || order.id.slice(0, 8)}.`)}`}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 font-semibold transition-colors text-xs"

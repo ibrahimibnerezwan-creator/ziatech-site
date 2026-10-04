@@ -1,4 +1,5 @@
 "use client";
+import { uploadImage } from '@/lib/upload-client';
 
 import React, { useState } from 'react';
 import { X, UploadCloud, Loader2, Image as ImageIcon } from 'lucide-react';
@@ -76,33 +77,8 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
       const safeName = selectedFile.name.replace(/\.[^.]+$/, '.jpg');
 
       setStepMsg('🔐 Securing upload authorization...');
-      const urlRes = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: safeName,
-          contentType: 'image/jpeg',
-        }),
-      });
+      const publicUrl = await uploadImage(compressedBlob, safeName);
 
-      if (!urlRes.ok) {
-        throw new Error('Upload authentication failed. Check admin session.');
-      }
-
-      const { uploadUrl, publicUrl } = await urlRes.json();
-
-      setStepMsg('☁️ Storing photo in Cloudflare R2...');
-      const r2Res = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'image/jpeg' },
-        body: compressedBlob,
-      });
-
-      if (!r2Res.ok) {
-        throw new Error('Direct R2 upload failed.');
-      }
-
-      setStepMsg('💾 Linking photo to product...');
       const mediaRes = await fetch('/api/products/media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,9 +94,9 @@ export default function AddMediaModal({ productId, onClose, onMediaAdded }: AddM
       }
 
       onMediaAdded();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorMsg(err.message || 'Upload failed. Please try again.');
+      setErrorMsg((err instanceof Error ? err.message : '') || 'Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
       setStepMsg('');

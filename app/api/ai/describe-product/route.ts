@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { imageBase64, mimeType } = await req.json();
-    if (!imageBase64 || !mimeType) {
+    if (typeof imageBase64 !== 'string' || imageBase64.length > 3000000 || !['image/jpeg','image/png','image/webp'].includes(mimeType)) {
       return NextResponse.json({ error: 'Missing image data' }, { status: 400 });
     }
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     ]);
 
     const responseText = result.response.text();
-    let parsed: any;
+    let parsed: Record<string, unknown>;
     try {
       const clean = responseText.replace(/```(?:json)?\s*/gi, '').replace(/```\s*$/gi, '').trim();
       parsed = JSON.parse(clean);
@@ -58,10 +58,10 @@ export async function POST(req: NextRequest) {
       category: parsed.category || 'Components',
       specs: parsed.specs || {},
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Gemini Vision error:', error);
     return NextResponse.json(
-      { error: error.message || 'AI could not analyze this hardware image' },
+      { error: 'AI description is currently unavailable. Please enter the details manually.' },
       { status: 500 }
     );
   }

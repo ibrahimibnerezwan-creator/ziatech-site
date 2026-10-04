@@ -14,6 +14,8 @@ type Product = {
     rating: number
     reviews: number
     stock: number
+    createdAt?: number
+    isFeatured?: boolean
 }
 
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'newest'
@@ -33,7 +35,11 @@ export function CategoryResults({ products }: { products: Product[] }) {
                 list.sort((a, b) => b.price - a.price)
                 break
             case 'newest':
+                list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))
+                break
             case 'featured':
+                list.sort((a,b) => Number(b.isFeatured) - Number(a.isFeatured))
+                break
             default:
                 break
         }
@@ -42,7 +48,7 @@ export function CategoryResults({ products }: { products: Product[] }) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <aside className="hidden md:block space-y-8 sticky top-24 h-fit">
+            <aside className="space-y-4 md:space-y-8 md:sticky top-24 h-fit">
                 <div className="space-y-2">
                     <h3 className="font-bold text-white mb-2">Availability</h3>
                     <label className="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
@@ -59,6 +65,7 @@ export function CategoryResults({ products }: { products: Product[] }) {
                 <div className="space-y-2">
                     <h3 className="font-bold text-white mb-2">Sort</h3>
                     <select
+                        aria-label="Sort products"
                         value={sort}
                         onChange={(e) => setSort(e.target.value as SortKey)}
                         className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-accent-500"

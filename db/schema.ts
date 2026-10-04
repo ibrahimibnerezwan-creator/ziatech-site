@@ -165,3 +165,7 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   }),
 }));
 
+
+export const requestLimits = sqliteTable('request_limits', {
+ key: text('key').primaryKey(), attempts: integer('attempts').notNull().default(0), expiresAt: integer('expires_at').notNull()
+});

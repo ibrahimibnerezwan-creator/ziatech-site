@@ -24,14 +24,14 @@ export function Hero() {
 
                 {/* TEXT CONTENT */}
                 <motion.div
-                    initial={{ opacity: 0, x: -40 }}
+                    initial={false}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
                     className="space-y-8 text-center md:text-left order-2 md:order-1"
                 >
                     {/* Tag — pill badge style, NOT Binary's rectangle */}
                     <motion.div
-                        initial={{ opacity: 0, y: 15 }}
+                        initial={false}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                         className="inline-flex items-center space-x-2 border border-primary-500/25 bg-primary-500/8 rounded-full px-5 py-2 backdrop-blur-sm"
@@ -70,16 +70,16 @@ export function Hero() {
                     {/* Stats — pill badges (distinct from Binary's divider layout) */}
                     <div className="pt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
                         <div className="flex items-center space-x-2 bg-white/5 rounded-full px-4 py-2 border border-white/5">
-                            <span className="text-lg font-bold text-white font-display">50k+</span>
+                            <span className="text-lg font-bold text-white font-display">Quality</span>
                             <span className="text-xs text-text-muted">Components</span>
                         </div>
                         <div className="flex items-center space-x-2 bg-white/5 rounded-full px-4 py-2 border border-white/5">
-                            <span className="text-lg font-bold text-white font-display">24h</span>
+                            <span className="text-lg font-bold text-white font-display">Nationwide</span>
                             <span className="text-xs text-text-muted">Delivery</span>
                         </div>
                         <div className="flex items-center space-x-2 bg-white/5 rounded-full px-4 py-2 border border-white/5">
-                            <span className="text-lg font-bold text-white font-display">4.9★</span>
-                            <span className="text-xs text-text-muted">Trusted</span>
+                            <span className="text-lg font-bold text-white font-display">Maker</span>
+                            <span className="text-xs text-text-muted">Focused</span>
                         </div>
                     </div>
                 </motion.div>

@@ -2,11 +2,12 @@
 
 import { Zap, ArrowRight } from 'lucide-react'
 import { CountdownTimer } from '@/components/ui/countdown-timer'
+import type { ProductForCard } from '@/lib/data'
 import { ProductCard } from '@/components/product/product-card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
-export function FlashSale({ products }: { products: any[] }) {
+export function FlashSale({ products }: { products: ProductForCard[] }) {
     const tomorrow = new Date()
     tomorrow.setHours(24, 0, 0, 0)
 
@@ -29,9 +30,9 @@ export function FlashSale({ products }: { products: any[] }) {
                         <p className="text-text-secondary text-sm">Limited time offers. Don&apos;t miss out.</p>
                     </div>
 
-                    <CountdownTimer targetDate={tomorrow} />
+                    <span className="text-sm text-gray-400">Current offers while stocks last</span>
 
-                    <Link href="/categories">
+                    <Link href="/category/all">
                         <Button variant="outline" className="hidden md:flex border-red-500/20 text-red-400 hover:bg-red-500/10 rounded-full font-bold">
                             View All Deals <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>
@@ -45,7 +46,7 @@ export function FlashSale({ products }: { products: any[] }) {
                 </div>
 
                 <div className="mt-8 md:hidden flex justify-center relative z-10">
-                    <Link href="/categories" className="w-full">
+                    <Link href="/category/all" className="w-full">
                         <Button variant="outline" className="w-full border-red-500/20 text-red-400 rounded-full">
                             View All Deals <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>

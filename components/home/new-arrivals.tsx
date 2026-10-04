@@ -1,11 +1,12 @@
 "use client"
 
+import type { ProductForCard } from '@/lib/data'
 import { ProductCard } from '@/components/product/product-card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
-export function NewArrivals({ products }: { products: any[] }) {
+export function NewArrivals({ products }: { products: ProductForCard[] }) {
     if (!products || products.length === 0) return null
 
     return (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Settings, Save, Check, Loader2, Store, Phone, MessageCircle, Mail, MapPin, CreditCard, Truck, Share2 } from 'lucide-react';
 
 export default function SettingsManager() {
+  const [errorMsg, setErrorMsg] = useState('');
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -11,11 +12,11 @@ export default function SettingsManager() {
 
   useEffect(() => {
     fetch('/api/admin/settings?t=' + Date.now())
-      .then((res) => res.json())
+      .then((res) => { if(!res.ok) throw new Error('Unable to load settings. Please sign in again.'); return res.json(); })
       .then((data) => {
         if (data && typeof data === 'object') setSettings(data);
       })
-      .catch(() => {})
+      .catch(e => setErrorMsg(e.message))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -27,6 +28,7 @@ export default function SettingsManager() {
     e.preventDefault();
     setIsSaving(true);
     setSuccessMsg('');
+    setErrorMsg('');
 
     try {
       const res = await fetch('/api/admin/settings', {
@@ -39,14 +41,16 @@ export default function SettingsManager() {
         setSuccessMsg('Settings saved successfully!');
         setTimeout(() => setSuccessMsg(''), 4000);
       } else {
-        alert('Failed to save settings.');
+        const body = await res.json().catch(()=>({})); setErrorMsg(body.error || 'Failed to save settings.');
       }
     } catch {
-      alert('Error saving settings.');
+      setErrorMsg('Error saving settings.');
     } finally {
       setIsSaving(false);
     }
   };
+
+  if (isLoading) return <p role="status" className="text-orange-300">Loading store settings…</p>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -69,6 +73,7 @@ export default function SettingsManager() {
         )}
       </div>
 
+      {errorMsg && <p role="alert" className="text-red-300">{errorMsg}</p>}
       <form onSubmit={handleSave} className="space-y-6">
         {/* Identity & Contact */}
         <div className="bg-[#18110b] border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-xl space-y-5">
@@ -82,7 +87,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Store Name</label>
               <input
                 type="text"
-                value={settings.storeName || "Zia's Tech Shop"}
+                value={settings.storeName ?? ''}
                 onChange={(e) => handleChange('storeName', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -92,7 +97,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Customer Hotline Phone</label>
               <input
                 type="text"
-                value={settings.phone || '+880 1712-345678'}
+                value={settings.phone ?? ''}
                 onChange={(e) => handleChange('phone', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -102,7 +107,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Official WhatsApp Number</label>
               <input
                 type="text"
-                value={settings.whatsapp || '01712345678'}
+                value={settings.whatsapp ?? ''}
                 onChange={(e) => handleChange('whatsapp', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -112,7 +117,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Support Email</label>
               <input
                 type="email"
-                value={settings.email || 'support@ziatech.shop'}
+                value={settings.email ?? ''}
                 onChange={(e) => handleChange('email', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -122,7 +127,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Warehouse / Store Physical Address</label>
               <input
                 type="text"
-                value={settings.address || 'Agargaon Tech Market, Dhaka, Bangladesh'}
+                value={settings.address ?? ''}
                 onChange={(e) => handleChange('address', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -142,7 +147,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">bKash Merchant / Personal No.</label>
               <input
                 type="text"
-                value={settings.bkash_number || '01712345678'}
+                value={settings.bkash_number ?? ''}
                 onChange={(e) => handleChange('bkash_number', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -152,7 +157,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Nagad Merchant / Personal No.</label>
               <input
                 type="text"
-                value={settings.nagad_number || '01712345678'}
+                value={settings.nagad_number ?? ''}
                 onChange={(e) => handleChange('nagad_number', e.target.value)}
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-orange-400 focus:outline-none"
               />
@@ -172,7 +177,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Steadfast API Key</label>
               <input
                 type="text"
-                value={settings.steadfast_api_key || ''}
+                value={settings.steadfast_api_key ?? ''}
                 onChange={(e) => handleChange('steadfast_api_key', e.target.value)}
                 placeholder="c5hrdhmpssren..."
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-400 focus:outline-none"
@@ -183,7 +188,7 @@ export default function SettingsManager() {
               <label className="block text-[11px] font-bold text-slate-300 uppercase mb-1">Steadfast Secret Key</label>
               <input
                 type="password"
-                value={settings.steadfast_secret_key || ''}
+                value={settings.steadfast_secret_key ?? ''}
                 onChange={(e) => handleChange('steadfast_secret_key', e.target.value)}
                 placeholder="••••••••••••"
                 className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-400 focus:outline-none"
@@ -196,7 +201,7 @@ export default function SettingsManager() {
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={isSaving || isLoading}
             className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold rounded-2xl text-sm transition flex items-center gap-2 shadow-lg shadow-orange-500/20 disabled:opacity-50"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

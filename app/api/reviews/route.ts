@@ -1,6 +1,8 @@
+import { rateLimit } from '@/lib/rate-limit';
+import { InputError, textValue, numberValue, errorResponse } from '@/lib/validation';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { reviews } from '@/db/schema';
+import { reviews, products } from '@/db/schema';
 import { desc, eq, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -40,13 +42,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(request: Request) {
   try {
-    const { productId, rating, comment, reviewerName } = await request.json();
-
-    if (!productId || !rating || !reviewerName) {
-      return NextResponse.json({ error: 'Missing required review fields' }, { status: 400 });
-    }
-
-    const numRating = Math.max(1, Math.min(5, Number(rating) || 5));
+    await rateLimit('review', 6, 15);
+    const body = await request.json();
+    const productId = textValue(body.productId, 'product ID', 100);
+    const reviewerName = textValue(body.reviewerName, 'reviewer name', 100);
+    const comment = textValue(body.comment || '', 'review', 3000, false);
+    const numRating = numberValue(body.rating, 'rating', true, 1);
+    if (numRating > 5) throw new InputError('Rating must be between 1 and 5.');
+    if (!(await db.query.products.findFirst({where:eq(products.id,productId)}))) throw new InputError('Product not found.',404);
 
     await db.insert(reviews).values({
       id: uuidv4(),
@@ -65,6 +68,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Failed to submit review:', error);
-    return NextResponse.json({ error: 'Failed to submit review' }, { status: 500 });
+    return errorResponse(error, 'Failed to submit review');
   }
 }

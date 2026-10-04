@@ -1,6 +1,7 @@
+import { notFound } from 'next/navigation';
 import { db } from '@/db';
 import { products, categories, productImages, brands, orders, orderItems, storeSettings, reviews, users } from '@/db/schema';
-import { eq, desc, ne, isNotNull, sql, and, or, like } from 'drizzle-orm';
+import { eq, asc, desc, ne, isNotNull, sql, and, or, like } from 'drizzle-orm';
 
 // ==================== PRODUCT QUERIES ====================
 
@@ -16,6 +17,8 @@ export interface ProductForCard {
   reviews: number;
   isNew?: boolean;
   stock: number;
+  isFeatured?: boolean;
+  createdAt?: number;
 }
 
 export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
@@ -25,7 +28,7 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       reviews: {
@@ -48,6 +51,8 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
     reviews: p.reviews.length,
     isNew: true,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
   }));
 }
 
@@ -59,7 +64,7 @@ export async function getFeaturedProducts(limit = 4): Promise<ProductForCard[]> 
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       reviews: {
@@ -81,18 +86,20 @@ export async function getFeaturedProducts(limit = 4): Promise<ProductForCard[]> 
       : 0,
     reviews: p.reviews.length,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
   }));
 }
 
 export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]> {
   const result = await db.query.products.findMany({
-    where: isNotNull(products.comparePrice),
+    where: sql`${products.comparePrice} > ${products.price}`,
     orderBy: [desc(products.createdAt)],
     limit: limit,
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       reviews: {
@@ -114,6 +121,8 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
       : 0,
     reviews: p.reviews.length,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
   }));
 }
 
@@ -124,7 +133,7 @@ export async function getProductBySlug(slug: string) {
     where: eq(products.slug, slug),
     with: {
       images: {
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       brand: true,
@@ -159,7 +168,7 @@ export async function getRelatedProducts(categoryId: string, excludeId: string, 
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       reviews: {
@@ -181,10 +190,12 @@ export async function getRelatedProducts(categoryId: string, excludeId: string, 
       : 0,
     reviews: p.reviews.length,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
   }));
 }
 
-export async function getProductsByCategory(slug: string, limit = 20): Promise<{ products: ProductForCard[], categoryName: string }> {
+export async function getProductsByCategory(slug: string, limit?: number): Promise<{ products: ProductForCard[], categoryName: string }> {
   let categoryId: string | undefined;
   let categoryName = 'All Products';
 
@@ -195,16 +206,17 @@ export async function getProductsByCategory(slug: string, limit = 20): Promise<{
     if (catRows) {
       categoryName = catRows.name;
       categoryId = catRows.id;
-    }
+    } else { notFound(); }
   }
 
   const result = await db.query.products.findMany({
     where: categoryId ? eq(products.categoryId, categoryId) : undefined,
+    orderBy: [desc(products.createdAt)],
     limit: limit,
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       reviews: {
@@ -226,6 +238,8 @@ export async function getProductsByCategory(slug: string, limit = 20): Promise<{
       : 0,
     reviews: p.reviews.length,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
   }));
 
   return { products: productsForCard, categoryName };
@@ -239,7 +253,7 @@ export async function getAllProducts() {
     with: {
       images: {
         limit: 1,
-        orderBy: [desc(productImages.sortOrder)],
+        orderBy: [asc(productImages.sortOrder)],
       },
       category: true,
       brand: true,
@@ -252,6 +266,8 @@ export async function getAllProducts() {
     slug: p.slug,
     price: p.price,
     stock: p.stock,
+    isFeatured: p.isFeatured,
+    createdAt: p.createdAt.getTime(),
     categoryName: p.category?.name || 'Uncategorized',
     brandName: p.brand?.name || 'Store Brand',
     imageUrl: p.images[0]?.url,
@@ -297,13 +313,7 @@ export async function getTotalRevenue() {
   return result[0].sum || 0;
 }
 
-export async function getStoreSettings() {
-  const result = await db.select().from(storeSettings);
-  return result.reduce((acc, curr) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {} as Record<string, string>);
-}
+export { publicSettings as getStoreSettings } from './settings';
 
 export async function getStoreSetting(key: string, defaultValue = '') {
   const result = await db.select().from(storeSettings).where(eq(storeSettings.key, key)).limit(1);
@@ -387,7 +397,7 @@ export async function getOrderById(id: string) {
             with: {
               images: {
                 limit: 1,
-                orderBy: [desc(productImages.sortOrder)],
+                orderBy: [asc(productImages.sortOrder)],
               }
             }
           }

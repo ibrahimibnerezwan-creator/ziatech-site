@@ -1,15 +1,15 @@
 import { db } from '@/db';
 import { orders, orderItems, products, productImages } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, asc } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
-import OrdersClient from './OrdersClient';
+import OrdersClient, {type OrderRecord} from './OrdersClient';
 
 export const dynamic = 'force-dynamic';
 
 export default async function MyOrdersPage() {
   const user = await getCurrentUser();
 
-  let initialOrders: any[] = [];
+  let initialOrders: OrderRecord[] = [];
 
   if (user) {
     try {
@@ -23,7 +23,7 @@ export default async function MyOrdersPage() {
                 with: {
                   images: {
                     limit: 1,
-                    orderBy: [desc(productImages.sortOrder)],
+                    orderBy: [asc(productImages.sortOrder)],
                   },
                 },
               },
@@ -34,7 +34,7 @@ export default async function MyOrdersPage() {
 
       initialOrders = userOrders.map(order => ({
         id: order.id,
-        shortId: order.id.slice(0, 8).toUpperCase(),
+        shortId: order.id,
         customerName: order.customerName,
         customerPhone: order.customerPhone,
         shippingCity: order.shippingCity,
@@ -44,7 +44,7 @@ export default async function MyOrdersPage() {
         paymentMethod: order.paymentMethod,
         paymentStatus: order.paymentStatus,
         status: order.status,
-        courierTrackingId: order.courierTrackingId,
+        courierTrackingId: order.courierTrackingId?.startsWith('DISPATCH_PENDING:') ? null : order.courierTrackingId,
         createdAt: order.createdAt,
         items: order.items.map(item => ({
           id: item.id,

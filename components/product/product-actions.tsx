@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ShoppingCart, Heart, Share2, Zap } from "lucide-react";
+import { WishlistButton } from "./wishlist-button";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart-context";
@@ -46,25 +47,9 @@ export function ProductActions({ product }: ProductActionsProps) {
     toast.success(`${product.name} (${qty} টি) কার্টে যোগ করা হয়েছে`);
   };
 
-  const handleWishlist = () => {
-    toast.success(`${product.name} উইশলিস্টে সেভ করা হয়েছে`);
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: product.name,
-          url: window.location.href,
-        })
-        .catch(() => {
-          navigator.clipboard.writeText(window.location.href);
-          toast.success("লিংক কপি করা হয়েছে!");
-        });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("লিংক কপি করা হয়েছে!");
-    }
+  const handleShare = async () => {
+    try { await navigator.clipboard.writeText(window.location.href); toast.success('Product link copied.'); }
+    catch { window.prompt('Copy this product link:', window.location.href); }
   };
 
   return (
@@ -119,14 +104,7 @@ export function ProductActions({ product }: ProductActionsProps) {
             কার্টে যোগ করুন
           </Button>
 
-          <Button
-            variant="outline"
-            className="w-10 h-10 p-0 border-white/10 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-red-400 rounded-xl"
-            onClick={handleWishlist}
-            title="Wishlist"
-          >
-            <Heart className="w-4 h-4" />
-          </Button>
+          <WishlistButton id={product.id} label className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/10 py-3 text-gray-300" />
 
           <Button
             variant="outline"

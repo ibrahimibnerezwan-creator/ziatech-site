@@ -1,13 +1,16 @@
 import React from 'react'
 import Link from 'next/link'
 import { Hexagon } from 'lucide-react'
-import { getAllCategoriesWithCount } from '@/lib/data'
+import { getAllCategoriesWithCount, getStoreSettings } from '@/lib/data'
 import { getCurrentUser } from '@/lib/auth'
 import { HeaderClient } from './header-client'
 
 export async function Header() {
     const dbCategories = await getAllCategoriesWithCount()
     const user = await getCurrentUser()
+    const settings = await getStoreSettings()
+    const phone = settings.phone || settings.whatsapp || ''
+    const whatsapp = (settings.whatsapp || phone).replace(/\D/g, '').replace(/^0/, '880')
     
     return (
         <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0c0906]/90 backdrop-blur-xl border-b border-orange-500/10">
@@ -21,12 +24,12 @@ export async function Header() {
                 <span className="hidden sm:inline text-gray-300">🚚 সারাদেশে ক্যাশ অন ডেলিভারি (Steadfast Courier)</span>
                 <span className="text-white/20 hidden sm:inline">|</span>
                 <a
-                    href="https://wa.me/8801755723451"
+                    href={`https://wa.me/${whatsapp}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-orange-400 hover:text-orange-300 hover:underline font-semibold flex items-center gap-1"
                 >
-                    📞 হটলাইন: 01755-723451
+                    📞 হটলাইন: {phone}
                 </a>
             </div>
 

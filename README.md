@@ -1,51 +1,24 @@
-# Zia's Tech Shop
+# ZiaTech
 
-Live Store: **[ziastech.shop](#)** (Replace with actual domain when purchased)
+Storefront: https://ziatech.shopbd.app — Admin: https://ziatech.shopbd.app/admin
 
-A modern, high-performance e-commerce platform built for electronics retail.
+Next.js 16 and React 19 storefront with a Turso/libSQL database, Drizzle ORM, Cloudflare R2 images, customer accounts and an authenticated merchant dashboard.
 
-## Technology Stack
-- **Framework:** Next.js 16 (App Router)
-- **UI & Styling:** React 19, Tailwind CSS v4, Radix UI UI Primitives
-- **Animations:** Framer Motion, Three.js (for 3D elements)
-- **Database:** PostgreSQL (Neon Serverless)
-- **ORM:** Prisma
+## Development
 
-## Project Structure
-- `/app` - Next.js App Router pages and API routes
-  - `/admin` - Secure dashboard for product & order management
-- `/components` - Reusable UI components
-  - `/home` - Sections for the landing page
-  - `/product` - Product cards and details
-  - `/ui` - Base UI elements (buttons, inputs)
-- `/prisma` - Database schema and migration files
-- `/docs` - Maintenance and client handoff guides
+1. Run `npm ci` with Node.js 20.19+.
+2. Copy `.env.example` to `.env.local`. Set your database, admin credentials, and a random `JWT_SECRET` of at least 32 characters. Keep environment files private.
+3. For a new local database, use Drizzle schema push with local credentials. Never use schema push on a populated production database without reviewing its proposed changes.
+4. Run `npm run dev` and open http://localhost:3000.
 
-## Local Development
+## Verification
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+`npm test` creates a disposable SQLite database under `.audit/` and checks checkout, inventory, order transitions and catalogue changes.
 
-2. **Environment Setup**
-   Copy the example environment file and fill in your Neon database URL.
-   ```bash
-   cp .env.example .env
-   ```
+`npm run test:e2e` creates separate synthetic fixtures and starts the site on port 3187. Install Chromium with `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH=/usr/bin/chromium`. Stop any server using that port first. Browser tests disable real storage, courier and AI credentials; the upload UI test uses a mock response.
 
-3. **Database Setup**
-   ```bash
-   npx prisma generate
-   npx prisma migrate deploy
-   ```
+Run `npm run typecheck` and `npm run build` with development environment values. Real R2 uploads and production environment settings require separate release checks.
 
-4. **Start Development Server**
-   ```bash
-   npm run dev
-   ```
+## Operations
 
-Navigate to `http://localhost:3000`.
-
-## Maintainer Notes
-See the `/docs/internal` folder for historical guides and `/docs/MAINTENANCE.md` for standard operating procedures.
+See [merchant guide](docs/CLIENT_GUIDE.md) and [maintenance guide](docs/MAINTENANCE.md). Older documents under `docs/internal/` are historical and may describe superseded hosting, database or access arrangements.

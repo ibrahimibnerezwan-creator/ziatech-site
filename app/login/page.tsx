@@ -16,7 +16,8 @@ export default function LoginPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const from = searchParams.get('from') || ''
+    const requestedFrom = searchParams.get('from') || ''
+    const from = requestedFrom.startsWith('/') && !requestedFrom.startsWith('//') && !requestedFrom.includes('\\') ? requestedFrom : ''
     const isAdminLogin = from.startsWith('/admin')
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -161,7 +162,7 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
                                 <Label htmlFor="password" className="text-text-secondary text-xs font-bold uppercase tracking-wider">Password</Label>
-                                <Link href="#" className="text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
+                                <Link href="/contact" className="text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
                                     Forgot?
                                 </Link>
                             </div>

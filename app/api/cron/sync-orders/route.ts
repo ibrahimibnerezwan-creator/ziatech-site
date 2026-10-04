@@ -1,3 +1,4 @@
+import { courierCredentials } from '@/lib/settings';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { orders } from '@/db/schema';
@@ -24,14 +25,13 @@ function mapSteadfastStatus(sfStatus: string): string | null {
 
 export async function GET(req: NextRequest) {
   const auth = req.headers.get('authorization');
-  const expectedSecret = process.env.CRON_SECRET || 'ziatech_cron_secret_2026_token';
+  const expectedSecret = process.env.CRON_SECRET;
 
-  if (auth && auth !== `Bearer ${expectedSecret}`) {
+  if (!expectedSecret || auth !== `Bearer ${expectedSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const apiKey = process.env.STEADFAST_API_KEY;
-  const secretKey = process.env.STEADFAST_SECRET_KEY;
+  const { apiKey, secretKey } = await courierCredentials();
 
   if (!apiKey || !secretKey) {
     return NextResponse.json({ error: 'Missing Steadfast credentials' }, { status: 503 });
@@ -57,9 +57,10 @@ export async function GET(req: NextRequest) {
     for (const order of activeOrders) {
       try {
         const tracking = order.courierTrackingId;
-        if (!tracking) continue;
+        if (!tracking || tracking.startsWith('DISPATCH_PENDING:')) continue;
 
-        const res = await fetch(`${STEADFAST_BASE}/status_by_trackingcode/${tracking}`, {
+        const res = await fetch(`${STEADFAST_BASE}/status_by_trackingcode/${encodeURIComponent(tracking)}`, {
+          signal: AbortSignal.timeout(10000),
           headers: {
             'Api-Key': apiKey,
             'Secret-Key': secretKey,
@@ -91,8 +92,8 @@ export async function GET(req: NextRequest) {
       synced: activeOrders.length,
       updated: updatedCount,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Steadfast cron sync error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Unable to synchronize courier statuses. Please try again.' }, { status: 500 });
   }
 }

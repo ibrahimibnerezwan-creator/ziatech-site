@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {}
+export type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement>
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, children, ...props }, ref) => {
@@ -31,7 +31,7 @@ Select.displayName = "Select"
 export { Select }
 
 // Simplified versions of the subcomponents to satisfy the usage in OrderFilters
-export const SelectTrigger = ({ children, className }: any) => <div className={className}>{children}</div>
-export const SelectValue = ({ placeholder }: any) => <span>{placeholder}</span>
-export const SelectContent = ({ children }: any) => <>{children}</>
-export const SelectItem = ({ children, value }: any) => <option value={value}>{children}</option>
+export const SelectTrigger = ({ children, className }: React.HTMLAttributes<HTMLDivElement>) => <div className={className}>{children}</div>
+export const SelectValue = ({ placeholder }: {placeholder?:string}) => <span>{placeholder}</span>
+export const SelectContent = ({ children }: {children?:React.ReactNode}) => <>{children}</>
+export const SelectItem = ({ children, value }: React.OptionHTMLAttributes<HTMLOptionElement>) => <option value={value}>{children}</option>

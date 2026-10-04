@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
 import { placeOrder } from './actions'
@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { CreditCard, Truck, Receipt, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
+import { deliveryFee } from '@/lib/validation'
 
 interface Settings {
     [key: string]: string
@@ -24,6 +25,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
     const { items, totalPrice, clearCart } = useCart()
     const router = useRouter()
 
+    const requestId = useRef<string | null>(null)
     const [step, setStep] = useState<1 | 2 | 3>(1)
     const [isLoading, setIsLoading] = useState(false)
 
@@ -33,11 +35,11 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
         customerPhone: '',
         address: '',
         shippingCity: 'Dhaka',
-        paymentMethod: 'bkash', // bkash, nagad, cod
+        paymentMethod: 'cod', // bkash, nagad, cod
         transactionId: '',
     })
 
-    const shippingCost = formData.shippingCity.toLowerCase() === 'dhaka' ? 60 : 120
+    const shippingCost = deliveryFee(formData.shippingCity)
     const finalTotal = totalPrice + shippingCost
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -63,23 +65,28 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
     const prevStep = () => setStep(prev => (prev - 1) as 1 | 2 | 3)
 
     const handleSubmit = async () => {
+        if (isLoading) return
         setIsLoading(true)
-
+        requestId.current ||= crypto.randomUUID()
+        try {
         const result = await placeOrder({
             ...formData,
+            requestId: requestId.current,
             items: items.map(i => ({ id: i.id, quantity: i.quantity, price: i.price })),
             deliveryCharge: shippingCost,
             total: finalTotal
         })
 
-        if (result.error) {
+        if ('error' in result) {
             toast.error(result.error)
+            requestId.current = null
             setIsLoading(false)
         } else {
             clearCart()
             toast.success('Order placed successfully!')
             router.push(`/order-confirmation/${result.orderId}`)
         }
+        } catch { toast.error("Network error. Please try again.") } finally { setIsLoading(false) }
     }
 
     if (items.length === 0) {
@@ -154,6 +161,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                     className="w-full h-10 px-3 py-2 bg-black/40 border-white/10 text-white border rounded-md focus:outline-none focus:ring-1 focus:ring-accent-500/50"
                                 >
                                     <option value="Dhaka">Dhaka City (৳60)</option>
+                                    <option value="Dhaka Suburbs (Gazipur/Savar/Narayanganj)">Dhaka Suburbs (৳100)</option>
                                     <option value="Outside Dhaka">Outside Dhaka (৳120)</option>
                                 </select>
                             </div>
@@ -174,16 +182,16 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                             {/* bKash Option */}
                             <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center gap-3 transition-all ${formData.paymentMethod === 'bkash' ? 'border-[#e2136e] bg-[#e2136e]/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}>
-                                <input type="radio" name="paymentMethod" value="bkash" checked={formData.paymentMethod === 'bkash'} onChange={handleInputChange} className="sr-only" />
+                                <input type="radio" name="paymentMethod" value="bkash" disabled={!settings.bkash_number} checked={formData.paymentMethod === 'bkash'} onChange={handleInputChange} className="sr-only" />
                                 <div className="w-12 h-12 bg-[#e2136e] rounded flex items-center justify-center font-bold text-white text-xs">bKash</div>
-                                <span className="text-white font-medium">bKash</span>
+                                <span className="text-white font-medium">bKash{!settings.bkash_number && " (unavailable)"}</span>
                             </label>
 
                             {/* Nagad Option */}
                             <label className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center gap-3 transition-all ${formData.paymentMethod === 'nagad' ? 'border-[#f37021] bg-[#f37021]/10' : 'border-white/10 bg-black/40 hover:border-white/30'}`}>
-                                <input type="radio" name="paymentMethod" value="nagad" checked={formData.paymentMethod === 'nagad'} onChange={handleInputChange} className="sr-only" />
+                                <input type="radio" name="paymentMethod" value="nagad" disabled={!settings.nagad_number} checked={formData.paymentMethod === 'nagad'} onChange={handleInputChange} className="sr-only" />
                                 <div className="w-12 h-12 bg-[#f37021] rounded flex items-center justify-center font-bold text-white text-xs">Nagad</div>
-                                <span className="text-white font-medium">Nagad</span>
+                                <span className="text-white font-medium">Nagad{!settings.nagad_number && " (unavailable)"}</span>
                             </label>
 
                             {/* COD Option */}

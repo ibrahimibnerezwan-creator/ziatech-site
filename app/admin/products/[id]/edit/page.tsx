@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
+import type { getProductById } from '@/lib/data'
 import { updateProduct } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +15,7 @@ export default function EditProductPage() {
     const router = useRouter()
     const id = params.id as string
     
-    const [product, setProduct] = useState<any>(null)
+    const [product, setProduct] = useState<Awaited<ReturnType<typeof getProductById>> | null>(null)
     const [categories, setCategories] = useState<{id: string, name: string}[]>([])
     const [imageUrl, setImageUrl] = useState('')
     const [isLoading, setIsLoading] = useState(true)
@@ -95,7 +96,7 @@ export default function EditProductPage() {
                                 name="comparePrice"
                                 type="number"
                                 step="0.01"
-                                defaultValue={product.comparePrice}
+                                defaultValue={product.comparePrice ?? ''}
                                 placeholder="0.00"
                                 className="bg-black/20 border-white/10"
                             />

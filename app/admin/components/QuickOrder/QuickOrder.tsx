@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, Plus, Check, Loader2, Sparkles, Phone, MapPin, User, Package } from 'lucide-react';
 
 interface ProductItem {
@@ -15,6 +15,7 @@ interface QuickOrderProps {
 }
 
 export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
+  const requestId = useRef<string | null>(null);
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [quantity, setQuantity] = useState('1');
@@ -53,6 +54,8 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
       return;
     }
 
+    if (isSubmitting) return;
+    requestId.current ||= crypto.randomUUID();
     setIsSubmitting(true);
     setMsg(null);
 
@@ -61,6 +64,7 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          requestId: requestId.current,
           customerName,
           customerPhone,
           address,
@@ -74,13 +78,15 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setMsg({ type: 'success', text: `Order created successfully! (ID: ${data.orderId.slice(-6).toUpperCase()})` });
+        setMsg({ type: 'success', text: `Order created successfully! (ID: ${data.orderId})` });
         setCustomerName('');
         setCustomerPhone('');
         setAddress('');
         setTrxId('');
+        requestId.current = null;
         onOrderCreated();
       } else {
+        if(res.status < 500) requestId.current = null;
         setMsg({ type: 'error', text: data.error || 'Failed to submit quick order.' });
       }
     } catch {
@@ -267,11 +273,11 @@ export default function QuickOrder({ onOrderCreated }: QuickOrderProps) {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Submitting & Dispatching...
+              <Loader2 className="w-4 h-4 animate-spin" /> Creating order...
             </>
           ) : (
             <>
-              <Check className="w-4 h-4" /> Place & Dispatch Order
+              <Check className="w-4 h-4" /> Create Order
             </>
           )}
         </button>

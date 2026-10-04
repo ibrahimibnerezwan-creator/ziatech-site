@@ -20,7 +20,7 @@ export function ProductGallery({
   price,
 }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const activeImage = images[selectedIndex]?.url || "/placeholder.png";
+  const activeImage = images[selectedIndex]?.url || "/placeholder.svg";
 
   const discount =
     comparePrice && comparePrice > price

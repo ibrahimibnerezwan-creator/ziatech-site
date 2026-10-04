@@ -10,7 +10,7 @@ interface ProductImage {
   url: string;
 }
 
-interface ProductItem {
+export interface ProductItem {
   id: string;
   name: string;
   title: string;
@@ -93,7 +93,8 @@ export default function ProductList({
         setEditingProduct(null);
         onProductUpdated();
       } else {
-        alert('Failed to save product updates.');
+        const data = await res.json();
+        alert(data.error || 'Failed to save product updates.');
       }
     } catch {
       alert('Error updating product.');
@@ -287,7 +288,7 @@ export default function ProductList({
       {/* Quick Edit Modal */}
       {editingProduct && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#18110b] border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#18110b] border border-slate-800 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Edit className="w-5 h-5 text-amber-400" />
               Edit Component Details

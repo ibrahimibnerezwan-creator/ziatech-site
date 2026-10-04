@@ -38,7 +38,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
     return (
         <>
             {/* DESKTOP NAV */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden lg:flex items-center space-x-5">
                 {topCategories.map((item) => (
                     <Link
                         key={item.id}
@@ -54,7 +54,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
             {/* SEARCH BAR */}
             <form
                 onSubmit={(e) => handleSearchSubmit(e, searchQuery)}
-                className="hidden md:block relative w-96 mx-4"
+                className="hidden md:block relative w-64 xl:w-80 mx-4"
             >
                 <motion.div
                     animate={{ scale: isSearchFocused ? 1.02 : 1 }}
@@ -75,7 +75,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                     <AnimatePresence>
                         {isSearchFocused && (
                             <motion.div
-                                initial={{ opacity: 0 }}
+                                initial={false}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 className="absolute inset-0 -z-10 bg-primary-500/15 blur-xl rounded-full"
@@ -95,9 +95,10 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                     <span>অর্ডার ট্র্যাক</span>
                 </Link>
 
-                <Link href="/cart">
+                <Link href="/wishlist" aria-label="Wishlist" className="text-orange-300 text-sm">Saved</Link>
+                <Link href="/cart" aria-label="Shopping cart">
                     <Button variant="ghost" size="icon" className="relative text-text-secondary hover:text-white hover:bg-white/5">
-                        <ShoppingCart className="w-5 h-5" />
+                        <ShoppingCart aria-label="Shopping cart" className="w-5 h-5" />
                         {totalItems > 0 && (
                             <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                                 {totalItems}
@@ -120,7 +121,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                         <AnimatePresence>
                             {isUserMenuOpen && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
+                                    initial={false}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
                                     className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-primary-700/20 rounded-2xl shadow-xl overflow-hidden z-50 py-1"
@@ -150,7 +151,7 @@ export function HeaderClient({ categories, user }: HeaderClientProps) {
                         </AnimatePresence>
                     </div>
                 ) : (
-                    <Link href="/login">
+                    <Link aria-label="Sign in" href="/login">
                         <Button variant="ghost" size="icon" className="hidden md:flex text-text-secondary hover:text-white hover:bg-white/5">
                             <User className="w-5 h-5" />
                         </Button>

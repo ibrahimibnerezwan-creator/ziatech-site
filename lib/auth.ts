@@ -1,9 +1,20 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-const secretKey = process.env.JWT_SECRET || 'ziatech-dev-secret-key-change-me';
-const key = new TextEncoder().encode(secretKey);
+function sessionKey() {
+    const secret = process.env.JWT_SECRET;
+    if (!secret || secret.length < 32) throw new Error('JWT_SECRET must contain at least 32 characters.');
+    return new TextEncoder().encode(secret);
+}
+export async function checkAdminPassword(password: unknown) {
+    if (typeof password !== 'string' || !password || password.length > 200) return false;
+    if (process.env.ADMIN_PASSWORD_HASH) return bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+    const expected = process.env.ADMIN_PASSWORD;
+    if (!expected) return false;
+    const { timingSafeEqual, createHash } = await import('node:crypto');
+    return timingSafeEqual(createHash('sha256').update(password).digest(), createHash('sha256').update(expected).digest());
+}
 
 export async function hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
@@ -14,19 +25,20 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
     return bcrypt.compare(password, hash);
 }
 
-export async function encrypt(payload: any) {
+export async function encrypt(payload: JWTPayload) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('7d')
-        .sign(key);
+        .sign(sessionKey());
 }
 
-export async function decrypt(input: string): Promise<any> {
+export async function decrypt(input: string): Promise<JWTPayload | null> {
     try {
-        const { payload } = await jwtVerify(input, key, {
+        const { payload } = await jwtVerify(input, sessionKey(), {
             algorithms: ['HS256'],
         });
+        if (typeof payload.userId !== 'string' || typeof payload.name !== 'string' || !['admin', 'customer'].includes(String(payload.role))) return null;
         return payload;
     } catch (error) {
         return null;

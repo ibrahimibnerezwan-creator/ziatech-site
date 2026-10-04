@@ -26,6 +26,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
         notFound()
     }
 
+    // The unguessable confirmation link shows a receipt without exposing delivery details.
     // Determine status styling
     let statusColor = "text-yellow-400 bg-yellow-400/20"
     if (orderRow.paymentStatus === 'VERIFIED') statusColor = "text-emerald-400 bg-emerald-400/20"
@@ -48,7 +49,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/10 pb-6 mb-6">
                         <div>
                             <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">Order ID</p>
-                            <p className="text-white font-mono text-lg">{orderRow.id.split('-').pop()?.toUpperCase()}</p>
+                            <p className="text-white font-mono text-sm break-all">{orderRow.id}</p>
                         </div>
                         <div className="mt-4 md:mt-0 text-left md:text-right">
                             <p className="text-sm text-gray-400 font-medium uppercase tracking-widest mb-1">Payment Status</p>
@@ -63,8 +64,8 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                         <div className="bg-black/40 p-5 rounded-xl border border-white/5">
                             <h3 className="text-accent-400 font-bold mb-4 flex items-center gap-2"><User className="w-4 h-4"/> Delivery Details</h3>
                             <p className="text-white font-medium">{orderRow.customerName}</p>
-                            <p className="text-gray-300 text-sm mt-1">{orderRow.customerPhone}</p>
-                            <p className="text-gray-300 text-sm mt-1">{orderRow.address}, {orderRow.shippingCity}</p>
+                            <p className="text-gray-300 text-sm mt-1">{orderRow.customerPhone.slice(0,3) + '*****' + orderRow.customerPhone.slice(-3)}</p>
+                            <p className="text-gray-300 text-sm mt-1">{orderRow.shippingCity}</p>
                         </div>
 
                         {/* Payment Details */}
@@ -77,11 +78,11 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                             {orderRow.transactionId && (
                                 <div className="flex justify-between text-sm text-gray-300 mb-4">
                                     <span>TrxID:</span>
-                                    <span className="text-white font-mono">{orderRow.transactionId}</span>
+                                    <span className="text-white font-mono">{'Recorded for verification'}</span>
                                 </div>
                             )}
                             <div className="flex justify-between text-lg text-white font-bold border-t border-white/10 pt-2">
-                                <span>Total Paid:</span>
+                                <span>Order Total:</span>
                                 <span className="text-accent-400">৳{orderRow.total.toLocaleString()}</span>
                             </div>
                         </div>
@@ -91,7 +92,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
                     {orderRow.paymentStatus === 'VERIFYING' && (
                         <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-5 mb-8">
                             <h4 className="text-orange-400 font-bold mb-2">Payment Verification Pending</h4>
-                            <p className="text-gray-300 text-sm">We've received your order and transaction ID. Our team is currently verifying the payment. You will receive an update shortly.</p>
+                            <p className="text-gray-300 text-sm">We&apos;ve received your order and transaction ID. Our team will verify the payment before dispatch.</p>
                         </div>
                     )}
 

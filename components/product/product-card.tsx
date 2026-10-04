@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Heart, ShoppingCart, Star } from 'lucide-react'
+import { WishlistButton } from './wishlist-button'
 import { toast } from 'sonner'
 
 import { useCart } from '@/lib/cart-context'
@@ -70,7 +71,7 @@ export function ProductCard({ product }: { product: Product }) {
     return (
         <>
             <motion.div
-                initial={{ opacity: 0, y: 15 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -5 }}
@@ -81,7 +82,7 @@ export function ProductCard({ product }: { product: Product }) {
                     {/* IMAGE CONTAINER */}
                     <div className="relative aspect-square overflow-hidden bg-white/[0.02] p-4 flex items-center justify-center">
                         <img
-                            src={product.image || '/placeholder.png'}
+                            src={product.image || '/placeholder.svg'}
                             alt={product.name}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
@@ -102,16 +103,7 @@ export function ProductCard({ product }: { product: Product }) {
                         </div>
 
                         {/* WISHLIST BUTTON */}
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                toast.success(`${product.name} উইশলিস্টে যুক্ত হয়েছে`)
-                            }}
-                            className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/40 hover:bg-black/80 border border-white/10 flex items-center justify-center text-gray-400 hover:text-red-400 transition-colors z-10"
-                        >
-                            <Heart className="w-3.5 h-3.5" />
-                        </button>
+                        <WishlistButton id={product.id} className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center text-gray-300 z-10" />
                     </div>
 
                     {/* DETAILS */}
@@ -128,7 +120,7 @@ export function ProductCard({ product }: { product: Product }) {
                                 <Star className="w-3 h-3 fill-amber-400" />
                             </div>
                             <span className="text-[11px] text-gray-400">
-                                {product.rating || '5.0'} ({product.reviews || 0})
+                                {product.reviews ? product.rating : 'No reviews'} {product.reviews ? `(${product.reviews})` : ''}
                             </span>
                         </div>
 

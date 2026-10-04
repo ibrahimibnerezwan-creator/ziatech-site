@@ -226,7 +226,7 @@ html {
 
 /* === Page Transition Fade === */
 main {
-  animation: page-enter 0.35s ease-out;
+  opacity: 1;
 }
 
 @keyframes page-enter {
@@ -253,4 +253,15 @@ main {
 
 .animate-pulse {
   animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@media print {
+  body { background: white !important; color: black !important; }
+  body * { visibility: hidden; }
+  .shipping-labels, .shipping-labels * { visibility: visible; }
+  .shipping-labels { position: absolute; inset: 0; padding: 0; background: white; }
+  .shipping-labels > div { break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

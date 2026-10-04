@@ -32,6 +32,10 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
     "products" | "orders" | "quick-order" | "labels" | "reviews" | "categories" | "settings"
   >("products");
 
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab && ['products','orders','quick-order','labels','reviews','categories','settings'].includes(tab)) setActiveTab(tab as typeof activeTab);
+  }, []);
   const [ordersPendingCount, setOrdersPendingCount] = useState(0);
   const [reviewsPendingCount, setReviewsPendingCount] = useState(0);
   const [isSyncingOrders, setIsSyncingOrders] = useState(false);
@@ -49,12 +53,12 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
 
       if (ordersRes.ok) {
         const oData = await ordersRes.json();
-        setOrdersPendingCount(oData.orders?.length || 0);
+        setOrdersPendingCount(Array.isArray(oData) ? oData.filter(o=>o.rawStatus === 'PENDING').length : 0);
       }
 
       if (reviewsRes.ok) {
         const rData = await reviewsRes.json();
-        setReviewsPendingCount(rData.reviews?.length || 0);
+        setReviewsPendingCount(Array.isArray(rData) ? rData.filter(r=>r.status === 'pending').length : 0);
       }
     } catch (e) {
       console.error("Failed to fetch notification badges", e);
@@ -73,14 +77,15 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
     try {
       const res = await fetch("/api/admin/sync-orders", { method: "POST" });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Courier sync failed.');
       if (data.synced > 0) {
         setSyncMsg(`Sync complete! ${data.synced} order(s) updated from Steadfast.`);
       } else {
-        setSyncMsg("Steadfast courier status check complete.");
+        setSyncMsg(data.message || "Steadfast courier status check complete.");
       }
       setOrderRefreshKey((prev) => prev + 1);
-    } catch {
-      setSyncMsg("Steadfast sync request failed.");
+    } catch (error) {
+      setSyncMsg(error instanceof Error ? error.message : "Steadfast sync request failed.");
     } finally {
       setIsSyncingOrders(false);
     }
@@ -172,7 +177,8 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                aria-label={tab.label}
+                onClick={() => { setActiveTab(tab.id as typeof activeTab); window.history.replaceState(null, "", `/admin?tab=${tab.id}`); fetchCounters(); }}
                 className={`px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
                   isActive
                     ? "bg-gradient-to-r from-orange-500 to-amber-500 text-black shadow-lg shadow-orange-500/20"
@@ -204,6 +210,7 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
               onOrderCreated={() => {
                 setOrderRefreshKey((c) => c + 1);
                 setActiveTab("orders");
+                window.history.replaceState(null, "", "/admin?tab=orders");
               }}
             />
           )}

@@ -4,7 +4,8 @@ import { productImages } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { isAuthenticatedAdmin } from '@/lib/auth';
-import { deleteFromR2, extractR2Key } from '@/lib/r2';
+import { imageUrl, errorResponse } from '@/lib/validation';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request: Request) {
   if (!(await isAuthenticatedAdmin())) {
@@ -23,19 +24,20 @@ export async function POST(request: Request) {
       .from(productImages)
       .where(eq(productImages.productId, productId));
 
-    const nextSortOrder = existingImages.length;
+    const nextSortOrder = Math.max(-1, ...existingImages.map(i=>i.sortOrder ?? 0)) + 1;
 
     await db.insert(productImages).values({
       id: uuidv4(),
       productId,
-      url,
+      url: imageUrl(url),
       sortOrder: nextSortOrder,
     });
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true, message: 'Image added' });
   } catch (error) {
     console.error('Failed to add media:', error);
-    return NextResponse.json({ error: 'Failed to add media' }, { status: 500 });
+    return errorResponse(error, 'Failed to add media');
   }
 }
 
@@ -71,14 +73,8 @@ export async function DELETE(request: Request) {
       );
     }
 
-    try {
-      const key = extractR2Key(image.url);
-      if (key) await deleteFromR2(key);
-    } catch (r2Err) {
-      console.error('R2 delete failed (continuing DB delete):', r2Err);
-    }
-
     await db.delete(productImages).where(eq(productImages.id, imageId));
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete image:', error);

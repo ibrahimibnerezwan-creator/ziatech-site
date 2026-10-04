@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { X, CheckCircle2, Loader2, Truck, ShieldCheck, Zap, MessageCircle } from "lucide-react";
@@ -20,6 +20,9 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ product, initialQuantity = 1, onClose }: CheckoutModalProps) {
+  const requestId = useRef<string | null>(null);
+  const [settings, setSettings] = useState<Record<string,string>>({});
+  useEffect(() => { fetch("/api/settings").then(r => r.ok ? r.json() : {}).then(setSettings).catch(() => {}); }, []);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState<{ orderId: string; invoice: string; total: number } | null>(null);
@@ -58,7 +61,8 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (honeypot) return;
+    if (honeypot || loading) return;
+    requestId.current ||= crypto.randomUUID();
 
     const cleanPhone = formData.phone.replace(/\D/g, "");
     if (!/^(01|8801)\d{9}$/.test(cleanPhone)) {
@@ -79,6 +83,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          requestId: requestId.current,
           customerName: formData.name.trim(),
           customerPhone: cleanPhone,
           address: formData.address.trim(),
@@ -100,16 +105,17 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
       const data = await res.json();
       if (!res.ok || data.error) {
+        if (res.status < 500) requestId.current = null;
         throw new Error(data.error || "অর্ডার সম্পন্ন হতে ব্যর্থ হয়েছে");
       }
 
       setSuccessData({
         orderId: data.orderId,
         invoice: data.invoice,
-        total: grandTotal,
+        total: data.total,
       });
-    } catch (err: any) {
-      setError(err.message || "কিছু একটা ভুল হয়েছে, দয়া করে পুনরায় চেষ্টা করুন।");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : '') || "কিছু একটা ভুল হয়েছে, দয়া করে পুনরায় চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
@@ -120,7 +126,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-4 overflow-y-auto"
-      onClick={onClose}
+      onClick={() => { if(!loading) onClose(); }}
     >
       <div
         className="bg-[#120e0b] border border-orange-500/20 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden relative my-auto animate-in fade-in zoom-in-95 duration-200"
@@ -140,7 +146,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={() => { if(!loading) onClose(); }}
             className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
@@ -180,7 +186,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <a
-                  href={`https://wa.me/8801755723451?text=${encodeURIComponent(`Hello Zia's Tech Shop! I just placed order ${successData.invoice} for ${product.name}.`)}`}
+                  href={`https://wa.me/${(settings.whatsapp || settings.phone || "").replace(/\D/g, "").replace(/^0/, "880")}?text=${encodeURIComponent(`Hello Zia's Tech Shop! I just placed order ${successData.invoice} for ${product.name}.`)}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex-1 py-3 px-4 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-400 font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
@@ -189,7 +195,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                   হোয়াটসঅ্যাপে যোগাযোগ
                 </a>
                 <button
-                  onClick={onClose}
+                  onClick={() => { if(!loading) onClose(); }}
                   className="flex-1 py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-colors"
                 >
                   আরও কেনাকাটা করুন
@@ -382,6 +388,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
                     <button
                       type="button"
+                      disabled={!settings.bkash_number}
                       onClick={() => setFormData({ ...formData, paymentMethod: "bkash" })}
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         formData.paymentMethod === "bkash"
@@ -395,6 +402,7 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
 
                     <button
                       type="button"
+                      disabled={!settings.nagad_number}
                       onClick={() => setFormData({ ...formData, paymentMethod: "nagad" })}
                       className={`p-2.5 rounded-xl border text-center transition-all ${
                         formData.paymentMethod === "nagad"
@@ -411,10 +419,11 @@ export function CheckoutModal({ product, initialQuantity = 1, onClose }: Checkou
                 {formData.paymentMethod !== "cod" && (
                   <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2 animate-in fade-in">
                     <p className="text-xs text-amber-300 font-medium">
-                      দয়া করে <strong>01755-723451</strong> (Personal) নম্বরে ৳{grandTotal.toLocaleString()} টাকা সেন্ড মানি করুন।
+                      দয়া করে <strong>{settings[`${formData.paymentMethod}_number`]}</strong> (Personal) নম্বরে ৳{grandTotal.toLocaleString()} টাকা সেন্ড মানি করুন।
                     </p>
                     <input
                       type="text"
+                      aria-label="Transaction ID"
                       required
                       placeholder="Transaction ID (যেমন: 9K3A8B...)"
                       value={formData.trxId}

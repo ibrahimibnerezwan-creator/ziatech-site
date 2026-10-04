@@ -1,94 +1,37 @@
 "use server"
-
-import { db } from '@/db'
-import { users } from '@/db/schema'
-import { eq } from 'drizzle-orm'
-import { hashPassword, verifyPassword, createSession, deleteSession } from '@/lib/auth'
-
-export async function registerAction(data: FormData) {
-    const name = data.get('name') as string
-    const email = data.get('email') as string
-    const phone = data.get('phone') as string
-    const password = data.get('password') as string
-
-    if (!name || !email || !phone || !password) {
-        return { error: 'All fields are required' }
-    }
-
-    try {
-        // Check if user already exists
-        const existingUser = await db.query.users.findFirst({
-            where: eq(users.email, email)
-        })
-
-        if (existingUser) {
-            return { error: 'User with this email already exists' }
-        }
-
-        const hashedPassword = await hashPassword(password)
-        const newUserId = crypto.randomUUID()
-
-        await db.insert(users).values({
-            id: newUserId,
-            name,
-            email,
-            phone,
-            password: hashedPassword,
-            createdAt: new Date(),
-        })
-
-        // Log the user in immediately
-        await createSession(newUserId, name, 'customer')
-
-        return { success: true }
-    } catch (error) {
-        console.error('Registration error:', error)
-        return { error: 'An unexpected error occurred' }
-    }
+import {db} from '@/db';
+import {users} from '@/db/schema';
+import {eq,sql} from 'drizzle-orm';
+import {hashPassword,verifyPassword,createSession,deleteSession,checkAdminPassword} from '@/lib/auth';
+import {InputError,textValue,validPhone} from '@/lib/validation';
+import {rateLimit} from '@/lib/rate-limit';
+import {revalidatePath} from 'next/cache';
+export async function registerAction(data:FormData) {
+ try {
+  await rateLimit('register',5,15);
+  const name=textValue(data.get('name'),'name',120);
+  const email=textValue(data.get('email'),'email',254).toLowerCase();
+  const phone=validPhone(data.get('phone'));
+  const password=textValue(data.get('password'),'password',72);
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<8) throw new InputError('Use a valid email and a password of at least 8 characters.');
+  if(await db.query.users.findFirst({where:sql`lower(${users.email}) = ${email}`})) throw new InputError('This email is already registered. Please sign in.');
+  const id=crypto.randomUUID();
+  await db.insert(users).values({id,name,email,phone,password:await hashPassword(password),role:'customer',createdAt:new Date()});
+  await createSession(id,name,'customer');revalidatePath('/','layout');
+  return {success:true};
+ }catch(e){return {error:e instanceof InputError?e.message:'Unable to register. Please try again.'};}
 }
-
-export async function loginAction(data: FormData) {
-    const email = data.get('email') as string
-    const password = data.get('password') as string
-
-    if (!email || !password) {
-        return { error: 'Email and password are required' }
-    }
-
-    try {
-        let user = await db.query.users.findFirst({
-            where: eq(users.email, email)
-        })
-        
-        // ADMIN FALLBACK for Prism Forge
-        if (!user && email === process.env.ADMIN_USER) {
-            if (password === process.env.ADMIN_PASSWORD) {
-                await createSession('admin-platform', 'Administrator', 'admin');
-                return { success: true, role: 'admin' };
-            }
-        }
-
-        if (!user) {
-            return { error: 'Invalid credentials' }
-        }
-
-        const isValid = await verifyPassword(password, user.password)
-
-        if (!isValid) {
-            return { error: 'Invalid credentials' }
-        }
-
-        // Create session
-        await createSession(user.id, user.name, user.role)
-
-        return { success: true, role: user.role }
-    } catch (error) {
-        console.error('Login error:', error)
-        return { error: 'An unexpected error occurred' }
-    }
+export async function loginAction(data:FormData) {
+ try{
+  await rateLimit('login');
+  const email=textValue(data.get('email'),'email',254).toLowerCase();
+  const password=textValue(data.get('password'),'password',200);
+  if(process.env.ADMIN_USER && email===process.env.ADMIN_USER.toLowerCase() && await checkAdminPassword(password)) {
+    await createSession('admin-platform','Administrator','admin');revalidatePath('/','layout');return {success:true,role:'admin'};
+  }
+  const user=await db.query.users.findFirst({where:sql`lower(${users.email}) = ${email}`});
+  if(!user||!(await verifyPassword(password,user.password))) throw new InputError('Invalid email or password.');
+  await createSession(user.id,user.name,user.role);revalidatePath('/','layout');return {success:true,role:user.role};
+ }catch(e){return {error:e instanceof InputError?e.message:'Unable to sign in. Please try again.'};}
 }
-
-export async function logoutAction() {
-    await deleteSession()
-    return { success: true }
-}
+export async function logoutAction(){await deleteSession();revalidatePath('/','layout');return {success:true};}

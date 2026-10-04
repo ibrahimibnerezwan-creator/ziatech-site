@@ -3,6 +3,22 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
+const TimeUnit = ({ value, label }: { value: number, label: string }) => (
+        <div className="flex flex-col items-center mx-2">
+            <motion.div
+                key={value}
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="w-12 h-12 md:w-16 md:h-16 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 flex items-center justify-center mb-1"
+            >
+                <span className="text-xl md:text-2xl font-bold font-mono text-accent-400">
+                    {value.toString().padStart(2, '0')}
+                </span>
+            </motion.div>
+            <span className="text-[10px] uppercase tracking-wider text-gray-500">{label}</span>
+        </div>
+    )
+
 export function CountdownTimer({ targetDate }: { targetDate: Date }) {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
@@ -27,21 +43,6 @@ export function CountdownTimer({ targetDate }: { targetDate: Date }) {
         return () => clearInterval(interval)
     }, [targetDate])
 
-    const TimeUnit = ({ value, label }: { value: number, label: string }) => (
-        <div className="flex flex-col items-center mx-2">
-            <motion.div
-                key={value}
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="w-12 h-12 md:w-16 md:h-16 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 flex items-center justify-center mb-1"
-            >
-                <span className="text-xl md:text-2xl font-bold font-mono text-accent-400">
-                    {value.toString().padStart(2, '0')}
-                </span>
-            </motion.div>
-            <span className="text-[10px] uppercase tracking-wider text-gray-500">{label}</span>
-        </div>
-    )
 
     return (
         <div className="flex items-center justify-center">

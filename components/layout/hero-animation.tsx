@@ -138,7 +138,7 @@ export function HeroAnimation() {
                     </div>
 
                     <motion.div
-                        initial={{ opacity: 0, y: 8 }}
+                        initial={false}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.25 }}
                         className="mt-4 text-center"

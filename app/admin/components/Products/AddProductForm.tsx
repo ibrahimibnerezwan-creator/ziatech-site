@@ -1,4 +1,5 @@
 "use client";
+import { uploadImage } from '@/lib/upload-client';
 
 import React, { useState } from 'react';
 import { Plus, Image as ImageIcon, Loader2, Sparkles, RefreshCw, Check, UploadCloud, X, Cpu } from 'lucide-react';
@@ -90,8 +91,8 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
       if (data.specs) {
         setSpecs(typeof data.specs === 'string' ? data.specs : JSON.stringify(data.specs, null, 2));
       }
-    } catch (err: any) {
-      console.warn('AI analysis skipped/failed:', err);
+    } catch (err) {
+      setErrorMsg((err instanceof Error ? err.message : '') || 'AI description is unavailable. You can enter the product details manually.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -105,8 +106,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    // Automatically trigger AI Vision description
-    analyzeImageWithAI(file);
+    // Optional AI assistance is triggered explicitly by the administrator.
   };
 
   const handleRegenerate = () => {
@@ -126,7 +126,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
     try {
       // 1. Client-side canvas compression (max 1400px, JPEG 85%)
-      setUploadStep('🗜️ Optimizing product image...');
+      setUploadStep('🗜️ Preparing image...');
       const canvas = await fileToScaledCanvas(selectedFile, 1400);
       const compressedBlob = await new Promise<Blob>((resolve) =>
         canvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.85)
@@ -134,33 +134,10 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
       const safeName = selectedFile.name.replace(/\.[^.]+$/, '.jpg');
 
-      // 2. Obtain presigned R2 upload URL
-      setUploadStep('🔐 Authorizing Cloudflare storage...');
-      const urlRes = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: safeName, contentType: 'image/jpeg' }),
-      });
-
-      if (!urlRes.ok) {
-        throw new Error('Upload authorization failed. Session expired?');
-      }
-      const { uploadUrl, publicUrl } = await urlRes.json();
-
-      // 3. Direct PUT to R2
-      setUploadStep('☁️ Uploading directly to R2 bucket...');
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'image/jpeg' },
-        body: compressedBlob,
-      });
-
-      if (!putRes.ok) {
-        throw new Error('Image transfer to Cloudflare failed.');
-      }
+      const publicUrl = await uploadImage(compressedBlob, safeName);
 
       // 4. Save to Turso DB via /api/products
-      setUploadStep('💾 Registering product in Turso DB...');
+      setUploadStep('💾 Saving product...');
       const createRes = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -194,9 +171,9 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
       setIsFeatured(false);
 
       onProductAdded();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorMsg(err.message || 'Error publishing product.');
+      setErrorMsg((err instanceof Error ? err.message : '') || 'Error publishing product.');
     } finally {
       setIsPublishing(false);
       setUploadStep('');

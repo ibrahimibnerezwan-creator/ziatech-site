@@ -1,3 +1,4 @@
+import { courierCredentials } from '@/lib/settings';
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticatedAdmin } from '@/lib/auth';
 import { db } from '@/db';
@@ -29,8 +30,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const apiKey = process.env.STEADFAST_API_KEY;
-  const secretKey = process.env.STEADFAST_SECRET_KEY;
+  const { apiKey, secretKey } = await courierCredentials();
 
   if (!apiKey || !secretKey) {
     return NextResponse.json({ 
@@ -64,9 +64,10 @@ export async function POST(req: NextRequest) {
     for (const order of activeOrders) {
       try {
         const tracking = order.courierTrackingId;
-        if (!tracking) continue;
+        if (!tracking || tracking.startsWith('DISPATCH_PENDING:')) continue;
 
-        const res = await fetch(`${STEADFAST_BASE}/status_by_trackingcode/${tracking}`, {
+        const res = await fetch(`${STEADFAST_BASE}/status_by_trackingcode/${encodeURIComponent(tracking)}`, {
+          signal: AbortSignal.timeout(10000),
           headers: {
             'Api-Key': apiKey,
             'Secret-Key': secretKey,
@@ -99,8 +100,8 @@ export async function POST(req: NextRequest) {
       synced: activeOrders.length,
       updated: updatedCount,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Steadfast manual sync error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Unable to synchronize courier statuses. Please try again.' }, { status: 500 });
   }
 }

@@ -1,32 +1,27 @@
-# Shop Owner's Guide - Zia's Tech Shop
+# Running your ZiaTech shop
 
-Welcome to your new online store! This guide explains how to manage your products and orders using the Admin Panel.
+Open https://ziatech.shopbd.app/admin and sign in with your existing administrator password.
 
-## 1. Accessing Your Admin Panel
+## Products and categories
 
-Go to `https://ziastech.shop/admin` (replace with your actual domain).
+Use **Manage Products** to upload a JPG, PNG, WebP or GIF (maximum 4 MB), set the name, price, stock and category, then publish. Use the edit button to change a product; its link stays the same. Keep products with order history — set stock to zero if no longer sold. **Categories** manages category names and images.
 
-You will see the Dashboard, which gives you a quick overview of your revenue, total orders, and active customers.
+## Orders
 
-## 2. Adding a New Product
+New orders appear in **Orders** and reserve stock immediately. **Quick Order** records phone or WhatsApp orders. It creates an order without booking a courier.
 
-1. Click on **Products** in the left sidebar.
-2. Click the **Add Product** button (top right).
-3. Fill in the required details:
-   - **Name:** E.g., Samsung Galaxy S24
-   - **Price:** Enter the price in Taka (৳)
-   - **Stock:** How many items you have available
-   - **Description:** Clear details about the item
-4. Click **Save Product**.
+1. Check the customer's details and items.
+2. For bKash/Nagad, independently check the transaction in your payment account, then set payment status to **VERIFIED**. A transaction ID alone is not confirmation.
+3. Update the order to **PROCESSING**. Book through **Dispatch with Steadfast** after saving your courier credentials, or arrange delivery manually and set the tracking code.
+4. Use **Print Labels** to select parcels and print. **Sync Steadfast** refreshes status for dispatched orders.
+5. Cancel an undispatched order to return stock once. Do not recreate a timed-out courier booking without checking the courier portal. Inspect returned parcels before manually adding stock back.
 
-## 3. Checking Orders
+Customers track guest orders using the full order ID and phone number used at checkout. Signed-in customers also see their account's orders under **My Orders**.
 
-1. Click on **Orders** in the left sidebar.
-2. You will see a list of all recent customer orders.
-3. Click on any order to see customer details, address, and what they bought.
+## Reviews and settings
 
-## Support & Maintenance
+Reviews stay private until approved in **Reviews**. You can reply, reject or delete them.
 
-If you encounter ANY issues, or the website goes down, please **do not attempt to fix it yourself**. Your website infrastructure is professionally managed.
+In **Store Settings**, enter real contact details, bKash/Nagad receiving numbers, and Steadfast credentials. Blank payment numbers keep those checkout choices disabled. COD remains available. Never enter test receiving numbers on the live shop. Save settings and reload the storefront to confirm contact changes.
 
-📞 **Contact for Support:** [Your WhatsApp / Phone Number]
+Shipping rates: Dhaka ৳60, Dhaka suburbs ৳100, outside Dhaka ৳120. Admin quick orders can select a different fee. Wishlists are saved in the customer's browser. Chat answers catalogue and support questions; advanced AI assistance is optional.

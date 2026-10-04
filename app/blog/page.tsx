@@ -1,20 +1,7 @@
-import { Footer } from '@/components/layout/footer'
-import { BookOpen } from 'lucide-react'
-
-export default function BlogPage() {
-    return (
-        <div className="min-h-screen flex flex-col">
-            <div className="container px-4 mx-auto py-12 flex-1 max-w-4xl">
-                <h1 className="text-4xl font-bold text-white mb-4">Project Tutorials</h1>
-                <p className="text-lg text-gray-400 mb-12">Learn how to build amazing projects with our components.</p>
-
-                <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/10 rounded-2xl">
-                    <BookOpen className="w-12 h-12 text-gray-500 mb-4" />
-                    <h2 className="text-xl font-bold text-white mb-2">Coming Soon</h2>
-                    <p className="text-gray-400 text-center max-w-md">We&apos;re preparing tutorials and project guides to help you get the most out of our components. Check back soon!</p>
-                </div>
-            </div>
-            <Footer />
-        </div>
-    )
-}
+import Link from 'next/link';
+import {Footer} from '@/components/layout/footer';
+export default function Tutorials(){return <><article className="max-w-4xl mx-auto px-4 py-12 space-y-8"><h1 className="text-4xl font-bold">Project tutorials</h1><p className="text-gray-400">Practical starting points for electronics projects.</p>{[
+ ['Start with an ESP32 board','Install the Arduino IDE and the Espressif ESP32 board package. Connect the development board with a USB data cable, select the correct board and serial port, then upload a simple serial-output example. ESP32 GPIO uses 3.3 V logic: do not connect a 5 V signal directly to a GPIO. Check the exact board documentation before wiring.'],
+ ['Choose a capacitor correctly','Read the capacitance, voltage rating and polarity markings. Tantalum capacitors are polarized: confirm the marked positive terminal against the datasheet and circuit before applying power. Choose a suitable voltage rating and derating for the circuit. Disconnect power and discharge capacitors before changing components.'],
+ ['Troubleshoot a new circuit','Start with the supply disconnected. Compare every connection with your schematic, check polarity and inspect for short circuits. Use a current-limited low-voltage supply for initial testing. Measure the supply rails before connecting a microcontroller and add one module at a time. Keep mains-powered work separate from beginner breadboard projects.']
+ ].map(([title,body])=><section key={title} className="rounded-2xl bg-white/5 border border-white/10 p-6"><h2 className="text-xl font-bold text-orange-300 mb-3">{title}</h2><p className="text-gray-300 leading-relaxed">{body}</p></section>)}<Link href="/category/all" className="inline-block text-orange-400 underline">Browse components</Link></article><Footer/></>;}

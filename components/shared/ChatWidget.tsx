@@ -17,12 +17,14 @@ const QUICK_PROMPTS = [
 ];
 
 export function ChatWidget() {
+  const [support, setSupport] = useState('');
+  useEffect(()=>{ fetch('/api/settings').then(r=>r.ok?r.json():{}).then((s: Record<string,string>)=>setSupport((s.whatsapp || s.phone || '').replace(/\D/g,'').replace(/^0/,'880'))).catch(()=>{}); },[]);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
       content:
-        "স্বাগতম! আমি জিয়ার টেক শপের এআই অ্যাসিস্ট্যান্ট। মাইক্রোকন্ট্রোলার, সেন্সর, রোবোটিক্স কম্পোনেন্ট বা ডেলিভারি সংক্রান্ত যেকোনো প্রশ্ন করতে পারেন!",
+        "স্বাগতম! আমি জিয়ার টেক শপের শপ অ্যাসিস্ট্যান্ট। মাইক্রোকন্ট্রোলার, সেন্সর, রোবোটিক্স কম্পোনেন্ট বা ডেলিভারি সংক্রান্ত যেকোনো প্রশ্ন করতে পারেন!",
     },
   ]);
   const [inputValue, setInputValue] = useState("");
@@ -62,7 +64,7 @@ export function ChatWidget() {
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply || "দুঃখিত, কোনো উত্তর পাওয়া যায়নি।" },
+        { role: "assistant", content: data.reply || data.text || "দুঃখিত, কোনো উত্তর পাওয়া যায়নি।" },
       ]);
     } catch (err) {
       setMessages((prev) => [
@@ -70,7 +72,7 @@ export function ChatWidget() {
         {
           role: "assistant",
           content:
-            "দুঃখিত, এই মুহূর্তে সার্ভারে সংযোগ সমস্যা হচ্ছে। সরাসরি আমাদের হোয়াটসঅ্যাপে (01755-723451) মেসেজ দিতে পারেন!",
+            "দুঃখিত, এই মুহূর্তে সার্ভারে সংযোগ সমস্যা হচ্ছে। সাহায্যের জন্য Contact Support পেজে যোগাযোগ করুন।",
         },
       ]);
     } finally {
@@ -80,6 +82,7 @@ export function ChatWidget() {
 
   return (
     <>
+      {isOpen && support && <a href={`https://wa.me/${support}`} target="_blank" rel="noopener noreferrer" className="fixed bottom-2 right-6 z-50 text-xs text-orange-300 underline">Contact support on WhatsApp</a>}
       {/* FLOATING TRIGGER BUTTON */}
       <div className="fixed bottom-6 right-6 z-40">
         {!isOpen && (
@@ -95,7 +98,7 @@ export function ChatWidget() {
               <Bot className="w-5 h-5 text-black" />
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-black animate-pulse" />
             </div>
-            <span className="hidden sm:inline">Maker AI Assistant</span>
+            <span className="hidden sm:inline">Shop Assistant</span>
           </motion.button>
         )}
       </div>

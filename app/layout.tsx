@@ -14,7 +14,7 @@ const ibmPlexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500', '
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: './' },
-  openGraph: { type: 'website', siteName: 'ZiaTech', url: './' },
+  openGraph: { type: 'website', siteName: 'ZiaTech', url: './', locale: 'en_BD' },
   title: "ZiaTech | Premium Electronics & Components",
   description: "Bangladesh's trusted source for premium electronics, IoT components, and tech accessories. Quality guaranteed, innovation delivered.",
   keywords: ['electronics', 'components', 'Bangladesh', 'tech', 'IoT', 'robotics', 'ZiaTech'],
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" className="dark" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${ibmPlexMono.variable} min-h-screen bg-bg-primary text-text-primary overflow-x-hidden`}
         style={{ fontFamily: 'var(--font-body-family), system-ui, sans-serif' }}

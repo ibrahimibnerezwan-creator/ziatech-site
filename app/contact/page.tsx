@@ -20,17 +20,17 @@ export default async function ContactPage() {
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-3">
                         <Phone className="w-8 h-8 text-accent-400" />
                         <h3 className="text-xl font-bold text-white">Phone</h3>
-                        <p className="text-gray-400">{phone}</p>
+                        <a className="text-orange-300 underline" href={`tel:${phone.replace(/\D/g, '')}`}>{phone}</a>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-3">
                         <MessageCircle className="w-8 h-8 text-accent-400" />
                         <h3 className="text-xl font-bold text-white">WhatsApp</h3>
-                        <p className="text-gray-400">{whatsapp}</p>
+                        <a className="text-orange-300 underline" href={`https://wa.me/${whatsapp.replace(/\D/g, '').replace(/^0/, '880')}`} target="_blank" rel="noopener noreferrer">{whatsapp}</a>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-3">
                         <Mail className="w-8 h-8 text-accent-400" />
                         <h3 className="text-xl font-bold text-white">Email</h3>
-                        <p className="text-gray-400">{email}</p>
+                        <a className="text-orange-300 underline" href={`mailto:${email}`}>{email}</a>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-3">
                         <MapPin className="w-8 h-8 text-accent-400" />

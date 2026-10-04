@@ -20,7 +20,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         notFound()
     }
 
-    const specs = product.specs ? JSON.parse(product.specs) : {}
+    let specs: Record<string, unknown> = {}
+    try { const parsed = product.specs ? JSON.parse(product.specs) : {}; if(parsed && typeof parsed === "object" && !Array.isArray(parsed)) specs = parsed } catch { /* Older free-text specifications are not structured data. */ }
 
     const relatedProductsFormatted = product.categoryId
         ? await getRelatedProducts(product.categoryId, product.id, 4)
@@ -188,7 +189,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {product.reviews && product.reviews.length > 0 ? (
-                            product.reviews.map((review: any) => (
+                            product.reviews.map((review) => (
                                 <div key={review.id} className="bg-bg-elevated/40 border border-white/5 p-6 rounded-2xl backdrop-blur-xl relative overflow-hidden group hover:border-primary-500/15 transition-all duration-300">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-primary-500/10 group-hover:bg-primary-500/40 transition-colors rounded-l-full"></div>
                                     <div className="flex justify-between items-start mb-4 pl-3">
@@ -242,4 +243,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <Footer />
         </div>
     )
+}
+
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}) {
+ const {slug}=await params; const product=await getProductBySlug(slug);
+ if(!product) return {title:'Product not found | ZiaTech'};
+ return {title:product.name+' | ZiaTech',description:product.description.slice(0,160),alternates:{canonical:'/product/'+encodeURIComponent(slug)},openGraph:{title:product.name,description:product.description.slice(0,160),images:product.images.slice(0,1).map(i=>i.url)}};
 }

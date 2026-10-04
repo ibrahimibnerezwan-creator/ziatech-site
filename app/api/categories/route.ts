@@ -1,3 +1,6 @@
+import { saveCategory, removeCategory } from '@/lib/catalogue';
+import { errorResponse, textValue } from '@/lib/validation';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { categories, products } from '@/db/schema';
@@ -31,88 +34,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const isAdmin = await isAuthenticatedAdmin();
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const { name, image } = await request.json();
-    if (!name || !name.trim()) {
-      return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
-    }
-
-    const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-    const slug = baseSlug || `cat-${Date.now()}`;
-    const newId = uuidv4();
-
-    await db.insert(categories).values({
-      id: newId,
-      name: name.trim(),
-      slug,
-      image: image || null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    return NextResponse.json({ success: true, id: newId });
-  } catch (error: any) {
-    console.error('Error creating category:', error);
-    return NextResponse.json({ error: error.message || 'Failed to create category' }, { status: 500 });
-  }
+  if (!(await isAuthenticatedAdmin())) return NextResponse.json({error:'Unauthorized'},{status:401});
+  try { const id=await saveCategory(await request.json()); revalidatePath('/', 'layout'); return NextResponse.json({success:true,id}); }
+  catch(error) { return errorResponse(error,'Failed to save category.'); }
 }
-
 export async function PATCH(request: Request) {
-  const isAdmin = await isAuthenticatedAdmin();
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const { id, name, image } = await request.json();
-    if (!id || !name) {
-      return NextResponse.json({ error: 'ID and name required' }, { status: 400 });
-    }
-
-    const baseSlug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-    const slug = baseSlug || `cat-${Date.now()}`;
-
-    await db
-      .update(categories)
-      .set({
-        name: name.trim(),
-        slug,
-        image: image || null,
-        updatedAt: new Date(),
-      })
-      .where(eq(categories.id, id));
-
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error('Error updating category:', error);
-    return NextResponse.json({ error: error.message || 'Failed to update category' }, { status: 500 });
-  }
+  if (!(await isAuthenticatedAdmin())) return NextResponse.json({error:'Unauthorized'},{status:401});
+  try { const data=await request.json(); const id=textValue(data.id,'ID',100); await saveCategory(data,id); revalidatePath('/', 'layout'); return NextResponse.json({success:true}); }
+  catch(error) { return errorResponse(error,'Failed to update category.'); }
 }
-
-export async function DELETE(request: NextRequest) {
-  const isAdmin = await isAuthenticatedAdmin();
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) {
-      return NextResponse.json({ error: 'Missing category id' }, { status: 400 });
-    }
-
-    // Set products in this category to null before deleting
-    await db.update(products).set({ categoryId: null }).where(eq(products.categoryId, id));
-    await db.delete(categories).where(eq(categories.id, id));
-
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error('Error deleting category:', error);
-    return NextResponse.json({ error: error.message || 'Failed to delete category' }, { status: 500 });
-  }
+export async function DELETE(request: Request) {
+  if (!(await isAuthenticatedAdmin())) return NextResponse.json({error:'Unauthorized'},{status:401});
+  try { await removeCategory(new URL(request.url).searchParams.get('id') || ''); revalidatePath('/', 'layout'); return NextResponse.json({success:true}); }
+  catch(error) { return errorResponse(error,'Failed to delete category.'); }
 }

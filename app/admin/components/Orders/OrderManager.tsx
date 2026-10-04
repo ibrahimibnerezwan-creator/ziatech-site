@@ -60,7 +60,7 @@ function normalizePhone(raw: string): string {
 function formatWhatsAppLink(phone: string, orderId: string, name: string): string {
   const digits = phone.replace(/\D/g, '');
   const bdNumber = digits.startsWith('0') ? '880' + digits.slice(1) : digits.startsWith('880') ? digits : '880' + digits;
-  const msg = encodeURIComponent(`Hi ${name}! Thank you for your order at ZiaTech (Order #${orderId.slice(-6).toUpperCase()}). We are preparing your shipment!`);
+  const msg = encodeURIComponent(`Hi ${name}! Thank you for your order at ZiaTech (Order #${orderId}). We are preparing your shipment!`);
   return `https://wa.me/${bdNumber}?text=${msg}`;
 }
 
@@ -112,7 +112,7 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
           prev.map((o) => (o.id === orderId ? { ...o, status: newStatus.toLowerCase(), rawStatus: newStatus } : o))
         );
       } else {
-        alert('Failed to update order status');
+        alert((await res.json()).error || 'Failed to update order status');
       }
     } catch {
       alert('Network error updating status');
@@ -129,11 +129,25 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
       if (res.ok) {
         setOrdersList((prev) => prev.filter((o) => o.id !== orderId));
       } else {
-        alert('Failed to delete order.');
+        alert((await res.json()).error || 'Failed to delete order.');
       }
     } catch {
       alert('Error deleting order.');
     }
+  };
+
+  const updateDetails = async (order: OrderRow, patch: Record<string,string>) => {
+    setUpdatingId(order.id);
+    try { const res = await fetch('/api/admin/orders', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:order.id,...patch})}); const data = await res.json(); if(!res.ok) throw new Error(data.error); await fetchOrders(); }
+    catch(error) { alert(error instanceof Error ? error.message : 'Update failed.'); }
+    finally { setUpdatingId(null); }
+  };
+  const dispatchOrder = async (order: OrderRow) => {
+    if(!confirm(`Dispatch this order for ${order.customerName} through Steadfast? This creates a real courier consignment.`)) return;
+    setUpdatingId(order.id);
+    try { const res = await fetch('/api/admin/dispatch', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:order.id})}); const data=await res.json(); if(!res.ok) throw new Error(data.error); await fetchOrders(); }
+    catch(error) { alert(error instanceof Error ? error.message : 'Dispatch failed.'); await fetchOrders(); }
+    finally { setUpdatingId(null); }
   };
 
   const filteredOrders = useMemo(() => {
@@ -234,6 +248,12 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
                 key={order.id}
                 className="bg-[#18110b]/90 border border-slate-800/80 hover:border-orange-500/30 rounded-3xl p-5 md:p-6 backdrop-blur-xl transition-all duration-200 space-y-4 shadow-lg group"
               >
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="text-xs text-slate-300">Payment status <select aria-label={`Payment status for ${order.customerName}`} value={order.paymentStatus} disabled={updatingId===order.id} onChange={e=>updateDetails(order,{paymentStatus:e.target.value})} className="ml-2 p-2 rounded bg-slate-900 border border-slate-700">{['PENDING','VERIFYING','VERIFIED','FAILED'].map(s=><option key={s}>{s}</option>)}</select></label>
+                  <button disabled={updatingId===order.id || !!order.trackingCode || ['CANCELLED','DELIVERED','SHIPPED'].includes(order.rawStatus) || (order.paymentMethod!=='cod' && order.paymentStatus!=='VERIFIED')} onClick={()=>dispatchOrder(order)} className="px-3 py-2 rounded bg-orange-500 text-black text-xs font-bold disabled:opacity-40">Dispatch with Steadfast</button>
+                  <button disabled={updatingId===order.id} onClick={()=>{ const code=window.prompt('Enter the courier tracking code. Check the Steadfast portal before clearing a pending dispatch.',order.trackingCode?.startsWith('DISPATCH_PENDING:')?'':order.trackingCode||''); if(code!==null) updateDetails(order,{trackingCode:code}); }} className="text-xs text-orange-300 underline">Set tracking code</button>
+                  {order.trackingCode?.startsWith('DISPATCH_PENDING:') && <p role="alert" className="text-xs text-amber-300">Dispatch confirmation pending — check Steadfast before retrying.</p>}
+                </div>
                 {/* Top Row: Customer & Order ID & Status */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800/80">
                   <div className="flex items-center gap-3">
@@ -245,8 +265,8 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
                         <h3 className="font-bold text-white text-base leading-tight">
                           {order.customerName}
                         </h3>
-                        <span className="text-[11px] font-mono text-orange-400 bg-orange-950/40 border border-orange-800/40 px-2 py-0.5 rounded-md">
-                          #{order.id.slice(-6).toUpperCase()}
+                        <span className="text-[11px] break-all font-mono text-orange-400 bg-orange-950/40 border border-orange-800/40 px-2 py-0.5 rounded-md">
+                          #{order.id}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
@@ -375,9 +395,9 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
                   {/* Courier Tracking */}
                   <div className="flex items-center gap-2">
                     <Truck className="w-4 h-4 text-orange-400" />
-                    {order.trackingCode ? (
+                    {order.trackingCode && !order.trackingCode.startsWith('DISPATCH_PENDING:') ? (
                       <a
-                        href={`https://steadfast.com.bd/t/${order.trackingCode}`}
+                        href={`https://steadfast.com.bd/t/${encodeURIComponent(order.trackingCode)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-xs font-mono font-bold text-orange-400 bg-orange-950/60 border border-orange-800/60 px-2.5 py-1 rounded-lg hover:border-orange-400 transition"
@@ -396,7 +416,7 @@ export default function OrderManager({ refreshKey }: { refreshKey?: number }) {
                       ৳{order.amount.toLocaleString()}
                     </span>
                     <span className="text-[10px] text-slate-500 font-mono">
-                      (incl. ৳{order.deliveryCharge || 60} delivery)
+                      (incl. ৳{order.deliveryCharge ?? 0} delivery)
                     </span>
                   </div>
                 </div>

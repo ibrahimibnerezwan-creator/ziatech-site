@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { reviews, products } from '@/db/schema';
@@ -50,11 +51,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Missing review id' }, { status: 400 });
     }
 
-    const patch: Record<string, any> = {};
+    if (status && !['pending','approved','rejected'].includes(status)) return NextResponse.json({error:'Invalid review status'},{status:400});
+    if (adminReply !== undefined && (typeof adminReply !== 'string' || adminReply.length > 3000)) return NextResponse.json({error:'Reply is too long'},{status:400});
+    const patch: Record<string, string> = {};
     if (status) patch.status = status.toLowerCase();
     if (adminReply !== undefined) patch.adminReply = adminReply;
 
     await db.update(reviews).set(patch).where(eq(reviews.id, id));
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to update review:', error);
@@ -75,6 +79,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     await db.delete(reviews).where(eq(reviews.id, id));
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete review:', error);

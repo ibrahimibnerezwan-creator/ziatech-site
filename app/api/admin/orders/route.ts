@@ -1,3 +1,6 @@
+import { updateOrder, deleteOrder } from '@/lib/order-management';
+import { errorResponse } from '@/lib/validation';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { orders, orderItems, products, productImages } from '@/db/schema';
@@ -22,7 +25,7 @@ export async function GET() {
               with: {
                 images: {
                   limit: 1,
-                  orderBy: [desc(productImages.sortOrder)],
+                  orderBy: [asc(productImages.sortOrder)],
                 },
               },
             },
@@ -79,50 +82,12 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const isAdmin = await isAuthenticatedAdmin();
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const { id, status, paymentStatus, trackingCode } = await request.json();
-    if (!id) {
-      return NextResponse.json({ error: 'Missing order id' }, { status: 400 });
-    }
-
-    const patch: Record<string, any> = { updatedAt: new Date() };
-    if (status) patch.status = status.toUpperCase();
-    if (paymentStatus) patch.paymentStatus = paymentStatus.toUpperCase();
-    if (trackingCode !== undefined) patch.courierTrackingId = trackingCode;
-
-    await db.update(orders).set(patch).where(eq(orders.id, id));
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Failed to update order:', error);
-    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
-  }
+  if (!(await isAuthenticatedAdmin())) return NextResponse.json({error:'Unauthorized'},{status:401});
+  try { const {id,...patch}=await request.json(); await updateOrder(id,patch); revalidatePath('/', 'layout'); return NextResponse.json({success:true}); }
+  catch(error) {return errorResponse(error,'Failed to update order.');}
 }
-
 export async function DELETE(request: NextRequest) {
-  const isAdmin = await isAuthenticatedAdmin();
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) {
-      return NextResponse.json({ error: 'Missing order id' }, { status: 400 });
-    }
-
-    // Delete order items first, then the order
-    await db.delete(orderItems).where(eq(orderItems.orderId, id));
-    await db.delete(orders).where(eq(orders.id, id));
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Failed to delete order:', error);
-    return NextResponse.json({ error: 'Failed to delete order' }, { status: 500 });
-  }
+  if (!(await isAuthenticatedAdmin())) return NextResponse.json({error:'Unauthorized'},{status:401});
+  try { await deleteOrder(request.nextUrl.searchParams.get('id') || ''); revalidatePath('/', 'layout'); return NextResponse.json({success:true}); }
+  catch(error) {return errorResponse(error,'Failed to delete order.');}
 }

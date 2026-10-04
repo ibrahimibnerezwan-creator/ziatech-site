@@ -17,6 +17,8 @@ interface OrderRow {
 }
 
 export default function LabelManager() {
+  const [settings, setSettings] = useState<Record<string,string>>({});
+  useEffect(()=>{fetch('/api/settings').then(r=>r.json()).then(setSettings).catch(()=>{});},[]);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -130,7 +132,7 @@ export default function LabelManager() {
 
       {/* Printable Sheet (Visible in Print + Preview) */}
       <div className="bg-white text-black p-4 sm:p-8 rounded-3xl print:p-0 print:rounded-none print:bg-white shadow-2xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 print:grid-cols-2 print:gap-4">
+        <div className="shipping-labels grid grid-cols-1 sm:grid-cols-2 gap-4 print:grid-cols-2 print:gap-4">
           {selectedOrders.map((order) => {
             const isPrepaid = order.paymentMethod !== 'cod';
             return (
@@ -142,14 +144,14 @@ export default function LabelManager() {
                 <div className="flex justify-between items-start border-b-2 border-black pb-2">
                   <div>
                     <h4 className="font-black text-base tracking-tight leading-none uppercase">ZIA TECH SHOP</h4>
-                    <p className="text-[10px] text-gray-700 mt-0.5">Electronics & Maker Hardware • Agargaon, Dhaka</p>
-                    <p className="text-[10px] font-mono text-gray-700">Hotline: +880 1712-345678</p>
+                    <p className="text-[10px] text-gray-700 mt-0.5">{settings.address}</p>
+                    <p className="text-[10px] font-mono text-gray-700">Hotline: {settings.phone}</p>
                   </div>
                   <div className="text-right">
                     <span className="inline-block px-2 py-0.5 bg-black text-white font-mono font-bold text-[10px] uppercase rounded">
                       {order.paymentMethod.toUpperCase()}
                     </span>
-                    <p className="font-mono text-[10px] font-bold mt-1">#{order.id.slice(-6).toUpperCase()}</p>
+                    <p className="font-mono text-[10px] font-bold mt-1 break-all max-w-40">#{order.id}</p>
                   </div>
                 </div>
 
@@ -168,7 +170,7 @@ export default function LabelManager() {
                   <div className="max-w-[65%]">
                     <p className="text-[9px] font-bold text-gray-600 uppercase">Package Contents:</p>
                     <p className="text-[11px] font-medium line-clamp-2">{order.productTitle}</p>
-                    {order.trackingCode && (
+                    {order.trackingCode && !order.trackingCode.startsWith('DISPATCH_PENDING:') && (
                       <p className="text-[10px] font-mono text-gray-700 mt-0.5">Steadfast: {order.trackingCode}</p>
                     )}
                   </div>

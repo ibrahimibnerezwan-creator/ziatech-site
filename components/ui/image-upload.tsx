@@ -33,10 +33,10 @@ export function ImageUpload({ value, onChange, onRemove, className }: ImageUploa
 
             const data = await response.json()
 
-            if (data.url) {
+            if (response.ok && data.url) {
                 onChange(data.url)
             } else {
-                throw new Error(data.message || 'Upload failed')
+                throw new Error(data.error || 'Upload failed')
             }
         } catch (error) {
             console.error('Error uploading image:', error)

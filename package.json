@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "npx drizzle-kit push"
+    "db:push": "npx drizzle-kit push",
+    "test": "node scripts/test.mjs",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "test:e2e": "node scripts/test.mjs browser",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1004.0",
@@ -31,7 +35,7 @@
     "framer-motion": "^12.23.26",
     "jose": "^6.2.1",
     "lucide-react": "^0.562.0",
-    "next": "16.1.1",
+    "next": "^16.3.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-dropzone": "^15.0.0",
@@ -40,6 +44,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
@@ -49,7 +54,7 @@
     "dotenv": "^17.3.1",
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
-    "eslint-config-next": "16.1.1",
+    "eslint-config-next": "^16.3.8",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

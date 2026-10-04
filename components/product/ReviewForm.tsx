@@ -43,8 +43,8 @@ export function ReviewForm({ productId }: ReviewFormProps) {
 
       setSubmitted(true);
       toast.success("আপনার রিভিউ জমা দেওয়া হয়েছে!");
-    } catch (err: any) {
-      toast.error(err.message || "রিভিউ জমা দিতে ব্যর্থ হয়েছে");
+    } catch (err) {
+      toast.error((err instanceof Error ? err.message : '') || "রিভিউ জমা দিতে ব্যর্থ হয়েছে");
     } finally {
       setLoading(false);
     }

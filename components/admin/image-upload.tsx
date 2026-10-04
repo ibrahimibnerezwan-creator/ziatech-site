@@ -1,4 +1,5 @@
 "use client"
+import { uploadImage } from '@/lib/upload-client';
 
 import React, { useState } from 'react'
 import { Image as ImageIcon, X, UploadCloud, Loader2 } from 'lucide-react'
@@ -21,23 +22,7 @@ export function ImageUpload({ onUploadComplete, label = "Upload Product Image", 
         setIsUploading(true)
 
         try {
-            // 1. Get pre-signed URL
-            const urlRes = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    filename: file.name,
-                    contentType: file.type,
-                }),
-            })
-            const { uploadUrl, publicUrl } = await urlRes.json()
-
-            // 2. Upload to R2
-            await fetch(uploadUrl, {
-                method: 'PUT',
-                headers: { 'Content-Type': file.type },
-                body: file,
-            })
+      const publicUrl = await uploadImage(file, file.name);
 
             setPreview(publicUrl)
             onUploadComplete(publicUrl)

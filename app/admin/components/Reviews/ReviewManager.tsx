@@ -205,7 +205,7 @@ export default function ReviewManager() {
 
                 {rev.comment && (
                   <p className="text-sm text-slate-300 leading-relaxed bg-slate-900/40 p-3.5 rounded-2xl border border-slate-800/60 italic">
-                    "{rev.comment}"
+                    &ldquo;{rev.comment}&rdquo;
                   </p>
                 )}
 
