@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   async headers() { return [{source:'/:path*',headers:[{key:'X-Content-Type-Options',value:'nosniff'},{key:'X-Frame-Options',value:'DENY'},{key:'Referrer-Policy',value:'strict-origin-when-cross-origin'}]}]; },
   reactStrictMode: true,
   experimental: {
+    // Recompile styles on deployment; restored disk caches served outdated CSS.
+    turbopackFileSystemCacheForBuild: false,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   images: {
