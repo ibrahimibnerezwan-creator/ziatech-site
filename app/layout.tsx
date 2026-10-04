@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Manrope, DM_Sans, Noto_Sans_Bengali, IBM_Plex_Mono } from 'next/font/google'
+import { Barlow_Condensed, Public_Sans, Noto_Sans_Bengali, IBM_Plex_Mono } from 'next/font/google'
 import { Header } from '@/components/layout/header'
 import { ToasterProvider } from '@/components/providers/toaster-provider'
 import { SiteFrame } from '@/components/layout/site-frame'
@@ -8,8 +8,8 @@ import { Providers } from './providers'
 import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const manrope = Manrope({ subsets: ['latin'], variable: '--font-display-family' })
-const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body-family' })
+const display = Barlow_Condensed({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-display-family' })
+const body = Public_Sans({ subsets: ['latin'], variable: '--font-body-family' })
 const bengali = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-bengali-family' })
 const ibmPlexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-mono-family' })
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${manrope.variable} ${dmSans.variable} ${bengali.variable} ${ibmPlexMono.variable} min-h-screen bg-bg-primary text-text-primary`}
+        className={`${display.variable} ${body.variable} ${bengali.variable} ${ibmPlexMono.variable} min-h-screen bg-bg-primary text-text-primary`}
         style={{ fontFamily: 'var(--font-body-family), var(--font-bengali-family), system-ui, sans-serif' }}
         suppressHydrationWarning
       >

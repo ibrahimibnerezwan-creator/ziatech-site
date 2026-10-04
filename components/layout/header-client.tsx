@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, ShoppingBag, UserRound, Menu, X, Package, Heart, ArrowUpRight, ChevronDown, Truck } from 'lucide-react'
+import { Search, ShoppingBag, UserRound, Menu, X, Package, Heart, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { useCart } from '@/lib/cart-context'
 import { logoutAction } from '@/app/auth/actions'
 import { Brand } from './brand'
@@ -63,16 +63,17 @@ export function HeaderClient({ categories, user, phone }: HeaderClientProps) {
 
   return (
     <header className="site-header">
-      <div className="announcement"><div className="store-container announcement-inner">
-        <span><Truck size={14} /> Nationwide delivery. Cash on delivery available.</span>
-        <Link href="/shipping">Delivery information <ArrowUpRight size={13} /></Link>
-      </div></div>
       <div className="store-container header-main">
         <Brand />
+        <nav className="header-primary-nav" aria-label="Main navigation">
+          <Link href="/category/all" aria-current={pathname.startsWith('/category/') ? 'page' : undefined}>Shop</Link>
+          <Link href="/categories" aria-current={pathname === '/categories' ? 'page' : undefined}>Categories</Link>
+          <Link href="/blog" aria-current={pathname === '/blog' ? 'page' : undefined}>Guides</Link>
+          <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined}>Help</Link>
+        </nav>
         <form role="search" className="header-search" onSubmit={search}>
-          <Search size={19} aria-hidden="true" />
           <input type="search" aria-label="Search products" placeholder="Search components, kits, modules..." value={query} onChange={e => setQuery(e.target.value)} />
-          <button type="submit" aria-label="Search"><ArrowUpRight size={20} /></button>
+          <button type="submit" aria-label="Search"><Search size={18} /></button>
         </form>
         <div className="header-actions">
           {user ? (
@@ -92,10 +93,6 @@ export function HeaderClient({ categories, user, phone }: HeaderClientProps) {
           <button ref={menuButton} className="mobile-menu-toggle" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={22} /> : <Menu size={22} />}</button>
         </div>
       </div>
-      <div className="header-nav-row"><div className="store-container header-nav-inner">
-        <nav aria-label="Main navigation">{links.map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? 'page' : undefined}>{link.label}</Link>)}</nav>
-        <Link href="/my-orders" className="track-link"><Package size={16} /> Track your order</Link>
-      </div></div>
       {menuOpen && <nav id="mobile-navigation" className="mobile-navigation" aria-label="Mobile navigation">
         {links.map(link => <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>{link.label}<ArrowUpRight size={17} /></Link>)}
         <Link href="/my-orders" onClick={() => setMenuOpen(false)}>Track your order<Package size={17} /></Link>

@@ -39,7 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
       <WishlistButton id={product.id} className="wishlist-control" />
       <div className="product-card-actions">
         <button className="quick-buy" disabled={product.stock <= 0} onClick={() => setCheckoutOpen(true)}>{product.stock <= 0 ? 'স্টক আউট' : 'অর্ডার করুন'}</button>
-        <button className="add-cart" onClick={addToCart} disabled={product.stock <= 0} title="কার্টে যোগ করুন" aria-label="কার্টে যোগ করুন"><ShoppingBag size={18} /></button>
+        <button className="add-cart" onClick={addToCart} disabled={product.stock <= 0} title="কার্টে যোগ করুন" aria-label="কার্টে যোগ করুন"><ShoppingBag size={18} /><span className="cart-action-label">Add to cart</span></button>
       </div>
     </article>
     {checkoutOpen && <CheckoutModal product={{ id: product.id, name: product.name, price: product.price, image: product.image, stock: product.stock }} onClose={() => setCheckoutOpen(false)} />}
