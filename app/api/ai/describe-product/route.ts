@@ -14,6 +14,16 @@ Respond ONLY with valid JSON. No markdown, no backticks.
 Example:
 {"title":"ESP32-WROOM-32 Development Board","description":"High-performance WiFi and Bluetooth dual-mode microcontroller board ideal for IoT and automation projects. Features 38 GPIO pins and ultra-low power consumption.","category":"Microcontrollers","specs":{"Operating Voltage":"3.3V - 5V DC","Wireless":"WiFi 802.11 b/g/n + BLE 4.2","Flash Memory":"4MB","Clock Speed":"240 MHz"}}`;
 
+export async function GET() {
+  if (!(await isAuthenticatedAdmin())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return NextResponse.json(
+    { available: Boolean(process.env.GEMINI_API_KEY) },
+    { headers: { 'Cache-Control': 'private, no-store' } }
+  );
+}
+
 export async function POST(req: NextRequest) {
   const isAdmin = await isAuthenticatedAdmin();
   if (!isAdmin) {
@@ -22,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: 'AI service not configured' }, { status: 503 });
+    return NextResponse.json({ error: 'AI assistance is unavailable. You can still enter the details and publish the product.' }, { status: 503 });
   }
 
   try {

@@ -1,8 +1,8 @@
 "use client";
 import { uploadImage } from '@/lib/upload-client';
 
-import React, { useState } from 'react';
-import { Plus, Image as ImageIcon, Loader2, Sparkles, RefreshCw, Check, UploadCloud, X, Cpu } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Plus, Loader2, Sparkles, Check, UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
 
 interface AddProductFormProps {
@@ -39,7 +39,10 @@ async function fileToScaledCanvas(file: File, maxSize: number): Promise<HTMLCanv
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);
-  canvas.getContext('2d')!.drawImage(drawSource, 0, 0, canvas.width, canvas.height);
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Unable to prepare this photo. Please choose another image.');
+  context.drawImage(drawSource, 0, 0, canvas.width, canvas.height);
+  if (typeof ImageBitmap !== 'undefined' && drawSource instanceof ImageBitmap) drawSource.close();
   return canvas;
 }
 
@@ -59,14 +62,38 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
   // AI & Upload State
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const [aiMessage, setAiMessage] = useState('');
+  const analysisRequest = useRef<AbortController | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
   const [uploadStep, setUploadStep] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/ai/describe-product', { cache: 'no-store', signal: controller.signal })
+      .then(async response => response.ok ? response.json() : null)
+      .then(data => { if (!controller.signal.aborted) setAiAvailable(data?.available === true); })
+      .catch(() => { /* Manual product entry remains available if this check fails. */ });
+    return () => { controller.abort(); analysisRequest.current?.abort(); };
+  }, []);
+
+  useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
+
+  const stopAnalysis = () => {
+    analysisRequest.current?.abort();
+    analysisRequest.current = null;
+    setIsAnalyzing(false);
+  };
+
   const analyzeImageWithAI = async (file: File) => {
+    stopAnalysis();
+    const controller = new AbortController();
+    analysisRequest.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 20000);
     setIsAnalyzing(true);
-    setErrorMsg('');
+    setAiMessage('');
     try {
       // 800px scaled canvas payload keeps base64 lightweight and fast
       const canvas = await fileToScaledCanvas(file, 800);
@@ -77,24 +104,32 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64: base64, mimeType: 'image/jpeg' }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'AI vision service unavailable');
+        throw new Error('AI assistance unavailable');
       }
 
       const data = await res.json();
-      if (data.title) setTitle(data.title);
-      if (data.description) setDescription(data.description);
-      if (data.category) setCategory(data.category);
+      if (analysisRequest.current !== controller) return;
+      if (typeof data.title === 'string') setTitle(current => current || data.title);
+      if (typeof data.description === 'string') setDescription(current => current || data.description);
+      if (typeof data.category === 'string') setCategory(current => current || data.category);
       if (data.specs) {
-        setSpecs(typeof data.specs === 'string' ? data.specs : JSON.stringify(data.specs, null, 2));
+        setSpecs(current => current || (typeof data.specs === 'string' ? data.specs : JSON.stringify(data.specs, null, 2)));
       }
-    } catch (err) {
-      setErrorMsg((err instanceof Error ? err.message : '') || 'AI description is unavailable. You can enter the product details manually.');
+      setAiMessage('AI suggestions added to empty fields. Check the details before publishing.');
+    } catch {
+      if (analysisRequest.current === controller) {
+        setAiMessage('AI সহায়তা এখন পাওয়া যাচ্ছে না। নাম ও দাম লিখে Publish Product to Catalog চাপুন—পণ্য সেভ হবে।');
+      }
     } finally {
-      setIsAnalyzing(false);
+      clearTimeout(timeout);
+      if (analysisRequest.current === controller) {
+        analysisRequest.current = null;
+        setIsAnalyzing(false);
+      }
     }
   };
 
@@ -102,6 +137,10 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
     const file = e.target.files?.[0];
     if (!file) return;
 
+    stopAnalysis();
+    setAiMessage('');
+    setErrorMsg('');
+    setSuccessMsg('');
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
@@ -110,16 +149,18 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
   };
 
   const handleRegenerate = () => {
-    if (selectedFile) analyzeImageWithAI(selectedFile);
+    if (selectedFile && aiAvailable && !isPublishing) analyzeImageWithAI(selectedFile);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !price || !selectedFile) {
+    if (isPublishing) return;
+    if (!title.trim() || !price || !selectedFile) {
       setErrorMsg('Product name, price, and a photo are required.');
       return;
     }
 
+    stopAnalysis();
     setIsPublishing(true);
     setErrorMsg('');
     setSuccessMsg('');
@@ -128,12 +169,13 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
       // 1. Client-side canvas compression (max 1400px, JPEG 85%)
       setUploadStep('🗜️ Preparing image...');
       const canvas = await fileToScaledCanvas(selectedFile, 1400);
-      const compressedBlob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.85)
+      const compressedBlob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Unable to prepare this photo. Please choose another image.')), 'image/jpeg', 0.85)
       );
 
       const safeName = selectedFile.name.replace(/\.[^.]+$/, '.jpg');
 
+      setUploadStep('Uploading photo...');
       const publicUrl = await uploadImage(compressedBlob, safeName);
 
       // 4. Save to Turso DB via /api/products
@@ -168,6 +210,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
       setComparePrice('');
       setDescription('');
       setSpecs('');
+      setAiMessage('');
       setIsFeatured(false);
 
       onProductAdded();
@@ -191,19 +234,19 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
           Add New Component
         </h2>
         <p className="text-xs text-slate-400 mt-1">
-          Upload hardware photo for automatic AI specs generation & R2 cloud storage.
+          ছবি, পণ্যের নাম ও দাম দিন। তারপর নিচের Publish Product to Catalog বাটন চাপুন। AI ছাড়াই পণ্য সেভ করা যাবে।
         </p>
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-2xl text-xs flex items-center justify-between">
+        <div role="alert" className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-2xl text-xs flex items-center justify-between">
           <span>{errorMsg}</span>
-          <button onClick={() => setErrorMsg('')} className="text-rose-400 hover:text-white">✕</button>
+          <button aria-label="Dismiss error" onClick={() => setErrorMsg('')} className="text-rose-400 hover:text-white">✕</button>
         </div>
       )}
 
       {successMsg && (
-        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-2xl text-xs flex items-center gap-2">
+        <div role="status" className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-2xl text-xs flex items-center gap-2">
           <Check className="w-4 h-4" />
           <span>{successMsg}</span>
         </div>
@@ -212,7 +255,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Photo Upload Area */}
         <div>
-          <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
+          <label htmlFor="product-photo" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
             Primary Photo <span className="text-orange-400">*</span>
           </label>
 
@@ -222,21 +265,15 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               <div className="absolute top-3 right-3 flex gap-2">
                 <button
                   type="button"
-                  onClick={handleRegenerate}
-                  disabled={isAnalyzing}
-                  className="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-orange-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 backdrop-blur-md transition shadow-lg"
-                  title="Re-run Gemini AI Vision analysis"
-                >
-                  {isAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                  <span>Re-analyze</span>
-                </button>
-                <button
-                  type="button"
+                  aria-label="Remove photo"
+                  disabled={isPublishing}
                   onClick={() => {
+                    stopAnalysis();
+                    setAiMessage('');
                     setSelectedFile(null);
                     setPreviewUrl(null);
                   }}
-                  className="p-1.5 bg-rose-500/80 hover:bg-rose-600 text-white rounded-xl backdrop-blur-md transition"
+                  className="p-3 bg-rose-500/80 hover:bg-rose-600 text-white rounded-xl backdrop-blur-md transition disabled:opacity-50"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -245,40 +282,55 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
               {isAnalyzing && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center gap-2 text-orange-300 text-xs font-semibold">
                   <Sparkles className="w-4 h-4 animate-bounce text-amber-400" />
-                  <span>Gemini Vision analyzing component specs...</span>
+                  <span>Preparing optional AI suggestions...</span>
                 </div>
               )}
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700/80 hover:border-orange-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
+            <label htmlFor="product-photo" className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-700/80 hover:border-orange-500/50 rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all group">
               <div className="flex flex-col items-center justify-center p-4 text-center">
                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                   <UploadCloud className="w-5 h-5" />
                 </div>
                 <p className="text-sm font-semibold text-slate-200">
-                  Click or drag component photo
+                  Choose component photo
                 </p>
-                <p className="text-[11px] text-orange-400/80 flex items-center gap-1 mt-1 font-mono">
-                  <Sparkles className="w-3 h-3 text-amber-400" /> Auto-detects specs via Gemini Vision
+                <p className="text-[11px] text-slate-400 mt-1">
+                  JPG, PNG, WebP or GIF
                 </p>
               </div>
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-                disabled={isPublishing}
-              />
             </label>
           )}
+          <input
+            id="product-photo"
+            type="file"
+            className="sr-only"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleFileChange}
+            onClick={event => { event.currentTarget.value = ''; }}
+            disabled={isPublishing}
+          />
+          {previewUrl && aiAvailable && (
+            <button
+              type="button"
+              onClick={handleRegenerate}
+              disabled={isAnalyzing || isPublishing}
+              className="mt-3 min-h-11 w-full px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-orange-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
+            >
+              {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              Fill details with AI (optional)
+            </button>
+          )}
+          {aiMessage && <p role="status" className="mt-3 text-xs leading-relaxed text-slate-300">{aiMessage}</p>}
         </div>
 
         {/* Product Title */}
         <div>
-          <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label htmlFor="product-name" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
             Component Name <span className="text-orange-400">*</span>
           </label>
           <input
+            id="product-name"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -291,10 +343,11 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         {/* Pricing & Stock Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label htmlFor="product-price" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
               Price (৳) <span className="text-orange-400">*</span>
             </label>
             <input
+              id="product-price"
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -307,10 +360,11 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label htmlFor="product-compare-price" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
               Compare Price (৳)
             </label>
             <input
+              id="product-compare-price"
               type="number"
               value={comparePrice}
               onChange={(e) => setComparePrice(e.target.value)}
@@ -322,10 +376,11 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label htmlFor="product-stock" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
               Stock Quantity
             </label>
             <input
+              id="product-stock"
               type="number"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
@@ -338,17 +393,18 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
         {/* Category */}
         <div>
-          <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label htmlFor="product-category" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
             Category
           </label>
           <div className="flex gap-2">
             <input
+              id="product-category"
               type="text"
               list="cat-suggestions"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Select or enter category..."
-              className="flex-1 h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-orange-400 focus:outline-none"
+              className="flex-1 min-w-0 h-11 px-4 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:border-orange-400 focus:outline-none"
             />
             <datalist id="cat-suggestions">
               {existingCategories.map((c) => (
@@ -367,10 +423,11 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
 
         {/* Description */}
         <div>
-          <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label htmlFor="product-description" className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1.5">
             Technical Description
           </label>
           <textarea
+            id="product-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
@@ -409,7 +466,7 @@ export default function AddProductForm({ existingCategories, onProductAdded }: A
         >
           {isPublishing ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Saving to Cloud & Database...
+              <Loader2 className="w-4 h-4 animate-spin" /> Saving product...
             </>
           ) : (
             <>

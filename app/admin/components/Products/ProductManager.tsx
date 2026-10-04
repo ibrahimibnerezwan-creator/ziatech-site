@@ -51,7 +51,7 @@ export default function ProductManager({ refreshKey }: { refreshKey?: number }) 
       {loadError && <p role="alert" className="lg:col-span-3 text-red-300">{loadError}</p>}
       {isLoading && <p role="status" className="lg:col-span-3 text-orange-300">Loading products…</p>}
       {/* Add Product Form Column */}
-      <div className="lg:col-span-1 sticky top-8">
+      <div className="lg:col-span-1 min-w-0">
         <AddProductForm
           existingCategories={existingCategories}
           onProductAdded={fetchProducts}
